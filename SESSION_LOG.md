@@ -7,44 +7,44 @@
 
 ---
 
-## Current state (as of 2026-09-17)
+## Current state (as of 2026-09-18)
 
 - **Project:** FII-DII-Decode — NIFTY FII/DII/Pro/Client participant-OI decoder
   (v2, transcript-grounded), daily 9 PM IST email automation via GitHub Actions.
-- **main tip:** `11bae2b` (merge of PR #3 — email fix) ← `8e0fe52` ← PR #2 (`93a310b`) ← PR #1 (`9ceb308`).
-- **Validation status:** v2 published as experimental / no standalone edge
-  (37.91% exact vs 42.14% majority baseline on 757 sessions). See README +
-  `reports/backtest_v2_2023-08_to_2026-09/report.md`.
+- **main tip:** `9947ea5` (bot report commit) ← `8063ebd` (PR #4) ← `11bae2b`
+  (PR #3, email fix) ← PR #2 ← PR #1.
+- **Working branch:** `arena/01a0b0db-fii-dii-decode`, tip `36d31dd`.
+  **PR #5 OPEN** (level-reaction backtest) — awaiting user merge.
+- **Automation status: HEALTHY.** Scheduled live run `35263293001` = SUCCESS.
+  The empty-SMTP-secret bug is confirmed fixed on a real runner.
+- **Validation status:** v2 published as experimental / NO standalone edge.
+  Direction: 37.91% exact vs 42.14% majority baseline (757 sessions).
+  Levels (new): 685 tests, 49.20% hold — also no edge.
 - **Automation:** `.github/workflows/daily-report.yml`, cron `30 15 * * 1-5`
   (21:00 IST), live mode; `workflow_dispatch` accepts `demo` / `no_email`.
 
 ## Open items / next steps
 
-1. **[FIXED & MERGED — PR #3, main `11bae2b`]** Workflow failed with exit 1 in
-   demo runs: GitHub Actions renders missing secrets as EMPTY env strings, so
-   `int(os.environ.get("SMTP_PORT", "465"))` got `int("")` → ValueError AFTER
-   reports were written. Fixed in `src/fiidii/email_send.py`
-   (`_env_str` / `_env_int` normalise blank + malformed values); regression
-   tests in `tests/test_email.py`. **Still to verify on the runner:** user (or
-   schedule) triggers a `workflow_dispatch` DEMO run on main → expect GREEN.
-   NOTE: Arena agent token CANNOT dispatch workflows (HTTP 403) — the user
-   must click "Run workflow" in the GitHub Actions UI, or wait for the
-   21:00 IST schedule.
-2. **Email secrets not yet configured by user.** Needed (GitHub → Settings →
+1. **[DONE]** Workflow exit-1 bug (blank SMTP secrets → `int("")`). Fixed in
+   PR #3, verified GREEN by scheduled run `35263293001` on 2026-09-18.
+2. **[DONE]** Live-fetch reachability from GitHub runners. The live scheduled
+   run reached the Stocklyzer participant-OI fallback and completed with
+   `DEGRADED_MISSING_LEVEL_INPUT` — direction inputs ready, no same-date option
+   chain. NSE direct is still not reachable from the runner; the documented
+   fallback chain carries it.
+3. **[DONE]** Historical option-chain snapshots for level validation. Rebuilt
+   from public NSE F&O bhavcopy via `research/bhavcopy_to_option_chain.py`;
+   result published in `reports/backtest_v2_levels_2023-08_to_2026-09/`.
+4. **Email secrets still not configured by user.** Needed (GitHub → Settings →
    Secrets → Actions): `SMTP_HOST` (smtp.gmail.com), `SMTP_PORT` (465),
    `SMTP_USER`, `SMTP_PASS` (Gmail **App Password**, not login password),
    `MAIL_FROM`, `MAIL_TO` (abhayv72727@gmail.com). Until then email is skipped
    with a clear log line and the job stays green.
-3. **Live-fetch reachability from GitHub runners still unverified.** Both
-   prior dispatch runs were DEMO mode. Need one live `workflow_dispatch` run
-   (no flags) — or the next 21:00 IST scheduled run — to see whether NSE +
-   fallback sources are reachable from a runner. If not, the run fails CLOSED
-   (exit 2) by design — then decide: alternate mirrors, self-hosted runner, or
-   scheduled demo + manual data.
-4. **Data for deeper validation (user-dependent):** genuine dated historical
-   option-chain snapshots, exact institutional levels, intraday candles, and
-   cash-flow history to test level reactions (direction-only OI result is
-   already published).
+5. **Merge PR #5** (or ask the agent to) so the level backtest lands on main.
+6. **Only remaining data blocker: intraday 10-15 minute candles.** Daily OHLC
+   cannot verify confirmation candles, sweep-then-reclaim, touch sequencing,
+   stops, or slippage. Exact institutional levels and historical cash-flow
+   history are still optional nice-to-haves.
 
 ## Key facts discovered (don't re-derive)
 
@@ -52,8 +52,22 @@
   (`results-receiver.actions.githubusercontent.com`,
   `productionresultssa*.blob.core.windows.net`) — use `gh run view` +
   committed `data/fetch_status_*.json` instead of downloading logs.
-- Sandbox also cannot reach NSE etc. — live CLI run here fails closed; that is
-  expected and documented in README.
+- Sandbox network access VARIES by session. Session 3 had no GitHub/NSE
+  egress; session 4 had working `git clone`, `gh`, and mirror access. Always
+  re-test with a quick `git ls-remote` before assuming the network is down.
+- Sandbox still cannot reach NSE directly — live CLI run here fails closed;
+  that is expected and documented in README.
+- Python deps are NOT preinstalled in a fresh sandbox. Create a venv first:
+  `python -m venv .venv && .venv/bin/pip install -r requirements.txt`, then run
+  with `PYTHONPATH=src .venv/bin/python`.
+- Historical option-chain rebuild recipe (session 4): sparse-checkout
+  `nse_archives/{participant_oi,index_close,fo_bhavcopy}` from
+  `sahilempire/groww-market-data` @ `7d481cf1fcffe44be68852892028195c4f12dddd`
+  (fo_bhavcopy is ~757 MB), run `research/bhavcopy_to_option_chain.py`
+  (~3.5 min for 760 files), then `backtest.py --option-chains`.
+- Levels do NOT change v2 direction metrics — the locked score never consumes
+  them. Identical direction numbers across chain/no-chain runs is the correct
+  control result, not a bug.
 - The workflow's "Commit data + reports" step runs `if: always()` and pushes
   to main even when the decode step fails — bot commits `42b527c` and
   `8e0fe52` were produced by the two FAILED demo runs (17:37 / 17:52 UTC).
