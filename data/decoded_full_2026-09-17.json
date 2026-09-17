@@ -1,0 +1,389 @@
+{
+  "decode": {
+    "date": "2026-09-17",
+    "bias": "BULLISH",
+    "composite": 0.274,
+    "confidence": 36.4,
+    "signals": [
+      {
+        "name": "fii_index_fut_net",
+        "score": 1.0,
+        "weight": 0.35,
+        "note": "FII index-fut net 40,150 (+33,050 vs prev): fresh longs."
+      },
+      {
+        "name": "fii_index_fut_ratio",
+        "score": 0.28215038650737867,
+        "weight": 0.15,
+        "note": "FII index-fut long/short ratio 1.28 (bullish)."
+      },
+      {
+        "name": "pro_index_fut_net",
+        "score": -0.8400000000000001,
+        "weight": 0.15,
+        "note": "Pro index-fut net -14,200 (-5,600 vs prev)."
+      },
+      {
+        "name": "option_writing_bias",
+        "score": -0.060834506945019746,
+        "weight": 0.15,
+        "note": "Institutional option writing: put-writing 1,700,500 vs call-writing 1,920,800 => resistance building (bearish)."
+      },
+      {
+        "name": "client_contra",
+        "score": 0.658625,
+        "weight": 0.1,
+        "note": "Client index-fut net -52,690; contrarian lean = bullish (fade the crowd)."
+      },
+      {
+        "name": "cash_flow",
+        "score": -0.49183333333333334,
+        "weight": 0.1,
+        "note": "Cash: FII net -2,101 Cr, DII net 1,250 Cr."
+      }
+    ],
+    "metrics": {
+      "fii_index_fut_net": 40150.0,
+      "fii_index_fut_net_change": 33050.0,
+      "fii_index_fut_ls_ratio": 1.282,
+      "pro_index_fut_net": -14200.0,
+      "pro_index_fut_net_change": -5600.0,
+      "inst_put_call_write_ratio": 0.885,
+      "client_index_fut_net": -52690.0,
+      "fii_cash_net": -2100.75,
+      "dii_cash_net": 1250.5,
+      "max_pain": 24850.0,
+      "pcr": 1.027,
+      "spot": 24850.0
+    }
+  },
+  "predictions": {
+    "next_day": {
+      "horizon": "next_day",
+      "direction": "SIDEWAYS-UP",
+      "confidence": 36.4,
+      "rationale": "Composite bias +0.27 (BULLISH). PCR 1.027, Neutral PCR: range-bound; trade the support/resistance band.",
+      "scenarios": [
+        {
+          "trigger": "Price rises to resistance 24850 (put_oi_change)",
+          "then": "Watch the reaction. Rejection here => reversal DOWN toward support. A 15-min close ABOVE with follow-through => resistance breaks, continuation UP (short-covering)."
+        },
+        {
+          "trigger": "Price falls to support 24850 (put_oi_change)",
+          "then": "Watch the reaction. A hold/bounce => reversal UP toward resistance. A 15-min close BELOW with follow-through => support breaks, continuation DOWN (long unwinding)."
+        }
+      ],
+      "key_levels": {
+        "support": [
+          {
+            "strike": 24400.0,
+            "kind": "support",
+            "basis": "put_oi",
+            "oi": 218945.0,
+            "oi_change": -4597.0,
+            "distance_pct": -1.81,
+            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+          },
+          {
+            "strike": 24350.0,
+            "kind": "support",
+            "basis": "put_oi",
+            "oi": 211591.0,
+            "oi_change": -3576.0,
+            "distance_pct": -2.01,
+            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+          },
+          {
+            "strike": 24450.0,
+            "kind": "support",
+            "basis": "put_oi",
+            "oi": 207774.0,
+            "oi_change": 10044.0,
+            "distance_pct": -1.61,
+            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+          },
+          {
+            "strike": 24600.0,
+            "kind": "support",
+            "basis": "put_oi_change",
+            "oi": 143253.0,
+            "oi_change": 13047.0,
+            "distance_pct": -1.01,
+            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+          }
+        ],
+        "resistance": [
+          {
+            "strike": 25250.0,
+            "kind": "resistance",
+            "basis": "call_oi",
+            "oi": 206583.0,
+            "oi_change": 6150.0,
+            "distance_pct": 1.61,
+            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+          },
+          {
+            "strike": 25200.0,
+            "kind": "resistance",
+            "basis": "call_oi",
+            "oi": 201323.0,
+            "oi_change": -642.0,
+            "distance_pct": 1.41,
+            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+          },
+          {
+            "strike": 25150.0,
+            "kind": "resistance",
+            "basis": "call_oi",
+            "oi": 197680.0,
+            "oi_change": 12944.0,
+            "distance_pct": 1.21,
+            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+          },
+          {
+            "strike": 24600.0,
+            "kind": "resistance",
+            "basis": "call_oi_change",
+            "oi": 14514.0,
+            "oi_change": 14656.0,
+            "distance_pct": -1.01,
+            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel)."
+          }
+        ],
+        "max_pain": 24850.0,
+        "pcr": 1.027
+      }
+    },
+    "next_week": {
+      "horizon": "next_week",
+      "direction": "SIDEWAYS-UP",
+      "confidence": 30.9,
+      "rationale": "Blended weekly bias +0.27 (today +0.27). Institutions typically defend the highest-OI put/call walls; the week trades between them unless a wall is decisively broken.",
+      "scenarios": [
+        {
+          "trigger": "Price rises to resistance 24850 (put_oi_change)",
+          "then": "Watch the reaction. Rejection here => reversal DOWN toward support. A 15-min close ABOVE with follow-through => resistance breaks, continuation UP (short-covering)."
+        },
+        {
+          "trigger": "Price falls to support 24850 (put_oi_change)",
+          "then": "Watch the reaction. A hold/bounce => reversal UP toward resistance. A 15-min close BELOW with follow-through => support breaks, continuation DOWN (long unwinding)."
+        }
+      ],
+      "key_levels": {
+        "support": [
+          {
+            "strike": 24400.0,
+            "kind": "support",
+            "basis": "put_oi",
+            "oi": 218945.0,
+            "oi_change": -4597.0,
+            "distance_pct": -1.81,
+            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+          },
+          {
+            "strike": 24350.0,
+            "kind": "support",
+            "basis": "put_oi",
+            "oi": 211591.0,
+            "oi_change": -3576.0,
+            "distance_pct": -2.01,
+            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+          },
+          {
+            "strike": 24450.0,
+            "kind": "support",
+            "basis": "put_oi",
+            "oi": 207774.0,
+            "oi_change": 10044.0,
+            "distance_pct": -1.61,
+            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+          },
+          {
+            "strike": 24600.0,
+            "kind": "support",
+            "basis": "put_oi_change",
+            "oi": 143253.0,
+            "oi_change": 13047.0,
+            "distance_pct": -1.01,
+            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+          }
+        ],
+        "resistance": [
+          {
+            "strike": 25250.0,
+            "kind": "resistance",
+            "basis": "call_oi",
+            "oi": 206583.0,
+            "oi_change": 6150.0,
+            "distance_pct": 1.61,
+            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+          },
+          {
+            "strike": 25200.0,
+            "kind": "resistance",
+            "basis": "call_oi",
+            "oi": 201323.0,
+            "oi_change": -642.0,
+            "distance_pct": 1.41,
+            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+          },
+          {
+            "strike": 25150.0,
+            "kind": "resistance",
+            "basis": "call_oi",
+            "oi": 197680.0,
+            "oi_change": 12944.0,
+            "distance_pct": 1.21,
+            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+          },
+          {
+            "strike": 24600.0,
+            "kind": "resistance",
+            "basis": "call_oi_change",
+            "oi": 14514.0,
+            "oi_change": 14656.0,
+            "distance_pct": -1.01,
+            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel)."
+          }
+        ],
+        "max_pain": 24850.0,
+        "pcr": 1.027
+      }
+    }
+  },
+  "levels": {
+    "spot": 24850.0,
+    "expiry": "25-Sep-2026",
+    "max_pain": 24850.0,
+    "pcr": 1.027,
+    "pcr_signal": "Neutral PCR: range-bound; trade the support/resistance band.",
+    "immediate_support": {
+      "strike": 24850.0,
+      "kind": "support",
+      "basis": "put_oi_change",
+      "oi": 37674.0,
+      "oi_change": 11927.0,
+      "distance_pct": 0.0,
+      "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+    },
+    "immediate_resistance": {
+      "strike": 24850.0,
+      "kind": "support",
+      "basis": "put_oi_change",
+      "oi": 37674.0,
+      "oi_change": 11927.0,
+      "distance_pct": 0.0,
+      "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+    },
+    "levels": [
+      {
+        "strike": 25250.0,
+        "kind": "resistance",
+        "basis": "call_oi",
+        "oi": 206583.0,
+        "oi_change": 6150.0,
+        "distance_pct": 1.61,
+        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+      },
+      {
+        "strike": 25200.0,
+        "kind": "resistance",
+        "basis": "call_oi",
+        "oi": 201323.0,
+        "oi_change": -642.0,
+        "distance_pct": 1.41,
+        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+      },
+      {
+        "strike": 25150.0,
+        "kind": "resistance",
+        "basis": "call_oi",
+        "oi": 197680.0,
+        "oi_change": 12944.0,
+        "distance_pct": 1.21,
+        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+      },
+      {
+        "strike": 24400.0,
+        "kind": "support",
+        "basis": "put_oi",
+        "oi": 218945.0,
+        "oi_change": -4597.0,
+        "distance_pct": -1.81,
+        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+      },
+      {
+        "strike": 24350.0,
+        "kind": "support",
+        "basis": "put_oi",
+        "oi": 211591.0,
+        "oi_change": -3576.0,
+        "distance_pct": -2.01,
+        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+      },
+      {
+        "strike": 24450.0,
+        "kind": "support",
+        "basis": "put_oi",
+        "oi": 207774.0,
+        "oi_change": 10044.0,
+        "distance_pct": -1.61,
+        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+      },
+      {
+        "strike": 24600.0,
+        "kind": "resistance",
+        "basis": "call_oi_change",
+        "oi": 14514.0,
+        "oi_change": 14656.0,
+        "distance_pct": -1.01,
+        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel)."
+      },
+      {
+        "strike": 25550.0,
+        "kind": "resistance",
+        "basis": "call_oi_change",
+        "oi": 51626.0,
+        "oi_change": 14548.0,
+        "distance_pct": 2.82,
+        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel)."
+      },
+      {
+        "strike": 25450.0,
+        "kind": "resistance",
+        "basis": "call_oi_change",
+        "oi": 106034.0,
+        "oi_change": 14228.0,
+        "distance_pct": 2.41,
+        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel)."
+      },
+      {
+        "strike": 24600.0,
+        "kind": "support",
+        "basis": "put_oi_change",
+        "oi": 143253.0,
+        "oi_change": 13047.0,
+        "distance_pct": -1.01,
+        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+      },
+      {
+        "strike": 24850.0,
+        "kind": "support",
+        "basis": "put_oi_change",
+        "oi": 37674.0,
+        "oi_change": 11927.0,
+        "distance_pct": 0.0,
+        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+      },
+      {
+        "strike": 25000.0,
+        "kind": "support",
+        "basis": "put_oi_change",
+        "oi": 23016.0,
+        "oi_change": 11674.0,
+        "distance_pct": 0.6,
+        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Local env / secrets
+.env
+*.local
+
+# Keep committed: data/ and reports/ (history is small CSV/JSON + reports)
+# but ignore bulky raw option-chain snapshots older than needed if desired:
+# data/option_chain/*.json
