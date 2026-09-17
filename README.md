@@ -125,6 +125,13 @@ target/stop execution after the confirmation candle:
 It again found **0** generic 10/15m trade rules clearing a 70% train/2025/2026
 win-rate gate and **0** PDF-level trade rules clearing the July-Aug/Sep gate.
 
+Finally, **v9 OI + intraday confirmation** retests the core idea using prior-day
+v3 FII/DII/Pro/Client lean plus next-session first 10/15/30/60-minute
+confirmation and symmetric target/stop execution:
+[`reports/v9_oi_intraday_confirmation/report.md`](reports/v9_oi_intraday_confirmation/report.md).
+It checked **29,568** OI+intraday rule summaries; **0** cleared the strict 70%
+train(2023-24)/validation(2025)/confirmation(2026) gate.
+
 To keep future sessions reproducible after Arena wipes external directories, a
 compact historical bundle is committed under [`historical/`](historical/) with
 participant OI, participant volume, canonical NIFTY OHLC, long price-regime OHLC,

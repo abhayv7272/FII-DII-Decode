@@ -27,7 +27,8 @@
   (`reports/v6_realworld_selective/`), and v7 2017-2026 15-minute intraday +
   exact dated PDF-level confirmation research
   (`reports/v7_intraday_institutional_levels/`), and v8 10/15-minute symmetric
-  target/stop trade-level simulation (`reports/v8_intraday_trade_sim/`). No
+  target/stop trade-level simulation (`reports/v8_intraday_trade_sim/`), and v9
+  OI+intraday confirmation research (`reports/v9_oi_intraday_confirmation/`). No
   honest 70-85% production-ready rule survived the
   holdout/sample/leakage/post-entry/trade-execution guards.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
@@ -42,12 +43,19 @@
   `/home/user/historical`, `/home/user/features`, and venvs are wiped between
   turns. Re-create venv with
   `pip install -r requirements.txt scipy scikit-learn`. The compact historical
-  bundle needed for v3-v8 feature/research rebuilds is now committed under
+  bundle needed for v3-v9 feature/research rebuilds is now committed under
   `historical/`; bulky raw bhavcopy ZIPs and raw 1-minute intraday files still
   stay outside git and must be re-downloaded only when rebuilding chain snapshots
   or 10-/15-minute intraday candles from scratch.
 
 ## Log (newest first)
+
+### 2026-09-18 (session 12 — V9 OI + intraday confirmation)
+- Continued immediately after V8 because the user asked to keep going toward real 70%+.
+- Added `research/v9_oi_intraday_confirmation.py`: combines prior-day v3 FII/DII/Pro/Client OI lean (`reports/backtest_v3_candidate_2023-08_to_2026-09/v3_predictions.csv`) with next-session first 10/15/30/60-minute confirmation, entering only after the confirmation candle closes and using symmetric target/stop execution.
+- Generated `reports/v9_oi_intraday_confirmation/`: 2,274,684 trade candidates summarized into 29,568 rule rows; raw full trades are omitted by default and a 5,000-row sample is saved.
+- Honest V9 result: **0** rules cleared strict 70% win-rate across train 2023-2024, validation 2025, and confirmation 2026 with sample guards and positive average points. Best 2026-only pockets (including 100% on 4-8 calls) failed older windows, often around 20-54%, so they are not promotable.
+- Validation after edits: py_compile + full pytest passed (`49 passed`). Production default remains v2; V3 remains opt-in only. Next path remains forward collection: exact external institutional levels + new intraday candles scored without changing V7/V8/V9 rules.
 
 ### 2026-09-18 (session 11 — V8 10/15m trade-level simulator)
 - User said "continue" after V7. Verified first: branch/session still active on `arena/01a0b16b-fii-dii-decode`; previous V7 commit `ca0316b` was pushed; no merge/close/branch switch.

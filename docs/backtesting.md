@@ -390,3 +390,33 @@ rules around 70-71% in the 2026 slice, but their 2017-2024 and/or 2025 win rates
 were near 50-61%, so they are regime-specific, not robust. The best PDF-level
 pockets again showed 100% on only 2-3 September trades while losing in the
 July-Aug training split; they are not promotable.
+
+## V9 OI + intraday confirmation
+
+V9 retests the core FII/DII/Pro/Client idea after adding long intraday data. It
+combines the prior-day v3 OI lean with next-session first 10/15/30/60-minute
+confirmation and enters only after that candle closes. Execution again uses
+symmetric target/stop percentages and counts ambiguous target+stop candles as
+losses.
+
+Run:
+
+```bash
+PYTHONPATH=research .venv/bin/python research/v9_oi_intraday_confirmation.py \
+  --out reports/v9_oi_intraday_confirmation
+```
+
+Published V9 result:
+
+| Check | Result |
+|---|---:|
+| V3 OI predictions tested | 757 |
+| Trade candidates generated | 2,274,684 |
+| Rule summaries checked | 29,568 |
+| Split | train 2023-2024 / validation 2025 / confirmation 2026 |
+| Rules clearing strict 70% win-rate gate | 0 |
+
+The best 2026-only OI+intraday pockets were tiny (often 4-8 confirmation calls)
+and failed the older train/validation windows. Therefore first-candle
+confirmation does not currently convert the OI lean into a robust executable
+70%+ edge.
