@@ -1,46 +1,49 @@
 {
-  "overall": "BLOCKED_MISSING_DIRECTION_INPUT",
+  "overall": "DEMO_FIXTURE",
   "run_date": "2026-09-17",
   "report_date": "2026-09-17",
-  "direction_inputs_ready": false,
-  "level_inputs_ready": false,
-  "fallback_inputs": [
-    "cash"
-  ],
+  "direction_inputs_ready": true,
+  "level_inputs_ready": true,
+  "fallback_inputs": [],
   "unavailable_inputs": [
-    "participant_oi_current",
-    "option_chain",
-    "index_quote",
-    "participant_volume",
-    "participant_oi_previous"
+    "index_quote"
   ],
   "inputs": {
     "participant_oi_current": {
-      "status": "unavailable",
-      "source": null,
+      "status": "available",
+      "source": "bundled synthetic demo fixture",
       "url": null,
-      "as_of": null,
+      "as_of": "2026-09-17",
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T16:17:38.878109+00:00",
-      "warning": "participant OI unavailable for 2026-09-17: NSE legacy archive _b: Failed to fetch https://archives.nseindia.com/content/nsccl/fao_participant_oi_17092026_b.csv after 2 attempts: HTTPSConnectionPool(host='archives.nseindia.com', port=443): Max retries exceeded with url: /content/nsccl/fao_participant_oi_17092026_b.csv (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); NSE legacy archive: Failed to fetch https://archives.nseindia.com/content/nsccl/fao_participant_oi_17092026.csv after 2 attempts: HTTPSConnectionPool(host='archives.nseindia.com', port=443): Max retries exceeded with url: /content/nsccl/fao_participant_oi_17092026.csv (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); GitHub mirror: 404 Client Error: Not Found for url: https://api.github.com/repos/sahilempire/groww-market-data/contents/nse_archives/participant_oi/fao_participant_oi_20260917.csv Rendered fallbacks: Stocklyzer participant fallback rejected: fallback fetch failed for https://www.stocklyzer.com/participant-wise: HTTPSConnectionPool(host='www.stocklyzer.com', port=443): Max retries exceeded with url: /participant-wise (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); NiftyTrader participant fallback rejected: fallback fetch failed for https://www.niftytrader.in/participant-wise-oi: HTTPSConnectionPool(host='www.niftytrader.in', port=443): Max retries exceeded with url: /participant-wise-oi (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))"
+      "fetched_at_utc": "2026-09-17T17:38:11.478420+00:00",
+      "warning": "Synthetic/approximate values; not live market data."
+    },
+    "participant_oi_previous": {
+      "status": "available",
+      "source": "bundled synthetic demo fixture",
+      "url": null,
+      "as_of": "2026-09-17",
+      "fallback": false,
+      "fetched_at_utc": "2026-09-17T17:38:11.478420+00:00",
+      "warning": "Synthetic/approximate values; not live market data."
     },
     "cash": {
       "status": "available",
-      "source": "MrChartist GitHub NSE cash snapshot",
-      "url": "https://github.com/MrChartist/fii-dii-data/blob/main/data/latest.json",
+      "source": "bundled synthetic demo fixture",
+      "url": null,
       "as_of": "2026-09-17",
-      "fallback": true,
-      "fetched_at_utc": "2026-09-17T16:18:26.935526+00:00",
-      "warning": "Third-party persisted NSE cash snapshot; NSE API failed."
+      "fallback": false,
+      "fetched_at_utc": "2026-09-17T17:38:11.478420+00:00",
+      "warning": "Synthetic/approximate values; not live market data."
     },
     "option_chain": {
-      "status": "unavailable",
-      "source": null,
+      "status": "available",
+      "source": "bundled synthetic demo fixture",
       "url": null,
-      "as_of": null,
+      "as_of": "2026-09-17",
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T16:18:31.633650+00:00",
-      "warning": "option chain fetch failed for NIFTY: NSE: Failed to fetch https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY after 2 attempts: HTTPSConnectionPool(host='www.nseindia.com', port=443): Max retries exceeded with url: /api/option-chain-indices?symbol=NIFTY (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); MarketNetra: fallback fetch failed for https://marketnetra.in/indices/nifty/option-chain: HTTPSConnectionPool(host='marketnetra.in', port=443): Max retries exceeded with url: /indices/nifty/option-chain (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))"
+      "fetched_at_utc": "2026-09-17T17:38:11.478420+00:00",
+      "warning": "Synthetic/approximate values; not live market data."
     },
     "index_quote": {
       "status": "unavailable",
@@ -48,26 +51,15 @@
       "url": null,
       "as_of": null,
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T16:18:36.287266+00:00",
-      "warning": "index quote failed: NSE: Failed to fetch https://www.nseindia.com/api/allIndices after 2 attempts: HTTPSConnectionPool(host='www.nseindia.com', port=443): Max retries exceeded with url: /api/allIndices (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); Yahoo: fallback fetch failed for https://query1.finance.yahoo.com/v8/finance/chart/%5ENSEI?period1=1788998400&period2=1789776000&interval=1d&events=history: HTTPSConnectionPool(host='query1.finance.yahoo.com', port=443): Max retries exceeded with url: /v8/finance/chart/%5ENSEI?period1=1788998400&period2=1789776000&interval=1d&events=history (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))"
+      "fetched_at_utc": "2026-09-17T17:38:11.478430+00:00",
+      "warning": "Demo fixture has option-chain spot but no independent index OHLC fetch."
     },
     "participant_volume": {
-      "status": "unavailable",
+      "status": "not_used",
       "source": null,
-      "url": null,
-      "as_of": null,
+      "as_of": "2026-09-17",
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T16:18:42.832006+00:00",
-      "warning": "participant volume unavailable for 2026-09-17: NSE archive: Failed to fetch https://nsearchives.nseindia.com/content/nsccl/fao_participant_vol_17092026.csv after 2 attempts: HTTPSConnectionPool(host='nsearchives.nseindia.com', port=443): Max retries exceeded with url: /content/nsccl/fao_participant_vol_17092026.csv (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); NSE legacy archive _b: Failed to fetch https://archives.nseindia.com/content/nsccl/fao_participant_vol_17092026_b.csv after 2 attempts: HTTPSConnectionPool(host='archives.nseindia.com', port=443): Max retries exceeded with url: /content/nsccl/fao_participant_vol_17092026_b.csv (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); NSE legacy archive: Failed to fetch https://archives.nseindia.com/content/nsccl/fao_participant_vol_17092026.csv after 2 attempts: HTTPSConnectionPool(host='archives.nseindia.com', port=443): Max retries exceeded with url: /content/nsccl/fao_participant_vol_17092026.csv (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))"
-    },
-    "participant_oi_previous": {
-      "status": "unavailable",
-      "source": null,
-      "url": null,
-      "as_of": null,
-      "fallback": false,
-      "fetched_at_utc": "2026-09-17T16:18:42.843843+00:00",
-      "warning": "Current participant OI is unavailable, so no previous pair was used."
+      "warning": "Participant volume is not an input to the locked v2 score."
     },
     "institutional_references": {
       "status": "not_provided",
