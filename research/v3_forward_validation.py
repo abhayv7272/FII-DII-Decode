@@ -139,12 +139,16 @@ def main() -> None:
     parser.add_argument("--base-ohlc", default="/home/user/historical/index_close")
     parser.add_argument("--extra-participant-oi", action="append", default=[])
     parser.add_argument("--extra-ohlc", action="append", default=[])
+    parser.add_argument("--repo-participant-store", default="data/participant_oi.csv")
+    parser.add_argument("--repo-ohlc-store", default="data/index_ohlc.csv")
     parser.add_argument("--output-dir", default="reports/v3_forward_validation")
     parser.add_argument("--from-date", default="2026-09-05")
     args = parser.parse_args()
 
-    oi = _load_forward_oi(args.base_participant_oi, args.extra_participant_oi)
-    ohlc = _load_forward_ohlc(args.base_ohlc, args.extra_ohlc)
+    oi = _load_forward_oi(args.base_participant_oi, args.extra_participant_oi,
+                          repo_store=args.repo_participant_store)
+    ohlc = _load_forward_ohlc(args.base_ohlc, args.extra_ohlc,
+                              repo_store=args.repo_ohlc_store)
     last_oi = max(oi["date"])
     last_bar = max(ohlc["date"])
 

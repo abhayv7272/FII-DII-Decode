@@ -7,7 +7,7 @@
 
 ---
 
-## Current state (as of 2026-09-17, updated)
+## Current state (as of 2026-09-18, updated)
 
 - **Project:** FII-DII-Decode — NIFTY FII/DII/Pro/Client participant-OI decoder
   (v2 production; **v3 candidate built + published as opt-in research**),
@@ -25,11 +25,40 @@
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
   (MrChartist 2026 history, exploratory): no standalone next-day content;
   mild v3-agreement premium; production's confirmation-only policy kept.
+  Gate is end-to-end smoke-tested on a synthetic forward window
+  (`tests/test_research_gates.py`, suite 49 passed).
 - **Automation:** unchanged (v2 default), cron `30 15 * * 1-5`.
+- **Sandbox caveat:** only files *inside the repo* persist across Arena turns —
+  `/home/user/historical`, `/home/user/features`, and venvs are wiped between
+  turns. Re-create venv with
+  `pip install -r requirements.txt scipy scikit-learn`; research data must be
+  re-downloaded (mirror commit `7d481cf`) or consolidated into the repo.
 
 ## Log (newest first)
 
-### 2026-09-18 (session 5 continued — forward gate + cash probe)
+### 2026-09-18 (session 6 — chat backup requested + gate smoke test)
+- User asked: **"Backup chat to github"** → this entry is the backup; all
+  work is committed to `arena/01a0b102-fii-dii-decode` (PR #6).
+- **Discovery:** Arena sandbox wipes everything outside the repo between turns
+  (venv, `/home/user/historical` mirror, `/home/user/features`, probe caches
+  gone). Local branch pointer also reset to `main` while the *working tree*
+  kept every file → repaired via `git fetch origin arena/01a0b102-fii-dii-decode`
+  + `git reset --mixed FETCH_HEAD` (remote branch/PR #6 were never lost).
+- **Gate smoke test added:** fabricated two post-2026-09-04 sessions via
+  `--extra-*` dirs, ran the full gate CLI — asserts `COLLECTING_DATA`,
+  per-version stats, prediction export, and that gate v3 numbers equal a
+  direct `run_backtest` call. New `--repo-participant-store` /
+  `--repo-ohlc-store` flags make the runner hermetic for tests (default
+  unchanged: repo stores). Suite: **49 passed**.
+- **Pipeline resilience:** live run now persists a close-only NIFTY bar from
+  the option chain's `underlyingValue` when the index-quote fetch fails
+  (`data/index_ohlc.csv` starts filling from either source).
+- **Pending decision (user redirected before answering):** commit compact
+  consolidated history CSVs (`historical/participant_oi.csv`,
+  `nifty_ohlc.csv`, `participant_vol.csv` ≈ 1.5 MB) into the repo so the gate
+  and all backtests survive sandbox wipes; a re-download was aborted mid-turn.
+- Next: if user approves, do the consolidation; otherwise re-download per
+  turn. Then keep accumulating daily stores and rerun the gate.
 - "Continue" → executed the two documented next steps.
 - **Forward-validation gate built & locked:** `research/v3_forward_validation.py`
   replays v1/v2/v3 via the production path on signal dates after 2026-09-04

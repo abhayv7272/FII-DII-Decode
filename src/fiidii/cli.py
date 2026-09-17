@@ -286,6 +286,35 @@ def _persist_session_context(
         store.save_option_chain(option_chain, symbol, session_date)
     if quote:
         _persist_index_ohlc(quote, symbol, session_date.isoformat())
+    elif option_chain:
+        _persist_chain_spot(option_chain, symbol, session_date.isoformat())
+
+
+def _persist_chain_spot(option_chain: dict, symbol: str, report_date: str) -> bool:
+    """Close-only fallback bar from the same-date option chain's underlyingValue.
+
+    The forward-validation gate only needs the close; open/high/low are left
+    blank (the replay leaves their gap/level observations unscored).
+    """
+    records = option_chain.get("records", {}) if isinstance(option_chain, dict) else {}
+    spot = _quote_number(records, "underlyingValue")
+    if spot is None:
+        return False
+    row = pd.DataFrame(
+        [
+            {
+                "date": report_date,
+                "symbol": symbol.upper(),
+                "open": None,
+                "high": None,
+                "low": None,
+                "close": spot,
+                "previous_close": None,
+            }
+        ]
+    )
+    store.append_df(row, "index_ohlc", dedup_on=["date", "symbol"])
+    return True
 
 
 def _history_for_method(
