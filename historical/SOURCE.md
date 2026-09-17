@@ -2,11 +2,13 @@
 
 These CSVs are a compact, reproducible subset of the public
 `sahilempire/groww-market-data` mirror pinned at commit
-`7d481cf1fcffe44be68852892028195c4f12dddd`.
+`7d481cf1fcffe44be68852892028195c4f12dddd`, plus the V7 intraday and
+PDF-level seed data described below.
 
 They are committed so Arena/session resets do not wipe the minimum data needed
-for v3/v4 research gates.  The bulky raw F&O bhavcopy ZIPs and per-date option
-chain snapshots are intentionally not committed.
+for v3/v4/v5/v6/v7 research gates.  The bulky raw F&O bhavcopy ZIPs, per-date
+option-chain snapshots, and raw 1-minute intraday files are intentionally not
+committed.
 
 Files:
 
@@ -21,6 +23,14 @@ Files:
   source for published OI backtests).
 - `chain_features.csv` — same-date EOD option-chain aggregate features rebuilt
   from F&O bhavcopy via `research/v3_chain_features.py`.
+- `nifty_15m.csv` — 15-minute NIFTY 50 intraday OHLCV bars from 2017-04-03 to
+  2026-09-17, derived from the public `technovusin/nifty50-historical-data`
+  1-minute archive via `research/build_intraday_candles.py`. Raw 1-minute CSVs
+  are kept outside Git; `nifty_15m.csv.manifest.json` records their hashes.
+- `institutional_levels_pdf_2026.csv` — 140 manually audited, date-stamped
+  NIFTY levels from the supplied `Market_Analysis_03_August_2026_Decoded-
+  combined.pdf`; 60 rows are tagged as explicit institutional/institutional-zone
+  references from the PDF wording.
 - `manifest.json` — source commit and SHA-256 checksums.
 
 Educational research only; not investment advice.

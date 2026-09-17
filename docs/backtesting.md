@@ -303,3 +303,52 @@ tradable level edge**.
 * Daily OHLC cannot verify 10-15 minute candle confirmation, sweep-then-reclaim,
   touch sequencing, stops, or slippage. These are **daily proxy** numbers, not
   trade simulation results.
+
+## V7 intraday + exact dated-level gate
+
+After V4/V5/V6 failed to produce a robust EOD/OI-only 75%+ edge, the next path
+adds the missing execution-time data:
+
+- `historical/nifty_15m.csv` — 15-minute NIFTY candles derived from the public
+  `technovusin/nifty50-historical-data` 1-minute archive. Raw 1-minute files are
+  kept outside Git; `historical/nifty_15m.csv.manifest.json` records upstream
+  files, hashes, and the builder script.
+- `historical/institutional_levels_pdf_2026.csv` — 140 manually audited,
+  date-stamped NIFTY levels from the supplied 2026 market-analysis PDF. Rows are
+  tagged as institutional when the PDF wording calls them institutional or
+  institutional-zone levels; otherwise they remain technical/psychological/
+  option-chain levels.
+- `research/v7_intraday_institutional_levels.py` — scores generic 15m rules over
+  2017-2026 and scores PDF-level 15m confirmation branches over the dated level
+  window.
+
+Run:
+
+```bash
+.venv/bin/python research/build_intraday_candles.py \
+  --raw-root /home/user/historical/technovusin-nifty50-historical-data/1min \
+  --interval 15 \
+  --out historical/nifty_15m.csv
+
+.venv/bin/python research/v7_intraday_institutional_levels.py \
+  --out reports/v7_intraday_institutional_levels
+```
+
+Published V7 result:
+
+| Check | Result |
+|---|---:|
+| 15m bars loaded | 58,397 |
+| Usable sessions | 2,336 (2017-04-03 to 2026-09-17) |
+| PDF level rows | 140 across 28 signal days |
+| Explicit institutional-level rows | 60 |
+| Generic 15m rules clearing 70% train/2025/2026 **post-entry** gate | 0 |
+| PDF-level variants clearing 70% July-Aug/Sep **post-entry** gate | 0 |
+
+Important scoring distinction: many first-15/30/60-minute momentum filters show
+70%+ **open-to-close** direction because the measured day already includes the
+first move. V7 therefore treats the candle close as the earliest entry and uses
+signal-close-to-day-close `post_entry_hit_rate` as the main honest metric. That
+post-entry edge did **not** clear the 70% gate. The best PDF-level first-candle
+branches reached high September-only rates on small samples, but failed the
+July-Aug training split, so they are forward-watch tags only.

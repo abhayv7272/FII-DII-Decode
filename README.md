@@ -107,10 +107,23 @@ v4 psychology pool and 10+ years of NIFTY daily price-regime history:
 It checked **319,600** OI/psychology rule pairs and **2,562** price-only rules;
 again **0** reached ≥75% robust holdout accuracy with minimum sample guards.
 
+The **v7 intraday + exact dated-level path** now adds the next strongest data
+source the EOD runs were missing: 15-minute NIFTY candles from 2017-04-03 to
+2026-09-17 and 140 date-stamped NIFTY levels manually audited from the supplied
+2026 market-analysis PDF:
+[`reports/v7_intraday_institutional_levels/report.md`](reports/v7_intraday_institutional_levels/report.md).
+The raw 1-minute archive stays outside Git; the derived 15m file and provenance
+manifest are committed under `historical/`. Honest post-entry scoring still found
+**0** generic 15m rules clearing a 70% train/2025/2026 gate and **0** PDF-level
+confirmation variants clearing a 70% July-Aug/Sep split. Some first-candle
+level branches showed 75-86% in the September slice, but July-Aug training was
+near coin flip, so these are forward-watch tags only, not production signals.
+
 To keep future sessions reproducible after Arena wipes external directories, a
 compact historical bundle is committed under [`historical/`](historical/) with
 participant OI, participant volume, canonical NIFTY OHLC, long price-regime OHLC,
-and chain aggregate features from the pinned Groww mirror.
+chain aggregate features from the pinned Groww mirror, plus the V7 15-minute
+intraday and PDF-level datasets.
 
 ### Level reactions now measured — and they show no edge either
 
@@ -167,11 +180,11 @@ Highlights:
 ### Still needed from you
 
 1. **GitHub secrets for email** (see below) so the 9 PM job can actually send mail.
-2. **Intraday candles (10-15 minute)**, exact institutional levels, and
-   historical cash-flow snapshots are still needed. Level reactions now have a
-   published *daily* proxy (above), but confirmation-candle behaviour, sweeps,
-   and slippage cannot be tested without intraday data. Bundled fixtures remain
-   demo/test-only.
+2. **Forward exact institutional levels and post-2026-09-17 intraday candles** are
+   still needed for a real untouched forward gate. V7 now includes historical
+   15-minute candles and a PDF-derived dated-level seed set, but the exact level
+   formula is still external and every new live level must be supplied with its
+   date/provenance. Bundled fixtures remain demo/test-only.
 
 ---
 

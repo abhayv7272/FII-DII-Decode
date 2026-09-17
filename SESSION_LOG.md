@@ -24,8 +24,10 @@
   (`reports/v4_psychology_search/`) plus a 2023-2025-fit / 2026-holdout combo,
   meta-gate, and recent intraday audit (`reports/v5_holdout_combo_meta/`), plus
   v6 pair/conjunction + 10-year price-regime search
-  (`reports/v6_realworld_selective/`). No honest 75-85% production-ready rule
-  survived the holdout/sample/leakage guards.
+  (`reports/v6_realworld_selective/`), and v7 2017-2026 15-minute intraday +
+  exact dated PDF-level confirmation research
+  (`reports/v7_intraday_institutional_levels/`). No honest 70-85%
+  production-ready rule survived the holdout/sample/leakage/post-entry guards.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
   in `reports/v3_forward_validation/gate_report.md` — state
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
@@ -38,11 +40,23 @@
   `/home/user/historical`, `/home/user/features`, and venvs are wiped between
   turns. Re-create venv with
   `pip install -r requirements.txt scipy scikit-learn`. The compact historical
-  bundle needed for v3/v4 feature rebuilds is now committed under `historical/`;
-  bulky raw bhavcopy ZIPs still stay outside git and must be re-downloaded only
-  when rebuilding chain snapshots from scratch.
+  bundle needed for v3-v7 feature/research rebuilds is now committed under
+  `historical/`; bulky raw bhavcopy ZIPs and raw 1-minute intraday files still
+  stay outside git and must be re-downloaded only when rebuilding chain snapshots
+  or 15-minute intraday candles from scratch.
 
 ## Log (newest first)
+
+### 2026-09-18 (session 10 — V7 intraday + exact dated-level path)
+- User approved the next strongest path: longer 10-15 minute intraday candles plus exact date-stamped institutional levels because EOD/OI-only curve-fitting had not cracked the edge.
+- Verified branch/session first: still on `arena/01a0b16b-fii-dii-decode`; no merge/PR close/branch switch/session close performed.
+- Downloaded public NIFTY 1-minute intraday archive from `technovusin/nifty50-historical-data` via GitHub API into `/home/user/historical/technovusin-nifty50-historical-data/1min` (outside Git), then built committed `historical/nifty_15m.csv` with `research/build_intraday_candles.py`.
+- V7 intraday data coverage: 58,397 15-minute bars, 2,336 usable sessions from 2017-04-03 through 2026-09-17; raw 1-minute files are kept out of Git and hashes are recorded in `historical/nifty_15m.csv.manifest.json`.
+- Manually audited the supplied 2026 market-analysis PDF summary sections into `historical/institutional_levels_pdf_2026.csv`: 140 date-stamped NIFTY level rows across 28 signal days, 60 tagged explicit institutional/institutional-zone references.
+- Added `research/v7_intraday_institutional_levels.py` and generated `reports/v7_intraday_institutional_levels/`.
+- Honest V7 result: 0 generic 15m rules cleared a 70% train/2025/2026 post-entry gate; 0 PDF-level confirmation variants cleared a 70% July-Aug/Sep post-entry gate. Some first-candle level branches were 75-86% on September only, but July-Aug training was near coin flip, so no production promotion.
+- Added `data/institutional_levels/README.md` for future externally supplied exact-level JSONs. Validation after edits: py_compile + full pytest passed (`49 passed`). Next step is untouched forward collection/scoring of exact daily levels + new 15m bars without changing thresholds.
+
 
 ### 2026-09-18 (session 9 — user requested backup + continue toward real-world next-day use)
 - User asked to backup chat to GitHub, verify session is not closed, and continue the 75-85% accuracy hunt for real-world present next-day prediction.
