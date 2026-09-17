@@ -417,6 +417,23 @@ Evidence: `reports/backtest_v3_candidate_2023-08_to_2026-09/`. Implementation:
 `src/fiidii/decode_v3.py` (delegates to the v2 machinery with candidate
 constants so the two cannot silently diverge).
 
+**Forward-validation gate (locked criteria before seeing results):**
+`research/v3_forward_validation.py` replays all versions on signal dates
+after 2026-09-04 from the mirror archives plus the accumulating daily stores
+(`data/participant_oi.csv`, `data/index_ohlc.csv`). Promotion requires ≥60
+evaluable sessions with v3 exact ≥ the window majority baseline, exact ≥ v2,
+and non-FLAT sign ≥ 52% with a Wilson lower bound above 50%. Status lives in
+`reports/v3_forward_validation/gate_report.md`.
+
+**Cash-flow probe (stage 8, exploratory only):** MrChartist history.json
+(155 rows, 2026-01-14→2026-09-17) shows no standalone next-day predictive
+content (best |IC| ≈ 0.03 close-to-close), while v3 agreement with same-day
+cash direction is mildly better than disagreement (exact 47.1% vs 43.8%,
+n≈70 each) — consistent with production's existing "cash is confirmation
+only" policy and insufficient to add cash as a score input. Daily cash keeps
+being accumulated in `data/fii_dii_cash.csv` for a future properly-windowed
+decision. Probe output: `reports/v3_deep_dive/cash_probe_2026.csv`.
+
 ## 11. Reproduction
 
 Run the full comparison against the pinned archive paths:

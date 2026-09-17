@@ -67,6 +67,15 @@ decoder requires an untouched forward window. Evidence package:
 **[`reports/backtest_v3_candidate_2023-08_to_2026-09/report.md`](reports/backtest_v3_candidate_2023-08_to_2026-09/report.md)**;
 opt in with `--decoder-version v3`.
 
+**Forward-validation gate:** the daily workflow already accumulates
+`data/participant_oi.csv` / `data/index_ohlc.csv` / `data/fii_dii_cash.csv`.
+`python research/v3_forward_validation.py` replays v1/v2/v3 on signal dates
+strictly after the fitted archive end (2026-09-04) and applies locked
+promotion criteria (≥60 evaluable sessions, exact ≥ majority baseline and ≥
+v2, non-FLAT sign ≥ 52% with Wilson lower bound > 50%). Current state:
+**`COLLECTING_DATA`** (gate report:
+[`reports/v3_forward_validation/gate_report.md`](reports/v3_forward_validation/gate_report.md)).
+
 ### Level reactions now measured — and they show no edge either
 
 Historical option-chain JSON is not published anywhere, so levels were previously

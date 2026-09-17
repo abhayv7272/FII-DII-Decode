@@ -1,0 +1,18 @@
+[
+  {
+    "cash_agrees_with_v3_lean":false,
+    "signals":73,
+    "exact_pct":43.84,
+    "nonflat_sign_pct":56.14,
+    "sign_n":57,
+    "block":"Q2_v3_x_cash"
+  },
+  {
+    "cash_agrees_with_v3_lean":true,
+    "signals":70,
+    "exact_pct":47.14,
+    "nonflat_sign_pct":56.9,
+    "sign_n":58,
+    "block":"Q2_v3_x_cash"
+  }
+]

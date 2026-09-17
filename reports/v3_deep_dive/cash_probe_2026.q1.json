@@ -1,0 +1,35 @@
+[
+  {
+    "feature":"fii_net",
+    "n":143,
+    "ic_cc":0.0115,
+    "ic_gap":0.1027,
+    "ic_oc":-0.1069,
+    "top20_up_rate":37.9,
+    "bottom20_down_rate":44.8,
+    "bucket_n":29,
+    "block":"Q1_univariate"
+  },
+  {
+    "feature":"dii_net",
+    "n":143,
+    "ic_cc":-0.0431,
+    "ic_gap":-0.0362,
+    "ic_oc":0.0696,
+    "top20_up_rate":37.9,
+    "bottom20_down_rate":31.0,
+    "bucket_n":29,
+    "block":"Q1_univariate"
+  },
+  {
+    "feature":"cash_combo",
+    "n":143,
+    "ic_cc":-0.0277,
+    "ic_gap":0.06,
+    "ic_oc":-0.0462,
+    "top20_up_rate":41.4,
+    "bottom20_down_rate":44.8,
+    "bucket_n":29,
+    "block":"Q1_univariate"
+  }
+]

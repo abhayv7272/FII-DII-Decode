@@ -20,9 +20,44 @@
   (sessions after 2026-09-04). Evidence:
   `reports/backtest_v3_candidate_2023-08_to_2026-09/` + full search log
   `reports/v3_deep_dive/REPORT.md`.
+- **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
+  in `reports/v3_forward_validation/gate_report.md` — state
+  `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
+  (MrChartist 2026 history, exploratory): no standalone next-day content;
+  mild v3-agreement premium; production's confirmation-only policy kept.
 - **Automation:** unchanged (v2 default), cron `30 15 * * 1-5`.
 
 ## Log (newest first)
+
+### 2026-09-18 (session 5 continued — forward gate + cash probe)
+- "Continue" → executed the two documented next steps.
+- **Forward-validation gate built & locked:** `research/v3_forward_validation.py`
+  replays v1/v2/v3 via the production path on signal dates after 2026-09-04
+  using the pinned mirror + the accumulating daily stores
+  (`data/participant_oi.csv`, `data/index_ohlc.csv`). Locked promotion
+  criteria: ≥60 evaluable sessions, v3 exact ≥ majority baseline, exact ≥ v2,
+  sign ≥52% with Wilson lo >50%. Current state: `COLLECTING_DATA` (0 evaluable
+  forward sessions — last mirror bar is 2026-09-04 and 09-17's target close
+  isn't published yet). Gate artifacts committed under
+  `reports/v3_forward_validation/`. Tests: `tests/test_research_gates.py`
+  (suite now 48 passed).
+- Verified the daily stores self-heal pairs: each live run appends the current
+  matrix (dated), so consecutive appends form pairs even when the Stocklyzer
+  fallback path cannot date its reconstructed previous matrix (deliberately
+  conservative; not stored). `data/index_ohlc.csv` still missing (quote fetch
+  failed on 09-17 live run; covered by `--extra-ohlc` refreshed mirrors).
+- **Stage-8 cash probe (exploratory):** MrChartist `history.json` fetched
+  (155 rows, 2026-01-14→2026-09-17). Q1: no standalone next-day content
+  (|IC|≈0.03 cc on 143 merged sessions). Q2: v3 + cash agree 47.14% exact vs
+  disagree 43.84% (mild, n≈70 each) — matches the existing
+  "confirmation-only" policy; NOT promoted (window post-dates fitting).
+  Outputs: `reports/v3_deep_dive/cash_probe_2026.csv` + .q1/.q2.json.
+- Docs updated: README v3-gate paragraph, methodology forward-gate +
+  cash-probe paragraphs.
+- Next: let the daily workflow accumulate; rerun the gate when
+  `data/index_ohlc.csv`/mirror catch up (mirror re-syncs are the OHLC supply).
+  Intraday candles remain the only path to a real executable (open-to-close)
+  test.
 
 ### 2026-09-17 (session 5 — Arena agent, branch `arena/01a0b102-fii-dii-decode`)
 - Task: increase accuracy as much as possible; full deep dive.
