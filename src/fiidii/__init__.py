@@ -1,4 +1,4 @@
-"""FII-DII-Decode: decode institutional F&O positioning and predict next-day / next-week bias.
+"""FII-DII-Decode: conditional next-day OI plans and positional carry context.
 
 Package layout
 --------------

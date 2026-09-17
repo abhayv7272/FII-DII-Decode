@@ -1,6 +1,6 @@
 # Historical backtesting
 
-The repository includes a point-in-time replay harness for the decoder's **next-session** call. A real OI-only evaluation on 757 sessions is published in [`reports/backtest_2023-08_to_2026-09/report.md`](../reports/backtest_2023-08_to_2026-09/report.md); its overall result is below the majority-class baseline, so the decoder remains experimental. The external raw archive is not vendored into this repository, while source commit and hashes are retained with the report.
+The repository includes a point-in-time replay harness for the decoder's **next-session** OI class. Frozen v1 and transcript-grounded v2 are compared on 757 real sessions in [`reports/backtest_v2_2023-08_to_2026-09/report.md`](../reports/backtest_v2_2023-08_to_2026-09/report.md). V2 improves some historical diagnostics but remains below the majority-class baseline and approximately chance on the executable next-open-to-close basis, so it remains experimental. The external raw archive is not vendored; the pinned source revision and hashes are retained with the reports.
 
 ## What is scored
 
@@ -17,7 +17,7 @@ This avoids two common sources of look-ahead bias:
 - a missing OI file is not replaced silently by a file from several sessions ago;
 - a current option chain or cash API response is never applied to an old date.
 
-Historical cash flow is not currently part of replay because the project does not collect dated cash snapshots. The live decoder can still use current-session cash as before.
+Historical cash flow is not part of replay because the project does not collect dated cash snapshots. V2 may display live current-session cash as confirmation, but it gives that input zero score weight so live behavior cannot silently become an unvalidated variant.
 
 ## Inputs
 
@@ -65,6 +65,7 @@ python backtest.py \
   --ohlc historical/nifty_ohlc.csv \
   --option-chains historical/option_chain/ \
   --symbol NIFTY \
+  --decoder-version v2 \
   --output-dir reports/backtest
 ```
 
@@ -74,12 +75,14 @@ Equivalent package command:
 PYTHONPATH=src python -m fiidii.cli backtest \
   --participant-oi historical/participant_oi.zip \
   --ohlc historical/nifty_ohlc.csv \
-  --option-chains historical/option_chains.zip
+  --option-chains historical/option_chains.zip \
+  --decoder-version v2
 ```
 
 Useful controls:
 
 ```text
+--decoder-version v1|v2           # v2 is the production default; v1 is frozen
 --flat-threshold-pct 0.15          # ±0.15% is FLAT (inclusive)
 --level-touch-tolerance-pct 0.05  # range may come within ±0.05% of a level
 --from-date 2025-01-01
@@ -111,7 +114,8 @@ The report provides:
 - UP, FLAT, and DOWN precision, recall, and F1;
 - actual-vs-predicted confusion matrix;
 - majority-class baseline;
-- fixed confidence buckets with mean confidence and realised accuracy (the decoder's confidence is a heuristic score, not an assumed calibrated probability);
+- fixed setup-strength buckets with mean displayed strength and realised accuracy (v2 retains the `confidence` field only for API compatibility; it is not a calibrated probability);
+- decoder method version, actionability state, and trigger-eligible subset diagnostics;
 - mean/median next-session return by predicted class;
 - institutional support/resistance reaction accuracy using a clearly labelled daily-bar proxy.
 
@@ -166,17 +170,31 @@ git clone --filter=blob:none --no-checkout --depth=1 \
 cd /tmp/groww-market-data
 git sparse-checkout init --cone
 git sparse-checkout set nse_archives/participant_oi nse_archives/index_close
+git fetch --depth=1 origin 7d481cf1fcffe44be68852892028195c4f12dddd
 git checkout 7d481cf1fcffe44be68852892028195c4f12dddd
 ```
 
-Then, from this repository:
+Then, from this repository, reproduce the frozen v1 audit:
 
 ```bash
 python backtest.py \
   --participant-oi /tmp/groww-market-data/nse_archives/participant_oi \
   --ohlc /tmp/groww-market-data/nse_archives/index_close \
+  --decoder-version v1 \
   --flat-threshold-pct 0.15 \
-  --output-dir /tmp/reproduced-backtest
+  --output-dir /tmp/reproduced-v1
 ```
 
-The primary metrics should be 757 evaluable signals, 36.20% exact three-class accuracy, and 42.61% directional hit rate when realised FLAT outcomes are counted as misses. Compare the aggregate source hashes in the published `provenance.json` before treating a mismatch as a code regression. Direct NSE TLS was unavailable in the build sandbox, so the mirror limitation is part of the disclosed result.
+Its primary close-to-close metrics are 757 signals, 36.20% exact three-class accuracy, and 42.61% directional-call hit rate with realised FLAT outcomes counted as misses.
+
+Reproduce the complete chronological v1/v2 and five-session comparison:
+
+```bash
+PYTHONPATH=src python research/compare_v1_v2.py \
+  --participant-oi /tmp/groww-market-data/nse_archives/participant_oi \
+  --ohlc /tmp/groww-market-data/nse_archives/index_close \
+  --output-dir /tmp/reproduced-v2-comparison \
+  --source-note "Public mirror pinned at 7d481cf1fcffe44be68852892028195c4f12dddd"
+```
+
+The v2 full close-to-close exact result should be 37.91%, versus v1's 36.20% and the 42.14% majority baseline. Compare aggregate source hashes in the published v1 `provenance.json` before treating a mismatch as a code regression. Direct NSE TLS was unavailable in the build sandbox, so the mirror limitation is part of the disclosed result.

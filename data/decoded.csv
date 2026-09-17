@@ -1,2 +1,2 @@
-date,bias,composite,confidence,positional_bias,positional_composite,positional_confidence,fii_index_fut_net,pro_index_fut_net,client_index_fut_net,smart_money_conflict
-2026-08-03,STRONG BULLISH,0.588,59.3,STRONG BULLISH,0.596,59.7,40150.0,25800.0,-56690.0,False
+date,bias,composite,confidence,positional_bias,positional_composite,positional_confidence,fii_index_fut_net,pro_index_fut_net,client_index_fut_net,smart_money_conflict,method_version,actionability,setup_strength
+2026-08-03,STRONG BULLISH,0.765,100.0,BULLISH,0.448,99.5,40150.0,25800.0,-56690.0,False,v2,CONDITIONAL_BULLISH_SETUP,100.0

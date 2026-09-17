@@ -1,26 +1,32 @@
 # FII/DII/Pro/Client Decode — NIFTY — 2026-08-03
 
-**Next-day (Pro-led):** STRONG BULLISH  ·  score `+0.59`  ·  conf 59%  ·  UP
-**Positional/Week (FII-led):** STRONG BULLISH  ·  score `+0.60`  ·  conf 60%  ·  UP
+> ⚠️ **Validation warning:** EXPERIMENTAL / NOT VALIDATED FOR TRADING: the locked v2 rules reached 37.91% exact UP/FLAT/DOWN accuracy on 757 sessions versus a 42.14% majority baseline. Its next-open-to-close sign result remained approximately chance. Treat the OI lean as conditional context, never a standalone entry signal.
+> 🧪 **Demo warning:** DEMO FIXTURE: inputs are bundled synthetic/approximate sample values for pipeline testing. This report date is not a historical forecast or backtest observation.
+
+**Next-day OI lean (Pro-led):** STRONG BULLISH  ·  score `+0.77`  ·  setup strength 100/100  ·  UP  ·  CONDITIONAL_BULLISH_SETUP
+**Positional carry context (FII-led):** BULLISH  ·  score `+0.45`  ·  NO-VALIDATED-EDGE  ·  research lean SIDEWAYS-UP
 
 ## Institutional Data & Setup
-- **Retail:** Retail is net BEARISH → contrarian POSITIVE for market (retail exiting longs is the fuel for a rally).
-- **Move quality:** FII: fresh longs added (real strength); Pro: fresh longs added (real strength)
+- **Retail:** Retail fresh index positioning is bearish (contra-positive), which supports a market bounce only after price confirmation.
+- **Move quality:** FII: fresh index-future longs (full-strength bullish), 17,150 contracts; Pro: fresh index-future longs (full-strength bullish), 18,500 contracts
 
-## Next-Day Prediction (Gap Up / Flat / Gap Down)
-- Direction: **UP** (confidence 59%)
-- Next-day bias +0.59 (STRONG BULLISH), Pro-led (ultra-short). Retail is net BEARISH → contrarian POSITIVE for market (retail exiting longs is the fuel for a rally). Move quality: FII: fresh longs added (real strength); Pro: fresh longs added (real strength). PCR 1.027 — Neutral PCR: range-bound; trade the support/resistance band.
-  - **PRIMARY:** Bias up but if retail is crowded long, expect 'sell-on-rise / dip-then-recover': a dip into 24600 that reverses up is the high-probability path.
-  - **GAP DOWN:** Ideal for a long setup if Smart Money is bullish. Market likely digs toward support 24600 (may even SWEEP liquidity just below a round figure to grab retail stop-losses), then REVERSES up — that liquidity sweep + institutional level + psychological level = high-probability long confluence. A sustained close BELOW 24600 with bearish volume flips it to resistance → continuation DOWN.
+## Next-Day Conditional Plan (Gap Up / Flat / Gap Down)
+- Forced research class: **UP** (setup strength 100/100)
+- Actionability: **CONDITIONAL_BULLISH_SETUP**
+- OI-only next-day research lean +0.77 (STRONG BULLISH), Pro-led (ultra-short). OI-only bullish lean. It becomes actionable only after the relevant option-chain/price level confirms with a 10-15 minute candle; a decisive break activates the opposite backup plan. Cash flow confirms the OI lean, but was not part of historical v2 scoring. Retail fresh index positioning is bearish (contra-positive), which supports a market bounce only after price confirmation. Move quality: FII: fresh index-future longs (full-strength bullish), 17,150 contracts; Pro: fresh index-future longs (full-strength bullish), 18,500 contracts. PCR 1.027 — Neutral PCR: range-bound; trade the support/resistance band.
+  - **PRIMARY:** Bias up but if retail is crowded long, the transcript's preferred 'sell-on-rise / dip-then-recover' path is a dip into 24600 followed by a confirmed reversal.
+  - **GAP DOWN:** Ideal for a long setup if Smart Money is bullish. Market likely digs toward support 24600 (may even SWEEP liquidity just below a round figure to grab retail stop-losses), then REVERSES up — that liquidity sweep + institutional level + psychological level is the transcript's preferred long confluence. A sustained close BELOW 24600 with bearish volume flips it to resistance → continuation DOWN.
   - **FLAT:** Trade the band: buy dips into support 24600 (hold → bounce), sell rallies into resistance 25150 (reject → fade). Direction resolves on which wall breaks with follow-through.
   - **GAP UP:** Watch resistance 25150. Rejection → fade back toward 24600. A decisive 15-min close ABOVE 25150 (call writers unwinding) → breakout continuation UP toward the next call wall.
 
-## Next-Week / Positional Outlook (Mon–Fri)
-- Direction: **UP** (confidence 51%)
-- Positional bias +0.60 (UP), FII-led (Pro must be supportive).  Big positional moves come only 2-3x a year; otherwise the week trades between the put wall (support) and call wall (resistance) unless a wall breaks decisively. Retail must unwind longs before a sustained up-leg.
-  - **FII longs keep building + Pro supportive** → Positional UP-leg; buy dips into support.
-  - **FII shorts keep building** → Positional DOWN pressure; sell rises into resistance.
-  - **Retail bullish positions start unwinding** → Removes the cap on upside → reversal-up trigger.
+## Next-Week / Positional Context (Mon–Fri)
+- Forecast status: **NO-VALIDATED-EDGE**
+- Unvalidated research lean: **SIDEWAYS-UP**
+- Actionability: **CONTEXT_ONLY_WAIT_FOR_MULTI_SESSION_CONFIRMATION**
+- Positional carry context +0.45 (research lean SIDEWAYS-UP), FII-led with Pro support required.  Big positional moves come only 2-3x a year; otherwise the week trades between the put wall (support) and call wall (resistance) unless a wall breaks decisively. Retail must unwind longs before a sustained up-leg. The carry/trend lean is shown as research context only: its locked five-session candidate did not survive the 2026 confirmation period.
+  - **FII carry longs build over several sessions + Pro supports** → Bullish context only; require price/level confirmation.
+  - **FII carry shorts build over several sessions + Pro supports** → Bearish context only; require price/level confirmation.
+  - **FII and Pro oppose, or Retail remains crowded** → No positional entry; expect range/whipsaw until the conflict resolves.
 
 ## Institutional Levels & Expected Reaction
 
@@ -45,11 +51,11 @@
 
 | Signal | Score | Weight | Note |
 |---|---|---|---|
-| Pro_composite | +0.56 | 0.50 | Pro (ultra-short, next-day driver): net +0.56 [index_call +0.90, index_fut +0.88, index_put +0.67]. |
-| FII_composite | +0.59 | 0.30 | FII (short-medium, positional driver): net +0.59 [index_fut +1.00, index_call +0.88, index_put +0.67]. |
-| Client_composite | +0.61 | 0.20 | Client/Retail (CONTRA — faded): net +0.61 [index_call +1.00, index_put +1.00, index_fut +0.88]. |
-| DII_composite | -0.00 | 0.00 | DII (arb — ignored for direction): net -0.00 [stock_fut -0.01, index_fut -0.00, index_call -0.00]. |
-| cash_flow | +0.65 | 0.15 | Cash: FII net 1,150 Cr, DII net 1,350 Cr. |
+| Pro_fresh_index | +0.74 | 0.53 | ultra-short driver; relative-OI quality score [index_fut +0.90, index_call +0.76, index_put +0.64] |
+| FII_fresh_index | +0.74 | 0.27 | secondary next-day / positional participant; relative-OI quality score [index_fut +0.93, index_call +0.76, index_put +0.64] |
+| Client_fresh_index | +0.86 | 0.20 | contra confirmation; relative-OI quality score [index_call +0.92, index_fut +0.85, index_put +0.81] |
+| DII_fresh_index | -0.00 | 0.00 | F&O direction ignored (arbitrage contamination); relative-OI quality score [index_fut -0.01, index_call -0.00, index_put -0.00] |
+| cash_confirmation | +0.57 | 0.00 | Confirmation only (not fitted in v2 backtest): FII 1,150 Cr, DII 1,350 Cr. |
 
 ## Trading Strategy & Risk Management
 

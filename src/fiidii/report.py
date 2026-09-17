@@ -21,12 +21,18 @@ _BIAS_COLOR = {
 _DIR_EMOJI = {
     "UP": "🟢⬆️", "SIDEWAYS-UP": "🟢↗️", "RANGE": "🟡➡️",
     "SIDEWAYS-DOWN": "🔴↘️", "DOWN": "🔴⬇️",
+    "NO-VALIDATED-EDGE": "⚪⏸️",
 }
 
 _VALIDATION_WARNING = (
-    "EXPERIMENTAL / NOT VALIDATED FOR TRADING: a 757-session NIFTY OI-only "
-    "historical replay produced 36.20% exact UP/FLAT/DOWN accuracy versus a 42.14% "
-    "majority-class baseline. Treat this as context, not a standalone entry signal."
+    "EXPERIMENTAL / NOT VALIDATED FOR TRADING: the locked v2 rules reached 37.91% "
+    "exact UP/FLAT/DOWN accuracy on 757 sessions versus a 42.14% majority baseline. "
+    "Its next-open-to-close sign result remained approximately chance. Treat the OI "
+    "lean as conditional context, never a standalone entry signal."
+)
+_DEMO_WARNING = (
+    "DEMO FIXTURE: inputs are bundled synthetic/approximate sample values for pipeline "
+    "testing. This report date is not a historical forecast or backtest observation."
 )
 
 _RISK = (
@@ -75,11 +81,19 @@ def _participant_reads_html(reads: dict) -> str:
 
 
 def render_html(dr: dict, predictions: dict, levels: dict,
-                report_date: str, symbol: str = "NIFTY") -> str:
+                report_date: str, symbol: str = "NIFTY",
+                demo: bool = False) -> str:
     bias = dr["bias"]
     color = _BIAS_COLOR.get(bias, "#333")
     pcolor = _BIAS_COLOR.get(dr["positional_bias"], "#333")
     nd, nw = predictions["next_day"], predictions["next_week"]
+    demo_block = ""
+    if demo:
+        demo_block = (
+            "<div style='margin:12px 0;padding:10px 14px;border-radius:8px;"
+            "background:#ffebee;border-left:6px solid #c62828;font-size:13px'>"
+            f"<b>Demo warning:</b> {_DEMO_WARNING}</div>"
+        )
 
     conflict_block = ""
     if dr.get("smart_money_conflict"):
@@ -112,22 +126,24 @@ def render_html(dr: dict, predictions: dict, levels: dict,
 <div style="margin:14px 0;padding:10px 14px;border-radius:8px;background:#fff8e1;
  border-left:6px solid #f9a825;font-size:13px"><b>Validation warning:</b>
  {_VALIDATION_WARNING}</div>
+{demo_block}
 
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 0">
   <div style="flex:1;min-width:240px;padding:14px 16px;border-radius:10px;
    background:{color}12;border-left:6px solid {color}">
-    <div style="font-size:12px;color:#666">NEXT-DAY (Pro-led)</div>
+    <div style="font-size:12px;color:#666">NEXT-DAY OI LEAN (Pro-led)</div>
     <div style="font-size:20px;font-weight:700;color:{color}">{bias}</div>
-    <div>score <b>{dr['composite']:+.2f}</b> · conf <b>{dr['confidence']:.0f}%</b></div>
+    <div>score <b>{dr['composite']:+.2f}</b> · setup strength <b>{dr['confidence']:.0f}/100</b></div>
     <div style="margin-top:4px">{_DIR_EMOJI.get(nd['direction'],'')} <b>{nd['direction']}</b></div>
+    <div style="font-size:12px;margin-top:4px"><b>{nd.get('actionability','')}</b></div>
   </div>
   <div style="flex:1;min-width:240px;padding:14px 16px;border-radius:10px;
    background:{pcolor}12;border-left:6px solid {pcolor}">
-    <div style="font-size:12px;color:#666">POSITIONAL / WEEK (FII-led)</div>
+    <div style="font-size:12px;color:#666">POSITIONAL CARRY CONTEXT (FII-led)</div>
     <div style="font-size:20px;font-weight:700;color:{pcolor}">{dr['positional_bias']}</div>
-    <div>score <b>{dr['positional_composite']:+.2f}</b> ·
-     conf <b>{dr['positional_confidence']:.0f}%</b></div>
+    <div>context score <b>{dr['positional_composite']:+.2f}</b></div>
     <div style="margin-top:4px">{_DIR_EMOJI.get(nw['direction'],'')} <b>{nw['direction']}</b></div>
+    <div style="font-size:12px;margin-top:4px">Research lean: <b>{nw.get('research_lean','')}</b></div>
   </div>
 </div>
 {conflict_block}
@@ -135,19 +151,25 @@ def render_html(dr: dict, predictions: dict, levels: dict,
 <h2>🧩 Institutional Data & Setup</h2>
 <p style="color:#444"><b>Retail:</b> {dr.get('retail_note','')}</p>
 <p style="color:#444"><b>Move quality:</b> {dr.get('move_quality','')}</p>
+<h3>Fresh-flow reads</h3>
 {_participant_reads_html(dr.get('participant_reads', {}))}
-<p style="font-size:12px;color:#777">Green = bullish contribution, red = bearish
-(Client/Retail already shown contra-adjusted, i.e. bullish-for-market sign).</p>
+<h3>As-on-date carry reads</h3>
+{_participant_reads_html(dr.get('participant_carry_reads', {}))}
+<p style="font-size:12px;color:#777">Green = bullish contribution, red = bearish.
+Client/Retail is already contra-adjusted. Stock derivatives are diagnostics only in the
+v2 next-day NIFTY score; carry is positional context, not the next-day trigger.</p>
 
-<h2>🔮 Next-Day Prediction (Gap Up / Flat / Gap Down)</h2>
+<h2>🔮 Next-Day Conditional Plan (Gap Up / Flat / Gap Down)</h2>
 <div style="font-size:18px">{_DIR_EMOJI.get(nd['direction'],'')} <b>{nd['direction']}</b>
- · confidence {nd['confidence']:.0f}%</div>
+ · setup strength {nd['confidence']:.0f}/100</div>
+<p><b>Actionability:</b> {nd.get('actionability','')}</p>
 <p style="color:#444">{nd['rationale']}</p>
 <ul>{_gap_html(nd['scenarios'])}</ul>
 
-<h2>🗓️ Next-Week / Positional Outlook (Mon–Fri)</h2>
-<div style="font-size:18px">{_DIR_EMOJI.get(nw['direction'],'')} <b>{nw['direction']}</b>
- · confidence {nw['confidence']:.0f}%</div>
+<h2>🗓️ Next-Week / Positional Context (Mon–Fri)</h2>
+<div style="font-size:18px">{_DIR_EMOJI.get(nw['direction'],'')} <b>{nw['direction']}</b></div>
+<p><b>Unvalidated research lean:</b> {nw.get('research_lean','')} ·
+ <b>Actionability:</b> {nw.get('actionability','')}</p>
 <p style="color:#444">{nw['rationale']}</p>
 <ul>{_gap_html(nw['scenarios'])}</ul>
 
@@ -184,20 +206,24 @@ Auto-generated by FII-DII-Decode using the participant-OI decode methodology
 
 
 def render_markdown(dr: dict, predictions: dict, levels: dict,
-                    report_date: str, symbol: str = "NIFTY") -> str:
+                    report_date: str, symbol: str = "NIFTY",
+                    demo: bool = False) -> str:
     nd, nw = predictions["next_day"], predictions["next_week"]
     L = [
         f"# FII/DII/Pro/Client Decode — {symbol} — {report_date}",
         "",
         f"> ⚠️ **Validation warning:** {_VALIDATION_WARNING}",
         "",
-        f"**Next-day (Pro-led):** {dr['bias']}  ·  score `{dr['composite']:+.2f}`  ·  "
-        f"conf {dr['confidence']:.0f}%  ·  {nd['direction']}",
-        f"**Positional/Week (FII-led):** {dr['positional_bias']}  ·  "
-        f"score `{dr['positional_composite']:+.2f}`  ·  conf "
-        f"{dr['positional_confidence']:.0f}%  ·  {nw['direction']}",
+        f"**Next-day OI lean (Pro-led):** {dr['bias']}  ·  score `{dr['composite']:+.2f}`  ·  "
+        f"setup strength {dr['confidence']:.0f}/100  ·  {nd['direction']}  ·  "
+        f"{nd.get('actionability','')}",
+        f"**Positional carry context (FII-led):** {dr['positional_bias']}  ·  "
+        f"score `{dr['positional_composite']:+.2f}`  ·  {nw['direction']}  ·  "
+        f"research lean {nw.get('research_lean','')}",
         "",
     ]
+    if demo:
+        L[3:4] = [f"> 🧪 **Demo warning:** {_DEMO_WARNING}", ""]
     if dr.get("smart_money_conflict"):
         L += [f"> ⚠️ **Smart-money conflict:** {dr['conflict_note']}", ""]
     L += [
@@ -205,15 +231,18 @@ def render_markdown(dr: dict, predictions: dict, levels: dict,
         f"- **Retail:** {dr.get('retail_note','')}",
         f"- **Move quality:** {dr.get('move_quality','')}",
         "",
-        "## Next-Day Prediction (Gap Up / Flat / Gap Down)",
-        f"- Direction: **{nd['direction']}** (confidence {nd['confidence']:.0f}%)",
+        "## Next-Day Conditional Plan (Gap Up / Flat / Gap Down)",
+        f"- Forced research class: **{nd['direction']}** (setup strength {nd['confidence']:.0f}/100)",
+        f"- Actionability: **{nd.get('actionability','')}**",
         f"- {nd['rationale']}",
     ]
     for s in nd["scenarios"]:
         L.append(f"  - **{s.get('open', s.get('trigger',''))}:** "
                  f"{s.get('plan', s.get('then',''))}")
-    L += ["", "## Next-Week / Positional Outlook (Mon–Fri)",
-          f"- Direction: **{nw['direction']}** (confidence {nw['confidence']:.0f}%)",
+    L += ["", "## Next-Week / Positional Context (Mon–Fri)",
+          f"- Forecast status: **{nw['direction']}**",
+          f"- Unvalidated research lean: **{nw.get('research_lean','')}**",
+          f"- Actionability: **{nw.get('actionability','')}**",
           f"- {nw['rationale']}"]
     for s in nw["scenarios"]:
         L.append(f"  - **{s.get('trigger','')}** → {s.get('then','')}")

@@ -1,13 +1,12 @@
-"""Prediction assembly — Amit Dhamija style.
+"""Build conditional next-day plans and positional context.
 
-Next-day (Pro-led): builds Gap Up / Flat / Gap Down scenarios, because the 9 AM
-news decides the open; for each open we say what should happen at the institutional
-option-chain levels (hold->reversal, break->continuation), including the
-liquidity-sweep-then-reverse pattern.
+The next-day output branches over gap-up, flat, and gap-down opens because the
+transcript says pre-open information determines the opening path.  Each branch
+still requires a price/option-level hold, rejection, or 10-15 minute break.
 
-Next-week / positional (FII-led): uses the multi-day trend of carry positions
-(longs building => upside brewing; shorts building => downside; mixed => range
-between put wall & call wall). Notes the retail-unwind trigger.
+For v2, the multi-session FII carry calculation is context only: the locked
+five-session candidate failed confirmation, so production emits
+``NO-VALIDATED-EDGE`` rather than a next-week directional forecast.
 """
 from __future__ import annotations
 
@@ -25,19 +24,21 @@ class Prediction:
     rationale: str
     scenarios: list
     key_levels: dict
+    actionability: str = ""
+    research_lean: str = ""
 
     def to_dict(self) -> dict:
         return asdict(self)
 
 
-def _direction(composite: float) -> str:
+def _direction(composite: float, threshold: float = 0.10) -> str:
     if composite >= 0.45:
         return "UP"
-    if composite >= 0.12:
+    if composite >= threshold:
         return "SIDEWAYS-UP"
     if composite <= -0.45:
         return "DOWN"
-    if composite <= -0.12:
+    if composite <= -threshold:
         return "SIDEWAYS-DOWN"
     return "RANGE"
 
@@ -98,8 +99,8 @@ def _gap_scenarios(levels: dict, decode_result) -> list:
                 f"Ideal for a long setup if Smart Money is bullish. Market likely digs "
                 f"toward support {sup_s} (may even SWEEP liquidity just below a round "
                 f"figure to grab retail stop-losses), then REVERSES up — that liquidity "
-                f"sweep + institutional level + psychological level = high-probability "
-                f"long confluence. A sustained close BELOW {sup_s} with bearish volume "
+                f"sweep + institutional level + psychological level is the transcript's "
+                f"preferred long confluence. A sustained close BELOW {sup_s} with bearish volume "
                 f"flips it to resistance → continuation DOWN.")
         },
         {
@@ -123,9 +124,9 @@ def _gap_scenarios(levels: dict, decode_result) -> list:
                        "plan": decode_result.conflict_note})
     elif bullish:
         out.insert(0, {"open": "PRIMARY",
-                       "plan": (f"Bias up but if retail is crowded long, expect "
-                                f"'sell-on-rise / dip-then-recover': a dip into {sup_s} "
-                                f"that reverses up is the high-probability path.")})
+                       "plan": (f"Bias up but if retail is crowded long, the transcript's "
+                                f"preferred 'sell-on-rise / dip-then-recover' path is a dip "
+                                f"into {sup_s} followed by a confirmed reversal.")})
     else:
         out.insert(0, {"open": "PRIMARY",
                        "plan": (f"Bias down: rallies into {res_s} likely sold; "
@@ -137,50 +138,79 @@ def build_predictions(decode_result, levels: Optional[dict],
                       decoded_history: Optional[pd.DataFrame] = None) -> dict:
     levels = levels or {}
     key_levels = _levels_summary(levels)
+    version = getattr(decode_result, "method_version", "v1")
+    threshold = 0.12 if version == "v1" else 0.10
 
     # ---- Next day (Pro-led) ----
-    nd_dir = _direction(decode_result.composite)
+    # This is the forced OI-only research class used by the historical audit. V2
+    # separately says whether it is actionable; every actual trade still needs the
+    # transcript's price/level confirmation.
+    nd_dir = _direction(decode_result.composite, threshold)
+    nd_action = getattr(decode_result, "actionability", "LEGACY_UNCONDITIONAL")
     nd = Prediction(
         horizon="next_day",
         direction=nd_dir,
         confidence=decode_result.confidence,
         rationale=(
-            f"Next-day bias {decode_result.composite:+.2f} ({decode_result.bias}), "
-            f"Pro-led (ultra-short). {decode_result.retail_note} "
+            f"OI-only next-day research lean {decode_result.composite:+.2f} "
+            f"({decode_result.bias}), Pro-led (ultra-short). "
+            f"{getattr(decode_result, 'setup_note', '')} {decode_result.retail_note} "
             f"Move quality: {decode_result.move_quality}. "
             f"PCR {levels.get('pcr','n/a')} — {levels.get('pcr_signal','')}"),
         scenarios=_gap_scenarios(levels, decode_result),
         key_levels=key_levels,
+        actionability=nd_action,
+        research_lean=nd_dir,
     )
 
     # ---- Next week / positional (FII-led) ----
     momentum = _rolling_positional(decoded_history)
     base = decode_result.positional_composite
     weekly = base if momentum is None else (0.55 * base + 0.45 * momentum)
-    nw_dir = _direction(weekly)
+    research_lean = _direction(weekly, threshold)
     carry = _carry_trend(decoded_history)
-    nw_conf = round(min(100, decode_result.positional_confidence * 0.85
-                        + (abs(momentum) * 20 if momentum else 0)), 1)
+
+    if version == "v1":
+        # Exact legacy behaviour for reproducible v1 replay.
+        nw_dir = research_lean
+        nw_conf = round(min(100, decode_result.positional_confidence * 0.85
+                            + (abs(momentum) * 20 if momentum else 0)), 1)
+        nw_action = "LEGACY_UNCONDITIONAL"
+        validation_note = ""
+    else:
+        # The transcript-grounded FII carry/trend candidate improved 2025 but
+        # failed 2026 confirmation. Do not promote it to a directional forecast.
+        nw_dir = "NO-VALIDATED-EDGE"
+        nw_conf = 0.0
+        nw_action = "CONTEXT_ONLY_WAIT_FOR_MULTI_SESSION_CONFIRMATION"
+        validation_note = (
+            " The carry/trend lean is shown as research context only: its locked "
+            "five-session candidate did not survive the 2026 confirmation period."
+        )
+
     nw = Prediction(
         horizon="next_week",
         direction=nw_dir,
         confidence=nw_conf,
         rationale=(
-            f"Positional bias {weekly:+.2f} ({_direction(weekly)}), FII-led "
-            f"(Pro must be supportive). "
+            f"Positional carry context {weekly:+.2f} (research lean {research_lean}), "
+            f"FII-led with Pro support required. "
             f"{'Momentum ' + format(momentum, '+.2f') + '. ' if momentum is not None else ''}"
             f"{carry} Big positional moves come only 2-3x a year; otherwise the week "
             f"trades between the put wall (support) and call wall (resistance) unless a "
-            f"wall breaks decisively. Retail must unwind longs before a sustained up-leg."),
+            f"wall breaks decisively. Retail must unwind longs before a sustained up-leg."
+            f"{validation_note}"),
         scenarios=[
-            {"trigger": "FII longs keep building + Pro supportive",
-             "then": "Positional UP-leg; buy dips into support."},
-            {"trigger": "FII shorts keep building",
-             "then": "Positional DOWN pressure; sell rises into resistance."},
-            {"trigger": "Retail bullish positions start unwinding",
-             "then": "Removes the cap on upside → reversal-up trigger."},
+            {"trigger": "FII carry longs build over several sessions + Pro supports",
+             "then": "Bullish context only; require price/level confirmation."},
+            {"trigger": "FII carry shorts build over several sessions + Pro supports",
+             "then": "Bearish context only; require price/level confirmation."},
+            {"trigger": "FII and Pro oppose, or Retail remains crowded",
+             "then": "No positional entry; expect range/whipsaw until the conflict resolves."},
         ],
         key_levels=key_levels,
+        actionability=nw_action,
+        research_lean=research_lean,
     )
 
     return {"next_day": nd.to_dict(), "next_week": nw.to_dict()}

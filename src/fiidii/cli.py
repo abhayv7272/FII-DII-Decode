@@ -6,7 +6,7 @@ Flow:
   2. Persist raw data into data/.
   3. Decode -> DecodeResult.
   4. Derive option-chain institutional levels.
-  5. Build next-day + next-week predictions (with rolling history).
+  5. Build a conditional next-day plan + next-week carry context.
   6. Render HTML + Markdown, save to reports/.
   7. Email the report.
 
@@ -82,6 +82,21 @@ def _persist_index_ohlc(quote: dict, symbol: str, report_date: str) -> None:
     store.append_df(row, "index_ohlc", dedup_on=["date", "symbol"])
 
 
+def _history_for_method(history: pd.DataFrame, method_version: str,
+                        report_date: str) -> pd.DataFrame:
+    """Keep only earlier observations produced by the active decoder version."""
+    if history.empty:
+        return history
+    if "method_version" in history:
+        history = history[history["method_version"] == method_version]
+    elif method_version == "v2":
+        return pd.DataFrame()
+    if not history.empty and "date" in history:
+        dates = pd.to_datetime(history["date"], errors="coerce")
+        history = history[dates < pd.Timestamp(report_date)]
+    return history
+
+
 def run(args) -> int:
     today_date = date.today()
     symbol = args.symbol.upper()
@@ -137,14 +152,22 @@ def run(args) -> int:
     result.metrics.update({k: levels.get(k) for k in ("max_pain", "pcr", "spot")})
 
     # --- History + predictions ---
-    hist = store.load_df("decoded")
+    # Never blend frozen-v1 positional scores into v2 carry context after an
+    # upgrade. Legacy history has no method_version column and is deliberately
+    # ignored until enough same-version observations accumulate.
+    hist = _history_for_method(
+        store.load_df("decoded"), result.method_version, report_date
+    )
     predictions = build_predictions(result, levels, hist)
 
     # --- Persist decoded signal history (for positional momentum & carry trend) ---
     row = pd.DataFrame([{
         "date": report_date,
+        "method_version": result.method_version,
         "bias": result.bias, "composite": result.composite,
         "confidence": result.confidence,
+        "actionability": result.actionability,
+        "setup_strength": result.setup_strength,
         "positional_bias": result.positional_bias,
         "positional_composite": result.positional_composite,
         "positional_confidence": result.positional_confidence,
@@ -157,20 +180,23 @@ def run(args) -> int:
 
     # --- Render ---
     rd = result.to_dict()
-    html = render_html(rd, predictions, levels, report_date, symbol)
-    md = render_markdown(rd, predictions, levels, report_date, symbol)
+    html = render_html(rd, predictions, levels, report_date, symbol, demo=args.demo)
+    md = render_markdown(rd, predictions, levels, report_date, symbol, demo=args.demo)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     (REPORTS_DIR / f"report_{report_date}.html").write_text(html)
     (REPORTS_DIR / f"report_{report_date}.md").write_text(md)
     (REPORTS_DIR / "latest.html").write_text(html)
     (REPORTS_DIR / "latest.md").write_text(md)
-    store.save_json({"decode": rd, "predictions": predictions, "levels":
-                     {k: v for k, v in levels.items() if k != "strike_frame"}},
-                    f"decoded_full_{report_date}")
+    store.save_json({
+        "run_mode": "demo_fixture" if args.demo else "live",
+        "decode": rd,
+        "predictions": predictions,
+        "levels": {k: v for k, v in levels.items() if k != "strike_frame"},
+    }, f"decoded_full_{report_date}")
 
-    print(f"Report generated for {report_date}: next-day {result.bias} "
-          f"(composite {result.composite:+.2f}, conf {result.confidence:.0f}%) | "
-          f"positional {result.positional_bias} "
+    print(f"Report generated for {report_date}: next-day OI lean {result.bias} "
+          f"(composite {result.composite:+.2f}, setup strength {result.confidence:.0f}/100) | "
+          f"positional context {result.positional_bias} "
           f"({result.positional_composite:+.2f})")
     print(f"  Next-day: {predictions['next_day']['direction']} | "
           f"Next-week: {predictions['next_week']['direction']}"
@@ -211,6 +237,7 @@ def run_backtest_command(args) -> int:
             level_touch_tolerance_pct=args.level_touch_tolerance_pct,
             from_date=args.from_date,
             to_date=args.to_date,
+            decoder_version=args.decoder_version,
         )
         result = run_backtest(participant_oi, ohlc, option_chains, config)
         paths = write_backtest_outputs(result, args.output_dir)
@@ -259,6 +286,10 @@ def main(argv=None) -> int:
         help="optional directory or ZIP of dated option-chain JSON snapshots",
     )
     b.add_argument("--symbol", default="NIFTY", help="index symbol (default: NIFTY)")
+    b.add_argument(
+        "--decoder-version", choices=("v1", "v2"), default="v2",
+        help="decoder rule set to replay (default: v2; v1 is frozen for comparison)",
+    )
     b.add_argument(
         "--flat-threshold-pct", type=float, default=0.15, metavar="PCT",
         help="absolute close-to-close move labelled FLAT (default: 0.15)",

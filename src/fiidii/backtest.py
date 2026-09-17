@@ -28,6 +28,7 @@ import zipfile
 import pandas as pd
 
 from .decode import decode
+from .legacy_v1 import decode as decode_v1
 from .fetch import _parse_participant_csv
 from .levels import derive_levels
 from .predict import build_predictions
@@ -36,9 +37,10 @@ from .predict import build_predictions
 CLASSES = ("UP", "FLAT", "DOWN")
 REQUIRED_PARTICIPANTS = {"CLIENT", "FII", "PRO"}
 PREDICTION_COLUMNS = (
-    "signal_date", "previous_oi_date", "target_date", "prediction_raw",
-    "predicted_class", "actual_class", "exact_hit", "direction_hit", "bias",
-    "composite", "confidence", "smart_money_conflict", "signal_close",
+    "signal_date", "previous_oi_date", "target_date", "method_version",
+    "prediction_raw", "predicted_class", "actual_class", "exact_hit",
+    "direction_hit", "bias", "composite", "confidence", "actionability",
+    "setup_strength", "smart_money_conflict", "signal_close",
     "target_open", "target_high", "target_low", "target_close", "gap_pct",
     "intraday_return_pct", "actual_return_pct", "option_chain_available",
     "support_level", "support_tested", "support_held", "resistance_level",
@@ -59,8 +61,11 @@ class BacktestConfig:
     level_touch_tolerance_pct: float = 0.05
     from_date: Optional[str] = None
     to_date: Optional[str] = None
+    decoder_version: str = "v2"
 
     def __post_init__(self) -> None:
+        if self.decoder_version not in {"v1", "v2"}:
+            raise ValueError("decoder_version must be 'v1' or 'v2'")
         if self.flat_threshold_pct < 0:
             raise ValueError("flat_threshold_pct must be >= 0")
         if self.level_touch_tolerance_pct < 0:
@@ -549,9 +554,10 @@ def run_backtest(participant_oi: pd.DataFrame, ohlc: pd.DataFrame,
                 bad_chain_dates.append(f"{signal_date.isoformat()} ({exc})")
                 chain = None
 
-        decoded = decode(today_oi, previous_oi, cash=None,
-                         option_levels=levels if chain else None,
-                         date_str=signal_date.isoformat())
+        decoder = decode_v1 if config.decoder_version == "v1" else decode
+        decoded = decoder(today_oi, previous_oi, cash=None,
+                          option_levels=levels if chain else None,
+                          date_str=signal_date.isoformat())
         # next_day does not consume decoded_history; explicitly passing None keeps
         # the replay independent of later positional-history changes.
         prediction = build_predictions(decoded, levels, decoded_history=None)["next_day"]
@@ -584,6 +590,7 @@ def run_backtest(participant_oi: pd.DataFrame, ohlc: pd.DataFrame,
             "signal_date": signal_date.isoformat(),
             "previous_oi_date": previous_date.isoformat(),
             "target_date": target_date.isoformat(),
+            "method_version": getattr(decoded, "method_version", "v1"),
             "prediction_raw": prediction["direction"],
             "predicted_class": predicted,
             "actual_class": realised,
@@ -592,6 +599,8 @@ def run_backtest(participant_oi: pd.DataFrame, ohlc: pd.DataFrame,
             "bias": decoded.bias,
             "composite": decoded.composite,
             "confidence": decoded.confidence,
+            "actionability": getattr(decoded, "actionability", "LEGACY_UNCONDITIONAL"),
+            "setup_strength": getattr(decoded, "setup_strength", decoded.confidence),
             "smart_money_conflict": decoded.smart_money_conflict,
             "signal_close": signal_close,
             "target_open": target_open,
@@ -695,9 +704,35 @@ def compute_metrics(predictions: pd.DataFrame,
             "level_touch_tolerance_pct": config.level_touch_tolerance_pct,
         }, curve)
 
-    directional = predictions[predictions["predicted_class"].isin(["UP", "DOWN"])]
+    directional_mask = predictions["predicted_class"].isin(["UP", "DOWN"])
+    directional = predictions[directional_mask]
     direction_hits = int(directional["direction_hit"].fillna(False).astype(bool).sum())
     exact_hits = int(predictions["exact_hit"].astype(bool).sum())
+
+    if config.decoder_version == "v2" and "actionability" in predictions:
+        eligible_mask = (
+            directional_mask
+            & predictions["actionability"].astype(str).str.startswith("CONDITIONAL_")
+        )
+        selection_policy = "v2 CONDITIONAL_* only"
+    else:
+        eligible_mask = directional_mask
+        selection_policy = "legacy: every forced directional call"
+    eligible = predictions[eligible_mask]
+    eligible_direction_hits = int(
+        eligible["direction_hit"].fillna(False).astype(bool).sum()
+    )
+    eligible_nonflat = eligible[eligible["actual_class"].isin(["UP", "DOWN"])]
+    eligible_nonflat_hits = int(
+        (eligible_nonflat["predicted_class"] == eligible_nonflat["actual_class"]).sum()
+    )
+    actionability_counts = (
+        {
+            str(label): int(count)
+            for label, count in predictions["actionability"].astype(str).value_counts().items()
+        }
+        if "actionability" in predictions else {}
+    )
 
     class_counts = {label: int((predictions["actual_class"] == label).sum()) for label in CLASSES}
     predicted_counts = {label: int((predictions["predicted_class"] == label).sum()) for label in CLASSES}
@@ -748,6 +783,21 @@ def compute_metrics(predictions: pd.DataFrame,
         "directional_coverage_pct": _rate(len(directional), n),
         "directional_hits": direction_hits,
         "directional_hit_rate_pct": _rate(direction_hits, len(directional)),
+        "actionability_counts": actionability_counts,
+        "trigger_eligible": {
+            "selection_policy": selection_policy,
+            "calls": len(eligible),
+            "coverage_pct": _rate(len(eligible), n),
+            "directional_hits_including_flat_misses": eligible_direction_hits,
+            "directional_hit_rate_including_flat_misses_pct": _rate(
+                eligible_direction_hits, len(eligible)
+            ),
+            "nonflat_samples": len(eligible_nonflat),
+            "nonflat_sign_hits": eligible_nonflat_hits,
+            "nonflat_sign_accuracy_pct": _rate(
+                eligible_nonflat_hits, len(eligible_nonflat)
+            ),
+        },
         "actual_class_counts": class_counts,
         "predicted_class_counts": predicted_counts,
         "majority_class_baseline_accuracy_pct": _rate(max(class_counts.values()), n),
@@ -763,7 +813,9 @@ def compute_metrics(predictions: pd.DataFrame,
             **level_parts,
         },
         "return_by_prediction": return_by_prediction,
-        "confidence_curve": curve.to_dict(orient="records"),
+        "confidence_curve": (
+            curve.astype(object).where(pd.notna(curve), None).to_dict(orient="records")
+        ),
     }
     return metrics, curve
 
@@ -786,6 +838,7 @@ def render_backtest_markdown(result: BacktestResult) -> str:
         "",
         "## Evaluation contract",
         "",
+        f"- Decoder rule set: **{cfg.decoder_version}**.",
         "- Signal date **D** uses D participant OI and the exact previous trading session's OI.",
         "- Target is the **next trading session close-to-close return**.",
         f"- Actual FLAT band: **±{cfg.flat_threshold_pct:.3f}%** (inclusive).",
@@ -798,6 +851,13 @@ def render_backtest_markdown(result: BacktestResult) -> str:
     if metrics.get("status") != "ok":
         lines += ["**No evaluable signals. No accuracy number is reported.**", ""]
     else:
+        trigger = metrics["trigger_eligible"]
+        selection_note = (
+            "V2 trigger-eligible means `CONDITIONAL_*`; conflict/wait and no-edge "
+            "states abstain."
+            if cfg.decoder_version == "v2"
+            else "V1 has no abstention contract, so every forced directional call is eligible."
+        )
         lines += [
             "| Metric | Result |",
             "|---|---:|",
@@ -806,9 +866,13 @@ def render_backtest_markdown(result: BacktestResult) -> str:
             f"| Exact 3-class accuracy | {_fmt_pct(metrics['exact_3_class_accuracy_pct'])} |",
             f"| Directional hit rate | {_fmt_pct(metrics['directional_hit_rate_pct'])} |",
             f"| Directional coverage | {_fmt_pct(metrics['directional_coverage_pct'])} |",
+            f"| Trigger-eligible calls | {trigger['calls']} ({_fmt_pct(trigger['coverage_pct'])}) |",
+            f"| Trigger-eligible hit rate incl. FLAT misses | {_fmt_pct(trigger['directional_hit_rate_including_flat_misses_pct'])} |",
+            f"| Trigger-eligible non-FLAT sign | {_fmt_pct(trigger['nonflat_sign_accuracy_pct'])} ({trigger['nonflat_samples']} samples) |",
             f"| Majority-class baseline | {_fmt_pct(metrics['majority_class_baseline_accuracy_pct'])} |",
             "",
-            "Directional hit rate scores UP/DOWN calls; a directional call followed by a FLAT day is a miss.",
+            "Directional hit rate scores UP/DOWN calls; a directional call followed by a "
+            "FLAT day is a miss. " + selection_note,
             "",
             "## Per-class precision / recall",
             "",
@@ -833,12 +897,13 @@ def render_backtest_markdown(result: BacktestResult) -> str:
         for actual in CLASSES:
             lines.append(f"| {actual} | {matrix[actual]['UP']} | {matrix[actual]['FLAT']} | {matrix[actual]['DOWN']} |")
 
-        lines += ["", "## Confidence vs accuracy", ""]
+        score_name = "Setup strength" if cfg.decoder_version == "v2" else "Legacy confidence"
+        lines += ["", f"## {score_name} vs accuracy", ""]
         if result.confidence_curve.empty:
-            lines.append("No confidence buckets available.")
+            lines.append(f"No {score_name.lower()} buckets available.")
         else:
             lines += [
-                "| Confidence bucket | N | Mean confidence | Exact accuracy | Directional hit rate |",
+                f"| {score_name} bucket | N | Mean {score_name.lower()} | Exact accuracy | Directional hit rate |",
                 "|---|---:|---:|---:|---:|",
             ]
             for _, item in result.confidence_curve.iterrows():
@@ -886,7 +951,7 @@ def render_backtest_markdown(result: BacktestResult) -> str:
         "## Limitations",
         "",
         "- Accuracy is sensitive to the declared FLAT threshold; compare thresholds before drawing conclusions.",
-        "- Decoder confidence is a heuristic score, not a calibrated probability; the buckets test whether it is empirically monotonic.",
+        "- The stored confidence/setup-strength value is heuristic, not a calibrated probability; the buckets test whether it is empirically monotonic.",
         "- The report does not include transaction costs, slippage, tradable entry timing, or position sizing.",
         "- Option-chain level metrics require genuine end-of-day snapshots from each signal date; a current snapshot must not be copied backward.",
         "- Expiry-regime, volatility-regime, and sample-size breakdowns become meaningful only with enough real history.",

@@ -1,226 +1,376 @@
-# Decode Methodology — Amit Dhamija's Participant-OI System
+# FII/DII Decode methodology — v2
 
-This is the **ultra-deep decode** of the channel's method, reconstructed line-by-line
-from the two source PDFs:
+> **Status:** experimental research, not investment advice. The locked v2 replay
+> reached 37.91% exact UP/FLAT/DOWN accuracy on 757 sessions, below the 42.14%
+> majority-class baseline. Its next-open-to-close sign result remained
+> approximately chance. Nothing here is a validated standalone trading signal.
 
-- `full_transcript.pdf` — Amit Dhamija on the Upsurge Club podcast ("Most Retail
-  Traders Never Look at This Setup"), the full conceptual explanation.
-- `Market_Analysis_03_August_2026_Decoded-combined.pdf` — several days of the actual
-  daily "Market Analysis Academy — Decoded" reports, showing the output format.
+This document describes the production v2 implementation. The frozen historical
+implementation is `src/fiidii/legacy_v1.py`; it remains available through
+`--decoder-version v1` so the published v1 audit is exactly reproducible.
 
-The engine in `src/fiidii/` implements exactly what is described below.
+The page/timestamp evidence, omitted conditions, contradictions, and explicit v1
+mapping errors are in [transcript-audit-v2.md](transcript-audit-v2.md).
 
----
+## 1. Scope of the model
 
-## 0. The one-line thesis
+The decoder uses two consecutive daily Participant-OI reports to produce:
 
-> The market is a **zero-sum game**. SEBI's own data shows **~90–93% of retail
-> (Clients) lose**. That money flows to **Smart Money (FII + Pro + operators)**.
-> So: **read what Smart Money is positioned for, fade what Retail is positioned
-> for, and trade the next day / next move in Smart Money's direction — reacting at
-> the institutional option-chain levels.**
+1. a **forced next-session OI research class** for historical comparison;
+2. a separate **actionability state** that may abstain or require confirmation;
+3. an **as-on-date positional carry context**, not a validated weekly forecast;
+4. transparent per-participant and per-instrument diagnostics.
 
-"Operator" = anyone with enough capital to *move* (operate) the market. Not
-necessarily one person — FIIs, Pro/proprietary desks, HNIs acting in the same
-direction. They can keep secrecy (Pro desks trade direct-to-exchange via DMA), so
-we can't see *who*, but the **NSE Participant-wise Open Interest** report shows us
-*what* each group is doing. "Thanks to SEBI" this footprint is public.
+It does not know the opening gap, intraday price path, news arriving after the OI
+report, or option-chain levels unless those inputs are separately supplied. Even
+when live confirmation data is supplied, it does not silently modify the locked
+OI-only class that was historically tested.
 
----
+The public Participant-OI file aggregates index families and expiries. Therefore
+“NIFTY OI lean” means an association between aggregate index participant
+positioning and the next NIFTY session; it is not a pure NIFTY-expiry position
+reconstruction.
 
-## 1. The data (free, official NSE)
+## 2. Participant hierarchy and horizons
 
-Google → **"NSE Participant Wise Open Interest"** → `nseindia.com/all-reports-derivatives`
-→ download the **Participant wise Open Interest** file (also `fao_participant_oi_DDMMYYYY.csv`
-from the archives). Data drops each evening ~7–8 PM.
+| Participant | V2 interpretation | Daily weight | Positional-context weight |
+|---|---|---:|---:|
+| Pro | Primary one-to-two-session participant | 53.33% | 25% |
+| FII | Secondary daily participant; primary multi-session participant | 26.67% | 60% |
+| Client/Retail | Minority contrary/crowding condition | 20% | 15% |
+| DII | Reported, but F&O direction ignored because of arbitrage/hedging contamination | 0% | 0% |
 
-Four participant categories, each with **6 instruments** (Long vs Short for each):
+The daily values implement 80% Smart Money and 20% contra-Client, with Pro:FII
+set to 2:1 inside Smart Money. These exact percentages are fixed engineering
+translations of the transcript's hierarchy, not percentages stated by the
+speaker.
 
-| # | Instrument | Meaning |
-|---|---|---|
-| 1 | **Future Index** Long / Short | Index futures directional bet |
-| 2 | **Future Stock** Long / Short | Stock futures directional bet |
-| 3 | **Option Index Call** Long / Short | Index call bought / **written (sold)** |
-| 4 | **Option Index Put** Long / Short | Index put bought / **written (sold)** |
-| 5 | **Option Stock Call** Long / Short | Stock call bought / written |
-| 6 | **Option Stock Put** Long / Short | Stock put bought / written |
+Client scores are inverted before blending. This is a crowding heuristic, not a
+claim that every Retail position must lose on the following day.
 
-The four categories:
+## 3. Fresh-flow decomposition
 
-- **Client** = Retail (you and me). *Largest volume, but scattered / un-united.*
-  **The contra indicator.**
-- **DII** = mostly arbitrage funds (sell stock futures + buy cash). **Largely
-  ignored** for F&O direction — not segregated by purpose, "we only get the numbers."
-- **FII** = foreign institutions. F&O positions are **short-to-medium term** →
-  drive the **positional / weekly / monthly** view.
-- **Pro** = proprietary desks (DMA, fast, secret). Positions are **ultra-short term
-  (1–2 days)** → drive the **next-day / very-short-term** view.
+For each participant and instrument, let:
 
-**FII + Pro = "Smart Money".**
+- `ΔL = long_today - long_previous`
+- `ΔS = short_today - short_previous`
 
----
+V2 keeps the four economically different actions separate:
 
-## 2. The daily data sheet — TWO numbers per cell
+```text
+fresh_long = max( ΔL, 0)
+long_unwind = max(-ΔL, 0)
+fresh_short = max( ΔS, 0)
+short_cover = max(-ΔS, 0)
+```
 
-He builds a sheet with, for every participant × instrument:
+For futures and calls, quality-adjusted bullish pressure is:
 
-1. **"Positions Bought / Sold Today"** = the **net change today** (today's action /
-   fresh positioning). *"आज क्या करके गए हैं।"*
-2. **As-on-date total carry position** = the accumulated Long/Short still open
-   (carried forward). *"As-on-date की total position."*
+```text
+P = fresh_long + 0.5*short_cover - fresh_short - 0.5*long_unwind
+```
 
-**Both matter.** Today's change tells you the immediate next-day story; the total
-carry tells you the positional story and how "heavy" a group is leaned.
+For puts, the sign is reversed: put buying is bearish and put writing is
+bullish. For Client/Retail, the resulting market-direction sign is then inverted
+for the contrary read.
 
-Always compare **Long vs Short** for each instrument to read the bias.
+Fresh additions receive full weight while closures receive half weight. The
+transcript explicitly distinguishes stronger fresh positioning from weaker
+covering/unwinding; `0.5` is the declared implementation choice for that
+qualitative priority.
 
----
+If no prior report is available, fresh pressure is zero rather than silently
+using carry as if it were today's action.
 
-## 3. Reading the bias (the decode rules)
+## 4. Relative-OI normalisation
 
-### 3a. Retail (Client) is the contra indicator — the core assumption
-- *"Retailer bearish is generally good for market. That is the underlying assumption
-  of this entire study."*
-- Retail is "born a bull" — almost always net long futures, long calls, short puts.
-- **When Retail is heavily bullish → upside is CAPPED** until those positions
-  unwind. *"जब तक रिटेलर की पोजीशन हल्की नहीं होगी, बाजार बार-बार वापस आएगा — Sell on Rise."*
-- **Reversal signal = Retail starts UNWINDING its bullish positions / builds fresh
-  bearish.** *"जिस दिन रिटेलर की पोजीशन अनवाइंडिंग दिखे और बेयरिश पोजीशन बनती दिखे — वो साइन है कि रिवर्सल आ गया।"*
-- Market rallies **only when Retail exits its long/buy positions.** *"बाजार में तेजी
-  तभी आती है जब रिटेलर buy पोजीशन से एग्जिट कर जाता है।"*
+V1 used fixed contract denominators. V2 instead computes one-sided current market
+OI for each instrument:
 
-### 3b. Option signals (options are the MOST important — rank #1)
-Ranked by importance: **Index Options > Stock Options > Index Futures > Stock
-Futures.** *"सबसे ज्यादा crucial — Options, particularly Index Options"* — most money,
-most leverage, especially option **buying**.
+```text
+market_oi = max(TOTAL long, TOTAL short)
+relative_flow = P / market_oi
+fresh_score = tanh(relative_flow / flow_scale)
+```
 
-For **Smart Money (FII + Pro)**:
-- **Call BUYING (Call Long ↑)** = bullish.
-- **Call WRITING (Call Short ↑)** = bearish / resistance building.
-- **Put WRITING (Put Short ↑, i.e. put SELL)** = **bullish** (support building,
-  downside capped). *"Put sell → downside capped for expiry."*
-- **Put BUYING (Put Long ↑)** = bearish / hedging / expecting a dip.
+If a `TOTAL` row is absent, totals are reconstructed by summing participant rows.
+The fixed flow scales are:
 
-For **Retail** the same actions are read **inverted** (contra):
-- Retail put-selling = retail is bullish = **bearish** for market.
-- Retail put-buying / call-selling = retail bearish = **bullish** for market.
+- index instruments: 2.5% of current market OI;
+- stock instruments: 1.5% of current market OI.
 
-### 3c. Fresh longs vs short covering (quality of the move)
-- **Fresh Long buildup = real strength.** *"फ्रेश लॉन्ग जब add होंगे तब असली ताकत आएगी।"*
-- **Short covering** (closing old shorts) while price rises = **not real strength
-  yet** — the move happens in big gap-ups and fizzles. *"नए लॉन्ग नहीं ऐड कर रहे, बल्कि
-  पुराने शॉर्ट्स क्लोज कर रहे हैं।"*
-- So distinguish: is the bullishness from *new longs* (strong) or *short covering*
-  (weak / gap-up-and-die)?
+The result lies in `[-1, +1]`. Positive always means bullish for the market after
+the put and Client sign adjustments; negative means bearish.
 
-### 3d. Cash market flow (confirmation)
-FII + DII cash net buying/selling confirms or contradicts the F&O footprint
-(e.g. "strong institutional buying ~₹2,500 Cr combined from DIIs and FIIs").
+This removes hard-coded absolute contract thresholds, but does not solve changes
+in contract size, expiry mix, or index composition. Those remain limitations.
 
-### 3e. FII vs Pro weighting by horizon
-- **Next-day / very short term** → weight **Pro** more (they create the near-term
-  volatility; ultra-short view).
-- **Positional (weekly / monthly)** → weight **FII** more, but **Pro must be
-  supportive in the same direction**. Interestingly, *Pros themselves follow the
-  FII positional view.*
+## 5. Next-session OI score
 
-### 3f. When FII and Pro are OPPOSITE (conflict → volatility)
-If Smart Money is split (e.g. Pro put-long / bearish vs FII put-short / bullish),
-expect a **one-sided move first, then reversal**:
-- A **Gap Down** first → gives Pro room to book put profits AND gives FII shorts room
-  to reverse → **dip then recovery** (contained). And vice-versa.
-- Which side opens first depends on **overnight news flow** (US markets, Gift Nifty,
-  geopolitics) — news before 9 AM overrides the data.
+The daily NIFTY participant read uses only aggregate index instruments:
 
-### 3g. Theta / expiry awareness
-Near expiry, if Smart Money is **long options**, the market **must move their way
-soon** or theta/weekend decay hurts them → raises the odds they defend/push that
-direction (e.g. "if they bought calls, Nifty should close at par or higher, else
-weekend decay kills the calls").
+```text
+participant_daily =
+    0.40 * index_call
+  + 0.40 * index_put
+  + 0.20 * index_future
+```
 
----
+Stock calls, stock puts, and stock futures are exposed as diagnostics but receive
+zero daily NIFTY weight. The source says index options have immediate next-day
+relevance, while aggregate stock-option activity may concern unidentified stocks
+or sectors and can operate on a different horizon.
 
-## 4. Institutional levels (option chain) & expected reaction
+With complete participant rows, the composite is:
 
-Levels are drawn from the **option chain** (OI + **change in OI**) plus the
-channel's own "Institutional Levels" (support/resistance zones). Reading:
+```text
+daily_composite =
+    0.533333 * Pro
+  + 0.266667 * FII
+  + 0.200000 * contra_Client
+```
 
-- **Highest Put OI / fresh Put writing = SUPPORT.** (e.g. 24,000 had highest Put OI
-  16.6 L, +68k added today → strong support.)
-- **Highest Call OI / fresh Call writing = RESISTANCE.**
-- **Both OI and Change-in-OI matter** — fresh additions mark today's active levels.
-- **Support broken & sustained → becomes RESISTANCE** (and vice-versa). *"Support
-  अगर टूटी तो Resistance बन जाएगी।"*
-- **Liquidity sweep:** below round-figure supports sit retail stop-losses; operators
-  often **sweep just below** (e.g. below 24,000) to grab liquidity, *then* reverse up.
-  A reversal after a liquidity sweep + institutional level + psychological level =
-  big **confluence** (high-probability long).
+If a participant row is missing, available nonzero weights are renormalised.
+DII is never assigned directional weight.
 
-### Expected reaction template
-> At **<level>**: if price arrives and **holds / rejects** → **reversal**
-> (bounce up from support / drop from resistance). If price gives a **decisive
-> 15-min close through** with follow-through volume → **breakout continuation**
-> (support→resistance flip or resistance→support flip).
+### Forced research class
 
----
+The locked class boundary is `±0.10`:
 
-## 5. Prediction assembly (next day + next week)
+| Composite | Research label |
+|---:|---|
+| `>= +0.45` | `UP` / strong bullish |
+| `+0.10` to `< +0.45` | `SIDEWAYS-UP` / bullish |
+| `>-0.10` to `<+0.10` | `RANGE` / neutral |
+| `>-0.45` to `<= -0.10` | `SIDEWAYS-DOWN` / bearish |
+| `<= -0.45` | `DOWN` / strong bearish |
 
-### Next-day (Pro-led)
-1. Establish bias from the decode (§3), weighting **Pro** for the near term.
-2. Build **three scenarios** — **Gap Up / Flat / Gap Down** — because we don't know
-   the 9 AM news. For each: what should happen at the institutional levels.
-3. Typical playbook when Smart Money is net bullish but Retail is bullish too:
-   **"Sell on rise / dip-then-recover"** — a gap-down into support that reverses up
-   is the high-probability pattern; a break below support (sustained, bearish
-   volume) flips to downside.
-4. State targets by the next resistance/support and note expiry/theta pressure.
+For the historical three-class audit, both `UP` and `SIDEWAYS-UP` map to `UP`,
+and both bearish labels map to `DOWN`. This forced class exists to compare v2 to
+v1 on every date; it must not be confused with permission to trade.
 
-### Next-week / positional (FII-led)
-1. Track the **trend of the carry positions over several days** (longs building =
-   big upside brewing; shorts building = downside; both mixed = range).
-2. Weight **FII** (positional), require **Pro supportive**.
-3. Big positional moves come only **2–3 times a year**; otherwise the week trades
-   **between the strongest put wall (support) and call wall (resistance)** unless a
-   wall breaks decisively.
-4. Retail must **unwind its bullish positions** before a sustained up-leg; watch for
-   that unwind as the trigger.
+The numeric boundary was frozen using the 2023–2024 development partition before
+locked 2025 validation and 2026 confirmation evaluation.
 
----
+## 6. Actionability and abstention
 
-## 6. Output report format (matches the "Decoded" PDF)
+V2 separates the forced research class from what the report says a user can act
+on.
 
-1. **Market Review** — prior session recap + any anomaly; did institutional levels hold?
-2. **Institutional Data & Expiry Setup** — FII/Pro stance (calls/puts/futures),
-   Retail stance, Cash-market flow, fresh-longs vs short-covering note.
-3. **Key Technical Levels** — Nifty 50 (and Bank Nifty): support / resistance /
-   breakout targets, each with expected reaction.
-4. **Next-Day Prediction** — bias + Gap Up/Flat/Gap Down scenarios.
-5. **Next-Week / Positional Outlook** — Mon–Fri bias from the carry trend.
-6. **Trading Strategy & Risk Management** — selective bias with strict SL; option
-   buyers must NOT average losers; ≤10–15% capital per trade; wait for confluence.
+### FII/Pro conflict
 
----
+A material conflict exists when FII and Pro daily participant reads have opposite
+signs and each absolute read exceeds `0.15`.
 
-## 7. Risk-management notes he stresses (included in the report footer)
+```text
+FII * Pro < 0 and min(abs(FII), abs(Pro)) > 0.15
+```
 
-- **Never average a losing option-buy** — retail's biggest mistake; premium decays
-  to zero. Average at most once, only with a pre-set stop.
-- **≤10–15% capital per trade**; scale in (e.g. 5% + 5%) with the stop-loss quantity
-  auto-modified up on the second tranche.
-- Always place the **stop-loss in the system immediately** (20–25 pts below the
-  support level for a long).
-- **Not investment advice** — educational decode of public data.
+Output:
 
----
+```text
+WAIT_FOR_REVERSAL_CONFIRMATION
+```
 
-## 8. How this maps to code
+The source treats this as a possible first-move/then-reversal path whose order
+depends on pre-open information. V2 therefore does not call the closing direction
+a safe entry.
 
-| Concept | Code |
-|---|---|
-| 6 instruments × 4 participants parsing | `fetch.py::_parse_participant_csv` |
-| Today's-change vs carry | `decode.py` (needs prev day; `store.py` history) |
-| Retail contra, Smart Money = FII+Pro, options-first ranking, fresh-longs vs short-cover, FII/Pro horizon split, conflict detection | `decode.py::decode` + `DEFAULT_WEIGHTS` |
-| OI + ΔOI levels, support/resistance flip, liquidity sweep, max pain, PCR | `levels.py::derive_levels` |
-| Gap Up/Flat/Gap Down scenarios, next-day (Pro), next-week (FII, carry trend) | `predict.py::build_predictions` |
-| 4+ section report | `report.py` |
+### Weak aggregate score
+
+If there is no material FII/Pro conflict but `abs(daily_composite) < 0.10`, output:
+
+```text
+NO_DIRECTIONAL_EDGE
+```
+
+### Conditional directional setup
+
+Otherwise output one of:
+
+```text
+CONDITIONAL_BULLISH_SETUP
+CONDITIONAL_BEARISH_SETUP
+```
+
+“Conditional” means the relevant option-chain/institutional level must hold,
+reject, or break with the transcript's price-action confirmation (typically a
+10–15 minute candle). If the level fails, the backup plan replaces the original
+lean. Without a date-matched chain and intraday candle, the repository cannot
+verify that trigger.
+
+### Setup strength is not confidence
+
+For API compatibility, the `confidence` field remains present. In v2 it is only:
+
+```text
+setup_strength = min(100, abs(daily_composite) / 0.45 * 100)
+```
+
+Conflict caps it at 40. It is deterministic score intensity, **not a calibrated
+probability of being right**. Historical strength buckets were not monotonic in
+2026; higher displayed strength must not be presented as higher expected
+accuracy.
+
+## 7. Cash, option chain, and opening scenarios
+
+### Cash flow
+
+When supplied, FII/DII cash data is displayed as zero-weight confirmation. A
+strong contradiction adds a warning; agreement adds a confirmation note. It does
+not change the daily class because historical cash inputs were unavailable for
+the locked v2 replay.
+
+### Option chain
+
+When supplied, option-chain logic identifies support, resistance, max pain, and
+PCR for the report's scenario plan. Levels do not alter the locked OI class.
+Historical date-matched chains were unavailable, so no option-level reaction
+accuracy is claimed for v2.
+
+Both total OI and change in OI matter when interpreting a live level. A large put
+wall can act as support and a large call wall as resistance, but a sustained break
+can flip the role. Aggregate end-of-day chain data cannot identify every buyer,
+writer, hedge, roll, or manipulation pattern.
+
+### Gap-up / flat / gap-down branches
+
+The output creates plans for all three possible openings because pre-open news
+and Gift Nifty were described as deciding or overriding the first path. These are
+conditional scenario descriptions—not three simultaneous predictions and not a
+claim that the opening gap is forecast from EOD OI.
+
+## 8. Positional carry context
+
+As-on-date carry uses the signed `long-short` level relative to current market OI:
+
+```text
+carry_ratio = direction_sign * (long - short) / market_oi
+carry_score = tanh(carry_ratio / instrument_carry_scale)
+```
+
+Client carry is contra-adjusted. Participant carry combines:
+
+| Instrument | Weight |
+|---|---:|
+| Index call | 30% |
+| Index put | 30% |
+| Index future | 25% |
+| Stock future | 15% |
+
+Participant carry is then FII 60%, Pro 25%, and contra-Client 15%. Stock futures
+are included here because the source uses them as multi-session accumulation
+context; stock options remain excluded.
+
+`build_predictions()` can calculate a recency-weighted five-session context and
+an internal `research_lean`. Production v2 nevertheless outputs:
+
+```text
+next_week.direction = NO-VALIDATED-EDGE
+next_week.actionability = CONTEXT_ONLY_WAIT_FOR_MULTI_SESSION_CONFIRMATION
+```
+
+The locked five-session candidate improved 2025 but failed the 2026 confirmation
+period. Publishing its direction as a production forecast would therefore be
+dishonest. V1 weekly output remains available only for replay compatibility.
+
+## 9. Chronological validation design
+
+The real-data replay uses point-in-time Participant-OI and NIFTY daily OHLC from
+the public `sahilempire/groww-market-data` mirror pinned at commit
+`7d481cf1fcffe44be68852892028195c4f12dddd`.
+
+The periods are:
+
+- **development:** 2023–2024 target sessions;
+- **validation:** 2025 target sessions;
+- **confirmation:** 2026 target sessions through the pinned archive;
+- **full:** all 757 evaluable signals.
+
+V2 rules and candidate thresholds were frozen from transcript interpretation and
+development work before evaluating unchanged logic on validation and
+confirmation. The repository's earlier v1 audit had already exposed 2026, so the
+confirmation period is not described as a pristine holdout.
+
+For OI published after signal session `t`, the next tradable target is session
+`t+1`. Three return bases are kept separate:
+
+```text
+close_to_close = close[t+1] / close[t] - 1
+next_open_to_close = close[t+1] / open[t+1] - 1
+overnight_gap = open[t+1] / close[t] - 1
+```
+
+Daily realised classes use a declared `±0.15%` FLAT band. The five-session audit
+uses a `±0.50%` FLAT band.
+
+Metrics distinguish:
+
+- exact UP/FLAT/DOWN classification;
+- majority-class baseline;
+- directional coverage;
+- directional-call hit rate with realised FLAT counted as a miss;
+- sign accuracy only among realised non-FLAT observations;
+- trigger-eligible/actionability subsets;
+- Wilson 95% confidence intervals.
+
+Sign accuracy after excluding FLAT observations answers a narrower question than
+three-class accuracy and must always be reported with its denominator.
+
+## 10. Locked result and interpretation
+
+Authoritative production replays:
+
+| Period | N | V1 exact close-to-close | V2 exact close-to-close | V1 non-FLAT sign | V2 non-FLAT sign |
+|---|---:|---:|---:|---:|---:|
+| 2023–2024 development | 342 | 35.96% | 38.01% | 54.21% | 56.25% |
+| 2025 validation | 248 | 37.90% | 37.90% | 55.88% | 54.86% |
+| 2026 confirmation | 167 | 34.13% | 37.72% | 50.55% | 53.00% |
+| Full | 757 | 36.20% | 37.91% | 53.96% | 55.05% |
+
+Full-sample basis diagnostics:
+
+| Basis | V1 exact | V2 exact | V1 directional-call hit | V2 directional-call hit | V1 non-FLAT sign | V2 non-FLAT sign |
+|---|---:|---:|---:|---:|---:|---:|
+| Close-to-close | 36.20% | 37.91% | 42.61% | 43.72% | 53.96% | 55.05% |
+| Overnight gap | 38.84% | 39.23% | 40.34% | 40.44% | 62.65% | 62.54% |
+| Next-open-to-close | 33.42% | 34.87% | 36.36% | 38.25% | 46.72% | 49.41% |
+
+The full close-to-close majority baseline is 42.14%, above both decoder versions.
+V2's full non-FLAT close sign 95% interval is 50.35%–59.65%. Its trigger-eligible
+next-open-to-close sign is 49.50% on 400 observations. Strength filtering did not
+remain stable in confirmation, and the weekly candidate was rejected.
+
+Therefore:
+
+- v2 is a more faithful and auditable transcript translation than v1;
+- it shows a modest historical improvement on several forced metrics;
+- it has **not** established reliable executable accuracy or profitability;
+- the old warning remains in generated reports;
+- future untouched forward validation is required before any stronger claim.
+
+The complete generated evidence is in
+`reports/backtest_v2_2023-08_to_2026-09/`. The prior v1 package remains intact in
+`reports/backtest_2023-08_to_2026-09/`.
+
+## 11. Reproduction
+
+Run the full comparison against the pinned archive paths:
+
+```bash
+PYTHONPATH=src python research/compare_v1_v2.py \
+  --participant-oi /path/to/groww-market-data/nse_archives/participant_oi \
+  --ohlc /path/to/groww-market-data/nse_archives/index_close \
+  --output-dir reports/backtest_v2_2023-08_to_2026-09 \
+  --source-note "Public mirror pinned at 7d481cf1fcffe44be68852892028195c4f12dddd"
+```
+
+For the standard backtest CLI, choose the decoder explicitly:
+
+```bash
+PYTHONPATH=src python -m fiidii.cli backtest \
+  --participant-oi /path/to/participant_oi \
+  --ohlc /path/to/index_close \
+  --decoder-version v2 \
+  --output-dir /tmp/fiidii-v2-replay
+```

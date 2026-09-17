@@ -42,6 +42,15 @@ def _ohlc() -> pd.DataFrame:
     ])
 
 
+def test_backtest_config_rejects_unknown_decoder_version():
+    try:
+        BacktestConfig(decoder_version="future")
+    except ValueError as exc:
+        assert "decoder_version" in str(exc)
+    else:
+        raise AssertionError("invalid decoder version was accepted")
+
+
 def test_class_contract_boundaries():
     assert prediction_class("SIDEWAYS-UP") == "UP"
     assert prediction_class("RANGE") == "FLAT"
@@ -137,7 +146,21 @@ def test_replay_uses_exact_previous_and_next_market_sessions():
     assert row["actual_class"] == "UP"
     assert row["option_chain_available"]
     assert row["level_tests"] >= 1
+    assert row["method_version"] == "v2"
+    assert row["actionability"]
     assert result.metrics["signals_evaluated"] == 1
+    assert result.metrics["trigger_eligible"]["selection_policy"] == "v2 CONDITIONAL_* only"
+    assert sum(result.metrics["actionability_counts"].values()) == 1
+
+
+def test_frozen_v1_decoder_remains_replayable():
+    result = run_backtest(
+        _participant_history(), _ohlc(),
+        config=BacktestConfig(decoder_version="v1"),
+    )
+    assert len(result.predictions) == 1
+    assert result.predictions.iloc[0]["method_version"] == "v1"
+    assert result.predictions.iloc[0]["actionability"] == "LEGACY_UNCONDITIONAL"
 
 
 def test_missing_exact_previous_oi_is_skipped_not_stretched():
