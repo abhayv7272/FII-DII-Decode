@@ -735,7 +735,7 @@ def main(argv=None) -> int:
     b.add_argument("--symbol", default="NIFTY", help="index symbol (default: NIFTY)")
     b.add_argument(
         "--decoder-version",
-        choices=("v1", "v2"),
+        choices=("v1", "v2", "v3"),
         default="v2",
         help="decoder rule set to replay (default: v2; v1 is frozen for comparison)",
     )

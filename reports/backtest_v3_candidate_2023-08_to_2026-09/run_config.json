@@ -1,0 +1,37 @@
+{
+  "source_note": "Public sahilempire/groww-market-data mirror pinned at commit 7d481cf1fcffe44be68852892028195c4f12dddd",
+  "decoder_versions": [
+    "v1",
+    "v2",
+    "v3"
+  ],
+  "flat_threshold_pct_daily": 0.15,
+  "flat_threshold_pct_weekly": 0.5,
+  "v3_status": "CANDIDATE - fitted on 2023-2024 development only; 2025 validation and 2026 confirmation reported unchanged. Promotion requires an untouched forward window.",
+  "v3_parameter_delta": {
+    "NEXT_DAY_INSTRUMENT_WEIGHT": {
+      "index_call": 0.3,
+      "index_put": 0.3,
+      "index_fut": 0.4
+    },
+    "NEXT_DAY_PARTICIPANT_WEIGHT": {
+      "Pro": 0.6,
+      "FII": 0.4,
+      "Client": -0.1,
+      "DII": 0.0
+    },
+    "forced_class_threshold": 0.0
+  },
+  "periods": {
+    "2023-2024 development": [
+      2023,
+      2024
+    ],
+    "2025 validation": [
+      2025
+    ],
+    "2026 confirmation": [
+      2026
+    ]
+  }
+}

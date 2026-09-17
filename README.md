@@ -33,6 +33,40 @@ breakdown, and weekly rejection evidence:
 The prior v1 audit remains intact at
 **[`reports/backtest_2023-08_to_2026-09/report.md`](reports/backtest_2023-08_to_2026-09/report.md)**.
 
+### 🔬 v3 candidate: a dev-fitted structural update that now beats the majority baseline (still under forward validation)
+
+A full deep dive (univariate null controls, six-way v2 ablation, ~840-structure
+weight grids, walk-forward ML, bhavcopy-derived chain features, level and
+weekly re-tests — log: **[`reports/v3_deep_dive/REPORT.md`](reports/v3_deep_dive/REPORT.md)**)
+produced a small v3-candidate update, fitted on the 2023-2024 development
+partition only and replayed unchanged afterwards:
+
+| Full-sample close-to-close (757 sessions) | V1 | V2 | **V3 candidate** |
+|---|---:|---:|---:|
+| Exact UP/FLAT/DOWN | 36.20% | 37.91% | **45.05%** (baseline 42.14%) |
+| Close non-FLAT sign | 53.96% | 55.05% | **57.12%** (95% CI 53.12–61.03) |
+| Next-open-to-close non-FLAT sign | 46.72% | 49.41% | **51.30%** |
+
+Per-period exact: dev **45.03%** (baseline 45.32%), validation **43.95%**
+(baseline 39.92%), confirmation **46.71%** (baseline 42.51%) — the first
+configuration in this repository to beat the period majority baselines on both
+untouched partitions, with paired McNemar vs v2 p≈0.0000 pooled
+(conf p=0.020, val p=0.063, dev p=0.006). The v3 delta: index futures 40% of
+each participant read, Pro:FII 60:40, a -0.10 Client tilt, and a 0.00
+forced-class threshold (the ~79% non-FLAT session share made v2's ±0.10 band
+cost more exact-class hits than it saved). Closures remain half weight and DII
+F&O still gets zero direction.
+
+Notes that keep this honest: v3 was selected from a bounded family on
+2023-2024 only; most of the close-to-close gain is the **overnight-gap
+channel**, which cannot be entered at the signal close (OI is published after
+it) — the **executable open-to-close basis remains ≈ chance for every
+version**, so **do not treat v3 as a tradable edge**. Weekly remains
+`NO-VALIDATED-EDGE`, and levels remain a coin flip. Promotion to the default
+decoder requires an untouched forward window. Evidence package:
+**[`reports/backtest_v3_candidate_2023-08_to_2026-09/report.md`](reports/backtest_v3_candidate_2023-08_to_2026-09/report.md)**;
+opt in with `--decoder-version v3`.
+
 ### Level reactions now measured — and they show no edge either
 
 Historical option-chain JSON is not published anywhere, so levels were previously
@@ -168,6 +202,9 @@ python backtest.py \
   --output-dir reports/backtest
 ```
 
+`--decoder-version` accepts `v1`, `v2`, or `v3` (the candidate above; the
+daily workflow default remains v2 until forward validation completes).
+
 `--participant-oi` also accepts a consolidated CSV or ZIP; `--option-chains` is
 optional. Outputs include per-date predictions/skips CSVs, `metrics.json`, a
 confidence-vs-accuracy CSV, and an auditable Markdown report. Definitions include
@@ -213,6 +250,7 @@ src/fiidii/
   fetch.py       # participant OI, cash, option chain collectors
   store.py       # CSV/JSON persistence + history
   decode.py      # v2 OI lean, actionability, setup strength, carry context
+  decode_v3.py   # v3-candidate decoder (dev-fitted; forward validation pending)
   legacy_v1.py   # frozen decoder used by the published v1 replay
   levels.py      # option-chain proxies + supplied institutional references
   predict.py     # next-day/weekly context + per-level decision trees
@@ -225,6 +263,8 @@ docs/methodology.md          # decoded signal methodology
 docs/institutional-levels.md # level-source audit + conditional reaction contract
 docs/backtesting.md          # historical data contract + metric definitions
 docs/data-fetching.md        # provider order, validation + fail-closed policy
+research/v3_*.py             # deep-dive pipeline (features, grids, ML, levels)
+research/run_v3_comparison.py# official-path v1/v2/v3 replay + evidence package
 tests/                # fixtures + unit/smoke tests
 .github/workflows/    # daily 9 PM IST automation
 ```
