@@ -19,7 +19,10 @@
   overnight-gap channel and it still needs an untouched forward window
   (sessions after 2026-09-04). Evidence:
   `reports/backtest_v3_candidate_2023-08_to_2026-09/` + full search log
-  `reports/v3_deep_dive/REPORT.md`.
+  `reports/v3_deep_dive/REPORT.md`. **V4 aggressive psychology/manipulation
+  search** (`reports/v4_psychology_search/`) tested 26,049 threshold rules over
+  4,764 engineered columns; no honest 75-85% rule survived both 2025/2026
+  holdouts with minimum sample guards.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
   in `reports/v3_forward_validation/gate_report.md` — state
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
@@ -31,10 +34,40 @@
 - **Sandbox caveat:** only files *inside the repo* persist across Arena turns —
   `/home/user/historical`, `/home/user/features`, and venvs are wiped between
   turns. Re-create venv with
-  `pip install -r requirements.txt scipy scikit-learn`; research data must be
-  re-downloaded (mirror commit `7d481cf`) or consolidated into the repo.
+  `pip install -r requirements.txt scipy scikit-learn`. The compact historical
+  bundle needed for v3/v4 feature rebuilds is now committed under `historical/`;
+  bulky raw bhavcopy ZIPs still stay outside git and must be re-downloaded only
+  when rebuilding chain snapshots from scratch.
 
 ## Log (newest first)
+
+### 2026-09-18 (session 7 — full-freedom v4 accuracy hunt + GitHub backup)
+- User set the stretch goal: push daily accuracy toward **70-85%+** using every
+  available idea — OI levels, institutional/psychological levels,
+  manipulation/gap logic, and 4/7/15/21-session history — with repeated
+  backtest/implement loops and frequent GitHub chat backups.
+- Re-downloaded the pinned Groww mirror (`sahilempire/groww-market-data` @
+  `7d481cf1fcffe44be68852892028195c4f12dddd`) outside git for this turn; NSE
+  archive direct HTTPS remains blocked from the sandbox.
+- Committed the previously pending compact research bundle under `historical/`:
+  `participant_oi.csv`, `participant_vol.csv`, canonical `nifty_ohlc.csv`, long
+  `nifty_ohlc_long.csv`, rebuilt `chain_features.csv`, and `manifest.json`.
+  This makes v3/v4 feature rebuilds survive Arena wipes without storing bulky
+  raw bhavcopy ZIPs.
+- Added `research/v4_psychology_search.py`: builds a 4,764-column enhanced
+  matrix from participant flows/levels, Pro-FII/Client psychology composites,
+  4/7/15/21-day changes and z-scores, bhavcopy option-chain PCR/wall/max-pain
+  aggregates, price/volatility/gap proxies, plus frozen-on-dev ML sanity checks.
+- Ran the v4 hunt: **26,049 threshold rules** exported to
+  `reports/v4_psychology_search/`. Honest result: **0 rules** hit ≥75% exact on
+  both 2025 validation and 2026 confirmation with ≥20 calls each; **0 rules**
+  hit ≥75% non-FLAT sign on both holdouts with ≥20 non-FLAT calls each. Closest
+  pockets are low-coverage research-only (e.g. volatility expansion / DII level
+  change zones around ~60-63% exact or ~63-73% sign, not promotable).
+- Important conclusion: do **not** fake a 75-85% number by overfitting. v3 remains
+  the strongest broad-coverage candidate; next real path is forward validation,
+  richer dated data (especially intraday 10-15m candles/exact institutional
+  levels), and prospective tracking of the v4 selective pockets.
 
 ### 2026-09-18 (session 6 — chat backup requested + gate smoke test)
 - User asked: **"Backup chat to github"** → this entry is the backup; all

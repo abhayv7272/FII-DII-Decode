@@ -1,0 +1,27 @@
+{
+  "source_repo": "sahilempire/groww-market-data",
+  "source_commit": "7d481cf1fcffe44be68852892028195c4f12dddd",
+  "source_download": "https://codeload.github.com/sahilempire/groww-market-data/zip/7d481cf1fcffe44be68852892028195c4f12dddd",
+  "files": {
+    "chain_features.csv": {
+      "bytes": 110894,
+      "sha256": "8aeaa9a1c71443d61c932629726175389cd6a5e77a1eaa807211ceb41e3ccbb5"
+    },
+    "nifty_ohlc.csv": {
+      "bytes": 34145,
+      "sha256": "aa706c289c6af7d00d314438f49a7be0a5999b5f7c25c675eb2ca8f769ff5921"
+    },
+    "nifty_ohlc_long.csv": {
+      "bytes": 440249,
+      "sha256": "ac8746f9aa3821b08c506f01cd020aeb52589327c7b688e71e1ddc56897bd71f"
+    },
+    "participant_oi.csv": {
+      "bytes": 438817,
+      "sha256": "0056415eee0ce82b1aea6bf499bf467a1a41f12b67c612cf3da3969d6e46e7e7"
+    },
+    "participant_vol.csv": {
+      "bytes": 450719,
+      "sha256": "5397a98b23ce9063b684688a7eac1531bdb79a32e17da3867a3f1176ba194673"
+    }
+  }
+}

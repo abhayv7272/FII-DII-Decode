@@ -6,6 +6,6 @@ beautifulsoup4>=4.12.0
 Jinja2>=3.1.2
 pytest>=7.4.0
 
-# Optional: only the research/v3_*.py deep-dive scripts need these
+# Optional: only the research/v3_*.py and research/v4_*.py deep-dive scripts need these
 # scipy>=1.11
 # scikit-learn>=1.3

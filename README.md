@@ -76,6 +76,27 @@ v2, non-FLAT sign ≥ 52% with Wilson lower bound > 50%). Current state:
 **`COLLECTING_DATA`** (gate report:
 [`reports/v3_forward_validation/gate_report.md`](reports/v3_forward_validation/gate_report.md)).
 
+### 🧪 V4 psychology/manipulation search: no honest 75-85% edge yet
+
+At the user's request, a much more aggressive v4 research pass now tests
+4/7/15/21-session institutional psychology patterns, smart-money/client
+crowding, Pro-vs-FII agreement/conflict, DII positioning levels, option-chain
+PCR/wall/max-pain aggregates, volatility/gap manipulation proxies, and frozen ML
+sanity checks. It exports **26,049** threshold rules across **4,764** engineered
+columns in [`reports/v4_psychology_search/`](reports/v4_psychology_search/).
+
+Result: **0 rules** reached ≥75% exact accuracy on both 2025 validation and 2026
+confirmation with at least 20 calls in each period; **0 rules** reached ≥75%
+non-FLAT sign accuracy on both holdout periods with at least 20 non-FLAT calls.
+The closest research-only pockets are low-coverage (~10-30 calls) and therefore
+not promotable. See
+[`reports/v4_psychology_search/report.md`](reports/v4_psychology_search/report.md).
+
+To keep future sessions reproducible after Arena wipes external directories, a
+compact historical bundle is committed under [`historical/`](historical/) with
+participant OI, participant volume, canonical NIFTY OHLC, long price-regime OHLC,
+and chain aggregate features from the pinned Groww mirror.
+
 ### Level reactions now measured — and they show no edge either
 
 Historical option-chain JSON is not published anywhere, so levels were previously

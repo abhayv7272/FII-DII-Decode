@@ -1,6 +1,6 @@
 # Historical backtesting
 
-The repository includes a point-in-time replay harness for the decoder's **next-session** OI class. Frozen v1 and transcript-grounded v2 are compared on 757 real sessions in [`reports/backtest_v2_2023-08_to_2026-09/report.md`](../reports/backtest_v2_2023-08_to_2026-09/report.md). V2 improves some historical diagnostics but remains below the majority-class baseline and approximately chance on the executable next-open-to-close basis, so it remains experimental. The external raw archive is not vendored; the pinned source revision and hashes are retained with the reports.
+The repository includes a point-in-time replay harness for the decoder's **next-session** OI class. Frozen v1 and transcript-grounded v2 are compared on 757 real sessions in [`reports/backtest_v2_2023-08_to_2026-09/report.md`](../reports/backtest_v2_2023-08_to_2026-09/report.md). V2 improves some historical diagnostics but remains below the majority-class baseline and approximately chance on the executable next-open-to-close basis, so it remains experimental. The bulky raw archive is not vendored; a compact research bundle is now committed under [`historical/`](../historical/) and the pinned source revision/checksums are retained with the reports.
 
 ## What is scored
 
@@ -82,7 +82,7 @@ PYTHONPATH=src python -m fiidii.cli backtest \
 Useful controls:
 
 ```text
---decoder-version v1|v2           # v2 is the production default; v1 is frozen
+--decoder-version v1|v2|v3        # v2 is production default; v3 is opt-in candidate
 --flat-threshold-pct 0.15          # ±0.15% is FLAT (inclusive)
 --level-touch-tolerance-pct 0.05  # range may come within ±0.05% of a level
 --from-date 2025-01-01
@@ -90,6 +90,26 @@ Useful controls:
 ```
 
 Percent arguments are percentage points: `0.15` means 0.15%, not 15%.
+
+## V4 psychology search harness
+
+`research/v4_psychology_search.py` is a research-only harness for aggressive
+accuracy hunting. It builds on `research/v3_features.py` and the compact
+`historical/` bundle, then tests 4/7/15/21-session participant psychology,
+Pro/FII/Client/DII positioning levels, option-chain aggregate levels, gap and
+volatility proxies, and frozen-on-development ML. The search is deliberately
+strict: thresholds and orientations come from 2023-2024 only, while 2025 and
+2026 remain holdouts.
+
+```bash
+# Requires optional research deps: scipy and scikit-learn
+python research/v4_psychology_search.py --out reports/v4_psychology_search
+```
+
+The published run exports `threshold_rules.csv` and ranked holdout views in
+[`reports/v4_psychology_search/`](../reports/v4_psychology_search/). It did not
+find any rule that honestly reached the requested 75-85% zone on both holdouts
+with minimum sample guards.
 
 ## Direction labels and metrics
 
