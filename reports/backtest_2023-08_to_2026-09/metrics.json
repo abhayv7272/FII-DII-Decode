@@ -1,0 +1,157 @@
+{
+  "config": {
+    "symbol": "NIFTY",
+    "flat_threshold_pct": 0.15,
+    "level_touch_tolerance_pct": 0.05,
+    "from_date": null,
+    "to_date": null
+  },
+  "metrics": {
+    "status": "ok",
+    "signals_evaluated": 757,
+    "signal_date_start": "2023-08-08",
+    "signal_date_end": "2026-09-03",
+    "target_definition": "next trading session close / signal-session close - 1",
+    "flat_threshold_pct": 0.15,
+    "exact_3_class_hits": 274,
+    "exact_3_class_accuracy_pct": 36.2,
+    "directional_calls": 528,
+    "directional_coverage_pct": 69.75,
+    "directional_hits": 225,
+    "directional_hit_rate_pct": 42.61,
+    "actual_class_counts": {
+      "UP": 319,
+      "FLAT": 160,
+      "DOWN": 278
+    },
+    "predicted_class_counts": {
+      "UP": 254,
+      "FLAT": 229,
+      "DOWN": 274
+    },
+    "majority_class_baseline_accuracy_pct": 42.14,
+    "class_metrics": {
+      "UP": {
+        "support_actual": 319,
+        "calls_predicted": 254,
+        "true_positives": 110,
+        "precision_pct": 43.31,
+        "recall_pct": 34.48,
+        "f1_pct": 38.39
+      },
+      "FLAT": {
+        "support_actual": 160,
+        "calls_predicted": 229,
+        "true_positives": 49,
+        "precision_pct": 21.4,
+        "recall_pct": 30.63,
+        "f1_pct": 25.2
+      },
+      "DOWN": {
+        "support_actual": 278,
+        "calls_predicted": 274,
+        "true_positives": 115,
+        "precision_pct": 41.97,
+        "recall_pct": 41.37,
+        "f1_pct": 41.67
+      }
+    },
+    "confusion_matrix_actual_rows": {
+      "UP": {
+        "UP": 110,
+        "FLAT": 99,
+        "DOWN": 110
+      },
+      "FLAT": {
+        "UP": 62,
+        "FLAT": 49,
+        "DOWN": 49
+      },
+      "DOWN": {
+        "UP": 82,
+        "FLAT": 81,
+        "DOWN": 115
+      }
+    },
+    "level_reaction_daily_proxy": {
+      "definition": "next-session range enters the level tolerance band; support succeeds on close >= level and resistance on close <= level",
+      "touch_tolerance_pct": 0.05,
+      "tests": 0,
+      "holds": 0,
+      "hold_accuracy_pct": null,
+      "support": {
+        "tests": 0,
+        "holds": 0,
+        "hold_accuracy_pct": null
+      },
+      "resistance": {
+        "tests": 0,
+        "holds": 0,
+        "hold_accuracy_pct": null
+      }
+    },
+    "return_by_prediction": {
+      "UP": {
+        "samples": 254,
+        "mean_next_session_return_pct": 0.0723,
+        "median_next_session_return_pct": 0.0565
+      },
+      "FLAT": {
+        "samples": 229,
+        "mean_next_session_return_pct": 0.107,
+        "median_next_session_return_pct": 0.047
+      },
+      "DOWN": {
+        "samples": 274,
+        "mean_next_session_return_pct": -0.0741,
+        "median_next_session_return_pct": -0.0038
+      }
+    },
+    "confidence_curve": [
+      {
+        "confidence_bin": "0-20",
+        "min_exclusive": 0,
+        "max_inclusive": 20,
+        "samples": 69,
+        "average_confidence": 5.03,
+        "exact_accuracy_pct": 26.09,
+        "directional_calls": 6,
+        "directional_hit_rate_pct": 66.67
+      },
+      {
+        "confidence_bin": "20<x<=40",
+        "min_exclusive": 20,
+        "max_inclusive": 40,
+        "samples": 423,
+        "average_confidence": 31.88,
+        "exact_accuracy_pct": 30.73,
+        "directional_calls": 257,
+        "directional_hit_rate_pct": 36.96
+      },
+      {
+        "confidence_bin": "40<x<=60",
+        "min_exclusive": 40,
+        "max_inclusive": 60,
+        "samples": 259,
+        "average_confidence": 46.93,
+        "exact_accuracy_pct": 48.26,
+        "directional_calls": 259,
+        "directional_hit_rate_pct": 48.26
+      },
+      {
+        "confidence_bin": "60<x<=80",
+        "min_exclusive": 60,
+        "max_inclusive": 80,
+        "samples": 6,
+        "average_confidence": 63.82,
+        "exact_accuracy_pct": 16.67,
+        "directional_calls": 6,
+        "directional_hit_rate_pct": 16.67
+      }
+    ]
+  },
+  "warnings": [
+    "No option-chain history supplied; level-reaction metrics are unavailable."
+  ],
+  "skipped_count": 3
+}

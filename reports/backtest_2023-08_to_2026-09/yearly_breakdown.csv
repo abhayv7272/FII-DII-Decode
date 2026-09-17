@@ -1,0 +1,6 @@
+segment,samples,exact_3class_accuracy_pct,majority_baseline_pct,directional_calls,directional_hit_including_flat_misses_pct,directional_nonflat_samples,directional_sign_accuracy_nonflat_pct,sign_wilson_95_low,sign_wilson_95_high,sign_vs_50_p_two_sided
+2023 partial,96,39.58,51.04,67,50.75,56,60.71,47.63,72.42,0.1409
+2024,246,34.55,43.09,181,38.12,134,51.49,43.11,59.79,0.7956
+2025,248,37.9,39.92,169,44.97,136,55.88,47.49,63.95,0.1982
+2026 through Sep 4,167,34.13,42.51,111,41.44,91,50.55,40.46,60.59,1.0
+all,757,36.2,42.14,528,42.61,417,53.96,49.16,58.68,0.117

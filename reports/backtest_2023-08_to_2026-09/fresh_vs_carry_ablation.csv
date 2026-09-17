@@ -1,0 +1,19 @@
+basis,segment,variant,samples,exact_accuracy_pct,majority_baseline_pct,nonflat_directional_n,nonflat_sign_accuracy_pct
+close-to-close,2023-2024 development,fresh only (current),342,35.96,45.32,190,54.21
+close-to-close,2023-2024 development,50% fresh + 50% carry,342,35.38,45.32,176,50.0
+close-to-close,2023-2024 development,carry only,342,33.33,45.32,204,45.59
+close-to-close,2025 validation,fresh only (current),248,37.9,39.92,136,55.88
+close-to-close,2025 validation,50% fresh + 50% carry,248,36.69,39.92,131,53.44
+close-to-close,2025 validation,carry only,248,38.31,39.92,178,50.56
+close-to-close,2026 latest,fresh only (current),167,34.13,42.51,91,50.55
+close-to-close,2026 latest,50% fresh + 50% carry,167,41.32,42.51,110,52.73
+close-to-close,2026 latest,carry only,167,42.51,42.51,136,52.21
+open-to-close,2023-2024 development,fresh only (current),342,33.04,36.84,184,45.65
+open-to-close,2023-2024 development,50% fresh + 50% carry,342,35.67,36.84,166,50.6
+open-to-close,2023-2024 development,carry only,342,38.01,36.84,197,51.27
+open-to-close,2025 validation,fresh only (current),248,35.08,41.94,139,51.8
+open-to-close,2025 validation,50% fresh + 50% carry,248,35.08,41.94,132,53.79
+open-to-close,2025 validation,carry only,248,41.53,41.94,186,51.61
+open-to-close,2026 latest,fresh only (current),167,31.74,38.32,88,40.91
+open-to-close,2026 latest,50% fresh + 50% carry,167,29.34,38.32,96,44.79
+open-to-close,2026 latest,carry only,167,37.72,38.32,127,49.61

@@ -1,0 +1,6 @@
+segment,samples,exact_3class_accuracy_pct,majority_baseline_pct,directional_calls,directional_hit_including_flat_misses_pct,directional_nonflat_samples,directional_sign_accuracy_nonflat_pct,sign_wilson_95_low,sign_wilson_95_high,sign_vs_50_p_two_sided
+all,757,36.2,42.14,528,42.61,417,53.96,49.16,58.68,0.117
+confidence >= 40,266,47.37,43.61,266,47.37,215,58.6,51.93,64.98,0.0139
+confidence >= 45,154,46.1,42.21,154,46.1,122,58.2,49.33,66.57,0.085
+raw strong UP or DOWN,61,47.54,42.62,61,47.54,47,61.7,47.43,74.21,0.1439
+raw sideways directional,467,41.97,41.54,467,41.97,370,52.97,47.88,58.0,0.2749

@@ -4,86 +4,119 @@
 <body style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
  max-width:860px;margin:0 auto;padding:16px;color:#1c1c1c;background:#fff">
 <h1 style="margin-bottom:0">📊 FII/DII/Pro/Client Decode</h1>
-<div style="color:#666">NIFTY · 2026-08-03 · generated 2026-09-17 13:15 IST</div>
+<div style="color:#666">NIFTY · 2026-08-03 · generated 2026-09-17 21:49 IST</div>
+<div style="margin:14px 0;padding:10px 14px;border-radius:8px;background:#fff8e1;
+ border-left:6px solid #f9a825;font-size:13px"><b>Validation warning:</b>
+ EXPERIMENTAL / NOT VALIDATED FOR TRADING: the locked v2 rules reached 37.91% exact UP/FLAT/DOWN accuracy on 757 sessions versus a 42.14% majority baseline. Its next-open-to-close sign result remained approximately chance. Treat the OI lean as conditional context, never a standalone entry signal.</div>
+<div style='margin:12px 0;padding:10px 14px;border-radius:8px;background:#ffebee;border-left:6px solid #c62828;font-size:13px'><b>Demo warning:</b> DEMO FIXTURE: inputs are bundled synthetic/approximate sample values for pipeline testing. This report date is not a historical forecast or backtest observation.</div>
+
+<h2>🛰️ Data Fetch Health</h2>
+<p><b>Overall:</b> DEMO_FIXTURE &nbsp;|&nbsp;
+<b>Run date:</b> 2026-09-17 &nbsp;|&nbsp;
+<b>Report session:</b> 2026-08-03</p>
+<table border='0' cellpadding='5' width='100%' style='border-collapse:collapse;font-size:12px'><tr style='background:#f2f2f2'><th>Input</th><th>Status</th><th>Source</th><th>As of</th><th>Warning</th></tr><tr><td>participant oi current</td><td style='color:#0f8a3c'><b>available</b></td><td>bundled synthetic demo fixture</td><td>2026-08-03</td><td style='font-size:11px'>Synthetic/approximate values; not live market data.</td></tr><tr><td>participant oi previous</td><td style='color:#0f8a3c'><b>available</b></td><td>bundled synthetic demo fixture</td><td>2026-08-03</td><td style='font-size:11px'>Synthetic/approximate values; not live market data.</td></tr><tr><td>cash</td><td style='color:#0f8a3c'><b>available</b></td><td>bundled synthetic demo fixture</td><td>2026-08-03</td><td style='font-size:11px'>Synthetic/approximate values; not live market data.</td></tr><tr><td>option chain</td><td style='color:#0f8a3c'><b>available</b></td><td>bundled synthetic demo fixture</td><td>2026-08-03</td><td style='font-size:11px'>Synthetic/approximate values; not live market data.</td></tr><tr><td>index quote</td><td style='color:#c62828'><b>unavailable</b></td><td>—</td><td>—</td><td style='font-size:11px'>Demo fixture has option-chain spot but no independent index OHLC fetch.</td></tr><tr><td>participant volume</td><td style='color:#7a7a7a'><b>not_used</b></td><td>—</td><td>2026-08-03</td><td style='font-size:11px'>Participant volume is not an input to the locked v2 score.</td></tr><tr><td>institutional references</td><td style='color:#7a7a7a'><b>not_provided</b></td><td>—</td><td>—</td><td style='font-size:11px'>Optional exact references were not supplied; automatic levels remain option-chain proxies.</td></tr></table>
+<p style="font-size:11px;color:#666">A next-day OI lean requires complete current and previous participant OI. Actionable level branches additionally require a same-date option chain. Cash can alter setup strength but not the locked OI class; OHLC is an audit input.</p>
 
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 0">
   <div style="flex:1;min-width:240px;padding:14px 16px;border-radius:10px;
    background:#0f8a3c12;border-left:6px solid #0f8a3c">
-    <div style="font-size:12px;color:#666">NEXT-DAY (Pro-led)</div>
+    <div style="font-size:12px;color:#666">NEXT-DAY OI LEAN (Pro-led)</div>
     <div style="font-size:20px;font-weight:700;color:#0f8a3c">STRONG BULLISH</div>
-    <div>score <b>+0.59</b> · conf <b>59%</b></div>
+    <div>score <b>+0.77</b> · setup strength <b>100/100</b></div>
     <div style="margin-top:4px">🟢⬆️ <b>UP</b></div>
+    <div style="font-size:12px;margin-top:4px"><b>CONDITIONAL_BULLISH_SETUP</b></div>
   </div>
   <div style="flex:1;min-width:240px;padding:14px 16px;border-radius:10px;
-   background:#0f8a3c12;border-left:6px solid #0f8a3c">
-    <div style="font-size:12px;color:#666">POSITIONAL / WEEK (FII-led)</div>
-    <div style="font-size:20px;font-weight:700;color:#0f8a3c">STRONG BULLISH</div>
-    <div>score <b>+0.60</b> ·
-     conf <b>60%</b></div>
-    <div style="margin-top:4px">🟢⬆️ <b>UP</b></div>
+   background:#2fae5e12;border-left:6px solid #2fae5e">
+    <div style="font-size:12px;color:#666">POSITIONAL CARRY CONTEXT (FII-led)</div>
+    <div style="font-size:20px;font-weight:700;color:#2fae5e">BULLISH</div>
+    <div>context score <b>+0.45</b></div>
+    <div style="margin-top:4px">⚪⏸️ <b>NO-VALIDATED-EDGE</b></div>
+    <div style="font-size:12px;margin-top:4px">Research lean: <b>SIDEWAYS-UP</b></div>
   </div>
 </div>
 
 
 <h2>🧩 Institutional Data & Setup</h2>
-<p style="color:#444"><b>Retail:</b> Retail is net BEARISH → contrarian POSITIVE for market (retail exiting longs is the fuel for a rally).</p>
-<p style="color:#444"><b>Move quality:</b> FII: fresh longs added (real strength); Pro: fresh longs added (real strength)</p>
-<table border='0' cellpadding='5' style='border-collapse:collapse;font-size:12px'><tr style='background:#f2f2f2'><th>Group</th><th>index call</th><th>index put</th><th>index fut</th><th>stock call</th><th>stock put</th><th>stock fut</th></tr><tr><td><b>Pro</b></td><td style='color:#0f8a3c'>+0.90</td><td style='color:#0f8a3c'>+0.67</td><td style='color:#0f8a3c'>+0.88</td><td style='color:#0f8a3c'>+0.08</td><td style='color:#0f8a3c'>+0.17</td><td style='color:#0f8a3c'>+0.02</td></tr><tr><td><b>FII</b></td><td style='color:#0f8a3c'>+0.88</td><td style='color:#0f8a3c'>+0.67</td><td style='color:#0f8a3c'>+1.00</td><td style='color:#0f8a3c'>+0.09</td><td style='color:#0f8a3c'>+0.16</td><td style='color:#0f8a3c'>+0.09</td></tr><tr><td><b>Client</b></td><td style='color:#0f8a3c'>+1.00</td><td style='color:#0f8a3c'>+1.00</td><td style='color:#0f8a3c'>+0.88</td><td style='color:#0f8a3c'>+0.00</td><td style='color:#c62828'>-0.12</td><td style='color:#c62828'>-0.02</td></tr><tr><td><b>DII</b></td><td style='color:#c62828'>-0.00</td><td style='color:#c62828'>-0.00</td><td style='color:#c62828'>-0.00</td><td style='color:#0f8a3c'>+0.00</td><td style='color:#888'>-0.00</td><td style='color:#c62828'>-0.01</td></tr></table>
-<p style="font-size:12px;color:#777">Green = bullish contribution, red = bearish
-(Client/Retail already shown contra-adjusted, i.e. bullish-for-market sign).</p>
+<p style="color:#444"><b>Retail:</b> Retail fresh index positioning is bearish (contra-positive), which supports a market bounce only after price confirmation.</p>
+<p style="color:#444"><b>Move quality:</b> FII: fresh index-future longs (full-strength bullish), 17,150 contracts; Pro: fresh index-future longs (full-strength bullish), 18,500 contracts</p>
+<h3>Fresh-flow reads</h3>
+<table border='0' cellpadding='5' style='border-collapse:collapse;font-size:12px'><tr style='background:#f2f2f2'><th>Group</th><th>index call</th><th>index put</th><th>index fut</th><th>stock call</th><th>stock put</th><th>stock fut</th></tr><tr><td><b>Pro</b></td><td style='color:#0f8a3c'>+0.76</td><td style='color:#0f8a3c'>+0.64</td><td style='color:#0f8a3c'>+0.90</td><td style='color:#0f8a3c'>+0.26</td><td style='color:#0f8a3c'>+0.78</td><td style='color:#0f8a3c'>+0.10</td></tr><tr><td><b>FII</b></td><td style='color:#0f8a3c'>+0.76</td><td style='color:#0f8a3c'>+0.64</td><td style='color:#0f8a3c'>+0.93</td><td style='color:#0f8a3c'>+0.32</td><td style='color:#0f8a3c'>+0.75</td><td style='color:#0f8a3c'>+0.37</td></tr><tr><td><b>Client</b></td><td style='color:#0f8a3c'>+0.92</td><td style='color:#0f8a3c'>+0.81</td><td style='color:#0f8a3c'>+0.85</td><td style='color:#0f8a3c'>+0.01</td><td style='color:#c62828'>-0.63</td><td style='color:#c62828'>-0.11</td></tr><tr><td><b>DII</b></td><td style='color:#c62828'>-0.00</td><td style='color:#c62828'>-0.00</td><td style='color:#c62828'>-0.01</td><td style='color:#0f8a3c'>+0.00</td><td style='color:#c62828'>-0.00</td><td style='color:#c62828'>-0.06</td></tr></table>
+<h3>As-on-date carry reads</h3>
+<table border='0' cellpadding='5' style='border-collapse:collapse;font-size:12px'><tr style='background:#f2f2f2'><th>Group</th><th>index call</th><th>index put</th><th>index fut</th><th>stock call</th><th>stock put</th><th>stock fut</th></tr><tr><td><b>Pro</b></td><td style='color:#0f8a3c'>+0.75</td><td style='color:#0f8a3c'>+0.92</td><td style='color:#0f8a3c'>+0.14</td><td style='color:#0f8a3c'>+0.38</td><td style='color:#0f8a3c'>+0.60</td><td style='color:#0f8a3c'>+0.05</td></tr><tr><td><b>FII</b></td><td style='color:#0f8a3c'>+0.56</td><td style='color:#0f8a3c'>+0.94</td><td style='color:#0f8a3c'>+0.22</td><td style='color:#0f8a3c'>+0.38</td><td style='color:#0f8a3c'>+0.51</td><td style='color:#0f8a3c'>+0.03</td></tr><tr><td><b>Client</b></td><td style='color:#0f8a3c'>+0.89</td><td style='color:#c62828'>-0.92</td><td style='color:#0f8a3c'>+0.30</td><td style='color:#c62828'>-0.38</td><td style='color:#c62828'>-0.69</td><td style='color:#c62828'>-0.14</td></tr><tr><td><b>DII</b></td><td style='color:#c62828'>-0.01</td><td style='color:#c62828'>-0.04</td><td style='color:#c62828'>-0.02</td><td style='color:#0f8a3c'>+0.01</td><td style='color:#c62828'>-0.01</td><td style='color:#c62828'>-0.06</td></tr></table>
+<p style="font-size:12px;color:#777">Green = bullish contribution, red = bearish.
+Client/Retail is already contra-adjusted. Stock derivatives are diagnostics only in the
+v2 next-day NIFTY score; carry is positional context, not the next-day trigger.</p>
 
-<h2>🔮 Next-Day Prediction (Gap Up / Flat / Gap Down)</h2>
+<h2>🔮 Next-Day Conditional Plan (Gap Up / Flat / Gap Down)</h2>
 <div style="font-size:18px">🟢⬆️ <b>UP</b>
- · confidence 59%</div>
-<p style="color:#444">Next-day bias +0.59 (STRONG BULLISH), Pro-led (ultra-short). Retail is net BEARISH → contrarian POSITIVE for market (retail exiting longs is the fuel for a rally). Move quality: FII: fresh longs added (real strength); Pro: fresh longs added (real strength). PCR 1.027 — Neutral PCR: range-bound; trade the support/resistance band.</p>
-<ul><li><b>PRIMARY:</b> Bias up but if retail is crowded long, expect 'sell-on-rise / dip-then-recover': a dip into 24600 that reverses up is the high-probability path.</li>
-<li><b>GAP DOWN:</b> Ideal for a long setup if Smart Money is bullish. Market likely digs toward support 24600 (may even SWEEP liquidity just below a round figure to grab retail stop-losses), then REVERSES up — that liquidity sweep + institutional level + psychological level = high-probability long confluence. A sustained close BELOW 24600 with bearish volume flips it to resistance → continuation DOWN.</li>
-<li><b>FLAT:</b> Trade the band: buy dips into support 24600 (hold → bounce), sell rallies into resistance 25150 (reject → fade). Direction resolves on which wall breaks with follow-through.</li>
-<li><b>GAP UP:</b> Watch resistance 25150. Rejection → fade back toward 24600. A decisive 15-min close ABOVE 25150 (call writers unwinding) → breakout continuation UP toward the next call wall.</li></ul>
+ · setup strength 100/100</div>
+<p><b>Actionability:</b> CONDITIONAL_BULLISH_SETUP</p>
+<p style="color:#444">OI-only next-day research lean +0.77 (STRONG BULLISH), Pro-led (ultra-short). OI-only bullish lean. It becomes actionable only after the relevant option-chain/price level confirms with a 10-15 minute candle; a decisive break activates the opposite backup plan. Cash flow confirms the OI lean, but was not part of historical v2 scoring. Retail fresh index positioning is bearish (contra-positive), which supports a market bounce only after price confirmation. Move quality: FII: fresh index-future longs (full-strength bullish), 17,150 contracts; Pro: fresh index-future longs (full-strength bullish), 18,500 contracts. PCR 1.027 — Put/call OI is comparatively balanced. Use confirmed support/resistance branches; PCR alone supplies no direction.</p>
+<ul><li><b>PRIMARY:</b> Bullish OI context prefers a confirmed hold/reclaim at 24600 or a confirmed break/retest above 25150; it does not forecast that either path must occur.</li>
+<li><b>GAP DOWN:</b> Evaluate support 24600; do not buy merely because price reached it. A liquidity sweep followed by a confirmed reclaim activates the bounce branch. Independently supplied institutional/psychological confluence strengthens the setup. A sustained bearish break BELOW 24600 flips it to resistance and activates the next lower level.</li>
+<li><b>FLAT:</b> Treat 24600 to 25150 as the decision band. A confirmed support reclaim activates the bounce branch; confirmed resistance rejection activates the fade branch. Without either candle, wait. Direction changes only when a wall breaks and sustains.</li>
+<li><b>GAP UP:</b> Evaluate resistance 25150. Confirmed rejection activates a move toward 24600; a decisive 15-minute close and retest ABOVE 25150 means the call-side concentration gave way and activates the next upper level.</li></ul>
 
-<h2>🗓️ Next-Week / Positional Outlook (Mon–Fri)</h2>
-<div style="font-size:18px">🟢⬆️ <b>UP</b>
- · confidence 51%</div>
-<p style="color:#444">Positional bias +0.60 (UP), FII-led (Pro must be supportive).  Big positional moves come only 2-3x a year; otherwise the week trades between the put wall (support) and call wall (resistance) unless a wall breaks decisively. Retail must unwind longs before a sustained up-leg.</p>
-<ul><li><b>FII longs keep building + Pro supportive:</b> Positional UP-leg; buy dips into support.</li>
-<li><b>FII shorts keep building:</b> Positional DOWN pressure; sell rises into resistance.</li>
-<li><b>Retail bullish positions start unwinding:</b> Removes the cap on upside → reversal-up trigger.</li></ul>
+<h2>🗓️ Next-Week / Positional Context (Mon–Fri)</h2>
+<div style="font-size:18px">⚪⏸️ <b>NO-VALIDATED-EDGE</b></div>
+<p><b>Unvalidated research lean:</b> SIDEWAYS-UP ·
+ <b>Actionability:</b> CONTEXT_ONLY_WAIT_FOR_MULTI_SESSION_CONFIRMATION</p>
+<p style="color:#444">Positional carry context +0.45 (research lean SIDEWAYS-UP), FII-led with Pro support required.  Big positional moves come only 2-3x a year; otherwise the week trades between the put wall (support) and call wall (resistance) unless a wall breaks decisively. Retail must unwind longs before a sustained up-leg. The carry/trend lean is shown as research context only: its locked five-session candidate did not survive the 2026 confirmation period.</p>
+<ul><li><b>FII carry longs build over several sessions + Pro supports:</b> Bullish context only; require price/level confirmation.</li>
+<li><b>FII carry shorts build over several sessions + Pro supports:</b> Bearish context only; require price/level confirmation.</li>
+<li><b>FII and Pro oppose, or Retail remains crowded:</b> No positional entry; expect range/whipsaw until the conflict resolves.</li></ul>
 
-<h2>🧭 Institutional Levels & Expected Reaction</h2>
+<h2>🧭 Level-by-Level Conditional Prediction</h2>
+<div style="margin:10px 0;padding:10px 14px;background:#fff8e1;border-left:5px solid #f9a825;font-size:12px">
+<b>Level-method disclosure:</b> The PDFs do not disclose the proprietary institutional-level formula; they refer viewers to an advanced course. Automatically drawn values are option-chain support/resistance proxies, not reconstructed proprietary levels. Any externally supplied exact references are identified separately.<br>
+<b>Option-chain input source:</b> bundled synthetic demo fixture</div>
 <table border="0" cellpadding="6" cellspacing="0" width="100%"
- style="border-collapse:collapse;font-size:14px">
+ style="border-collapse:collapse;font-size:12px">
 <tr style="background:#f2f2f2;text-align:left">
- <th>Strike</th><th>Type</th><th>Basis</th><th>OI</th><th>ΔOI</th><th>Dist</th><th>Expected reaction</th></tr>
-<tr><td>25250</td><td>resistance</td><td>call_oi</td><td>206,583</td><td>+6,150</td><td>+1.61%</td><td style='font-size:12px'>Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support.</td></tr>
-<tr><td>25200</td><td>resistance</td><td>call_oi</td><td>201,323</td><td>-642</td><td>+1.41%</td><td style='font-size:12px'>Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support.</td></tr>
-<tr><td>25150</td><td>resistance</td><td>call_oi</td><td>197,680</td><td>+12,944</td><td>+1.21%</td><td style='font-size:12px'>Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support.</td></tr>
-<tr><td>24400</td><td>support</td><td>put_oi</td><td>218,945</td><td>-4,597</td><td>-1.81%</td><td style='font-size:12px'>Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance.</td></tr>
-<tr><td>24350</td><td>support</td><td>put_oi</td><td>211,591</td><td>-3,576</td><td>-2.01%</td><td style='font-size:12px'>Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance.</td></tr>
-<tr><td>24450</td><td>support</td><td>put_oi</td><td>207,774</td><td>+10,044</td><td>-1.61%</td><td style='font-size:12px'>Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance.</td></tr>
-<tr><td>24600</td><td>resistance</td><td>call_oi_change</td><td>14,514</td><td>+14,656</td><td>-1.01%</td><td style='font-size:12px'>Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel).</td></tr>
-<tr><td>25550</td><td>resistance</td><td>call_oi_change</td><td>51,626</td><td>+14,548</td><td>+2.82%</td><td style='font-size:12px'>Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel).</td></tr>
-<tr><td>25450</td><td>resistance</td><td>call_oi_change</td><td>106,034</td><td>+14,228</td><td>+2.41%</td><td style='font-size:12px'>Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel).</td></tr>
-<tr><td>24600</td><td>support</td><td>put_oi_change</td><td>143,253</td><td>+13,047</td><td>-1.01%</td><td style='font-size:12px'>Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding).</td></tr>
-<tr><td>24850</td><td>support</td><td>put_oi_change</td><td>37,674</td><td>+11,927</td><td>+0.00%</td><td style='font-size:12px'>Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding).</td></tr>
-<tr><td>25000</td><td>support</td><td>put_oi_change</td><td>23,016</td><td>+11,674</td><td>+0.60%</td><td style='font-size:12px'>Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding).</td></tr>
+ <th>Level</th><th>Role</th><th>Source</th><th>Priority</th>
+ <th>OI-lean preferred branch</th><th>Hold / reject confirmation</th>
+ <th>Break / flip confirmation</th><th>Gap / no-confirmation rule</th></tr>
+<tr><td>24250</td><td>support</td><td>option_chain_proxy</td><td>SECONDARY</td><td><b>HOLD_OR_RECLAIM</b></td><td style='font-size:12px'><b>BOUNCE_OR_RECLAIM_UP</b>: 10-15 minute bullish rejection/reclaim; enter only on the confirming candle high break → 24450 (option chain proxy)</td><td style='font-size:12px'><b>BREAK_DOWN_AND_ROLE_FLIP</b>: 10-15 minute bearish close below, failed reclaim, and candle low break → next lower level not available</td><td style='font-size:12px'>If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level. Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only. Without confirmation: WAIT / NO TRADE AT THIS LEVEL.</td></tr>
+<tr><td>24450</td><td>support</td><td>option_chain_proxy</td><td>SECONDARY</td><td><b>HOLD_OR_RECLAIM</b></td><td style='font-size:12px'><b>BOUNCE_OR_RECLAIM_UP</b>: 10-15 minute bullish rejection/reclaim; enter only on the confirming candle high break → 24600 (option chain proxy)</td><td style='font-size:12px'><b>BREAK_DOWN_AND_ROLE_FLIP</b>: 10-15 minute bearish close below, failed reclaim, and candle low break → 24250 (option chain proxy)</td><td style='font-size:12px'>If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level. Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only. Without confirmation: WAIT / NO TRADE AT THIS LEVEL.</td></tr>
+<tr><td>24600</td><td>support</td><td>option_chain_proxy</td><td>IMMEDIATE</td><td><b>HOLD_OR_RECLAIM</b></td><td style='font-size:12px'><b>BOUNCE_OR_RECLAIM_UP</b>: 10-15 minute bullish rejection/reclaim; enter only on the confirming candle high break → 25150 (option chain proxy)</td><td style='font-size:12px'><b>BREAK_DOWN_AND_ROLE_FLIP</b>: 10-15 minute bearish close below, failed reclaim, and candle low break → 24450 (option chain proxy)</td><td style='font-size:12px'>If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level. Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only. Without confirmation: WAIT / NO TRADE AT THIS LEVEL.</td></tr>
+<tr><td>25150</td><td>resistance</td><td>option_chain_proxy</td><td>IMMEDIATE</td><td><b>BREAK_UP_AND_ROLE_FLIP</b></td><td style='font-size:12px'><b>REJECTION_DOWN</b>: 10-15 minute bearish rejection; enter only on the confirming candle low break → 24600 (option chain proxy)</td><td style='font-size:12px'><b>BREAK_UP_AND_ROLE_FLIP</b>: 10-15 minute bullish close above, successful retest, and candle high break → 25300 (option chain proxy)</td><td style='font-size:12px'>If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level. Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only. Without confirmation: WAIT / NO TRADE AT THIS LEVEL.</td></tr>
+<tr><td>25300</td><td>resistance</td><td>option_chain_proxy</td><td>SECONDARY</td><td><b>BREAK_UP_AND_ROLE_FLIP</b></td><td style='font-size:12px'><b>REJECTION_DOWN</b>: 10-15 minute bearish rejection; enter only on the confirming candle low break → 25150 (option chain proxy)</td><td style='font-size:12px'><b>BREAK_UP_AND_ROLE_FLIP</b>: 10-15 minute bullish close above, successful retest, and candle high break → 25350 (option chain proxy)</td><td style='font-size:12px'>If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level. Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only. Without confirmation: WAIT / NO TRADE AT THIS LEVEL.</td></tr>
+<tr><td>25350</td><td>resistance</td><td>option_chain_proxy</td><td>SECONDARY</td><td><b>BREAK_UP_AND_ROLE_FLIP</b></td><td style='font-size:12px'><b>REJECTION_DOWN</b>: 10-15 minute bearish rejection; enter only on the confirming candle low break → 25300 (option chain proxy)</td><td style='font-size:12px'><b>BREAK_UP_AND_ROLE_FLIP</b>: 10-15 minute bullish close above, successful retest, and candle high break → next upper level not available</td><td style='font-size:12px'>If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level. Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only. Without confirmation: WAIT / NO TRADE AT THIS LEVEL.</td></tr>
+</table>
+<p style="font-size:12px"><b>Preferred branch is conditional, not a probability.</b>
+ No confirming candle means no level trade.</p>
+
+<h2>📐 Level Evidence</h2>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"
+ style="border-collapse:collapse;font-size:12px">
+<tr style="background:#f2f2f2;text-align:left">
+ <th>Strike</th><th>Role</th><th>Source</th><th>Basis</th><th>OI</th><th>ΔOI</th>
+ <th>Evidence grade</th><th>Evidence / confluence</th></tr>
+<tr><td>24250</td><td>support</td><td>option_chain_proxy<br><span style='font-size:11px'>put-side concentration</span></td><td>put_oi_total_plus_change</td><td>172,400</td><td>+11,557</td><td>HIGH_RELATIVE_CONCENTRATION</td><td style='font-size:12px'>PUT total OI 172,400; OI change +11,557 (increased); relative evidence score 82.7/100. OI alone does not identify buyer/writer. </td></tr>
+<tr><td>24450</td><td>support</td><td>option_chain_proxy<br><span style='font-size:11px'>put-side concentration</span></td><td>put_oi_total_plus_change</td><td>207,774</td><td>+10,044</td><td>HIGH_RELATIVE_CONCENTRATION</td><td style='font-size:12px'>PUT total OI 207,774; OI change +10,044 (increased); relative evidence score 87.7/100. OI alone does not identify buyer/writer. </td></tr>
+<tr><td>24600</td><td>support</td><td>option_chain_proxy<br><span style='font-size:11px'>put-side concentration</span></td><td>put_oi_total_plus_change</td><td>143,253</td><td>+13,047</td><td>HIGH_RELATIVE_CONCENTRATION</td><td style='font-size:12px'>PUT total OI 143,253; OI change +13,047 (increased); relative evidence score 79.3/100. OI alone does not identify buyer/writer. </td></tr>
+<tr><td>25150</td><td>resistance</td><td>option_chain_proxy<br><span style='font-size:11px'>call-side concentration</span></td><td>call_oi_total_plus_change</td><td>197,680</td><td>+12,944</td><td>HIGH_RELATIVE_CONCENTRATION</td><td style='font-size:12px'>CALL total OI 197,680; OI change +12,944 (increased); relative evidence score 93.0/100. OI alone does not identify buyer/writer. </td></tr>
+<tr><td>25300</td><td>resistance</td><td>option_chain_proxy<br><span style='font-size:11px'>call-side concentration</span></td><td>call_oi_total_plus_change</td><td>189,478</td><td>+8,323</td><td>HIGH_RELATIVE_CONCENTRATION</td><td style='font-size:12px'>CALL total OI 189,478; OI change +8,323 (increased); relative evidence score 77.9/100. OI alone does not identify buyer/writer. </td></tr>
+<tr><td>25350</td><td>resistance</td><td>option_chain_proxy<br><span style='font-size:11px'>call-side concentration</span></td><td>call_oi_total_plus_change</td><td>158,275</td><td>+13,031</td><td>HIGH_RELATIVE_CONCENTRATION</td><td style='font-size:12px'>CALL total OI 158,275; OI change +13,031 (increased); relative evidence score 81.8/100. OI alone does not identify buyer/writer. </td></tr>
 </table>
 <p><b>Max Pain:</b> 24850.0 ·
- <b>PCR:</b> 1.027 — Neutral PCR: range-bound; trade the support/resistance band.</p>
+ <b>PCR:</b> 1.027 — Put/call OI is comparatively balanced. Use confirmed support/resistance branches; PCR alone supplies no direction.</p>
 
 <h2>🧬 Decode Signals</h2>
 <table border="0" cellpadding="6" cellspacing="0" width="100%"
  style="border-collapse:collapse;font-size:14px">
 <tr style="background:#f2f2f2;text-align:left">
  <th>Signal</th><th>Score</th><th>Weight</th><th>Note</th></tr>
-<tr><td>Pro_composite</td><td>+0.56</td><td>0.50</td><td style='font-size:12px'>Pro (ultra-short, next-day driver): net +0.56 [index_call +0.90, index_fut +0.88, index_put +0.67].</td></tr>
-<tr><td>FII_composite</td><td>+0.59</td><td>0.30</td><td style='font-size:12px'>FII (short-medium, positional driver): net +0.59 [index_fut +1.00, index_call +0.88, index_put +0.67].</td></tr>
-<tr><td>Client_composite</td><td>+0.61</td><td>0.20</td><td style='font-size:12px'>Client/Retail (CONTRA — faded): net +0.61 [index_call +1.00, index_put +1.00, index_fut +0.88].</td></tr>
-<tr><td>DII_composite</td><td>-0.00</td><td>0.00</td><td style='font-size:12px'>DII (arb — ignored for direction): net -0.00 [stock_fut -0.01, index_fut -0.00, index_call -0.00].</td></tr>
-<tr><td>cash_flow</td><td>+0.65</td><td>0.15</td><td style='font-size:12px'>Cash: FII net 1,150 Cr, DII net 1,350 Cr.</td></tr>
+<tr><td>Pro_fresh_index</td><td>+0.74</td><td>0.53</td><td style='font-size:12px'>ultra-short driver; relative-OI quality score [index_fut +0.90, index_call +0.76, index_put +0.64]</td></tr>
+<tr><td>FII_fresh_index</td><td>+0.74</td><td>0.27</td><td style='font-size:12px'>secondary next-day / positional participant; relative-OI quality score [index_fut +0.93, index_call +0.76, index_put +0.64]</td></tr>
+<tr><td>Client_fresh_index</td><td>+0.86</td><td>0.20</td><td style='font-size:12px'>contra confirmation; relative-OI quality score [index_call +0.92, index_fut +0.85, index_put +0.81]</td></tr>
+<tr><td>DII_fresh_index</td><td>-0.00</td><td>0.00</td><td style='font-size:12px'>F&O direction ignored (arbitrage contamination); relative-OI quality score [index_fut -0.01, index_call -0.00, index_put -0.00]</td></tr>
+<tr><td>cash_confirmation</td><td>+0.57</td><td>0.00</td><td style='font-size:12px'>Confirmation only (not fitted in v2 backtest): FII 1,150 Cr, DII 1,350 Cr.</td></tr>
 </table>
 
 <h2>📈 Key Metrics</h2>
-<div style="font-size:13px;color:#333"><span style='display:inline-block;margin:2px 10px 2px 0'><b>fii_cash_net</b>: 1,150</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>dii_cash_net</b>: 1,350</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>fii_index_fut_net</b>: 40,150</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>pro_index_fut_net</b>: 25,800</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>client_index_fut_net</b>: -56,690</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>max_pain</b>: 24,850</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>pcr</b>: 1</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>spot</b>: 24,850</span></div>
+<div style="font-size:13px;color:#333"><span style='display:inline-block;margin:2px 10px 2px 0'><b>method_version</b>: v2</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>normalization</b>: quality-adjusted fresh flow / current instrument market OI</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>close_position_weight</b>: 0</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>direction_threshold</b>: 0</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>stock_derivatives_in_next_day_score</b>: 0</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>fii_cash_net</b>: 1,150</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>dii_cash_net</b>: 1,350</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>fii_index_fut_net</b>: 40,150</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>pro_index_fut_net</b>: 25,800</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>client_index_fut_net</b>: -56,690</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>max_pain</b>: 24,850</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>pcr</b>: 1</span><span style='display:inline-block;margin:2px 10px 2px 0'><b>spot</b>: 24,850</span></div>
 
 <h2>🛡️ Trading Strategy & Risk Management</h2>
 <p style="font-size:13px;color:#444">Never average a losing option-buy (premium decays to zero) — average at most once, only with a pre-set stop. Risk ≤10–15% capital per trade; scale in (e.g. 5%+5%) and place the stop-loss in the system immediately (~20–25 pts below support for a long). Wait for confluence.</p>

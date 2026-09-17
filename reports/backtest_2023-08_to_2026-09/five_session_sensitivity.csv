@@ -1,0 +1,7 @@
+segment,samples,exact_3class_accuracy_pct,majority_baseline_pct,directional_calls,directional_hit_including_flat_misses_pct,directional_nonflat_samples,directional_sign_accuracy_nonflat_pct,sign_wilson_95_low,sign_wilson_95_high,sign_vs_50_p_two_sided,flat_threshold_pct
+five-session threshold ±0.00%,753,22.18,52.99,299,55.85,299,55.85,50.19,61.37,0.0491,0.0
+five-session threshold ±0.25%,753,26.56,46.75,299,49.5,265,55.85,49.83,61.7,0.0651,0.25
+five-session threshold ±0.50%,753,29.88,43.96,299,45.48,238,57.14,50.79,63.27,0.0322,0.5
+five-session threshold ±0.75%,753,34.4,38.11,299,38.13,200,57.0,50.07,63.67,0.056,0.75
+five-session threshold ±1.00%,753,35.46,43.69,299,28.09,153,54.9,46.99,62.57,0.2576,1.0
+five-session threshold ±1.50%,753,43.69,62.82,299,19.06,98,58.16,48.27,67.44,0.1293,1.5

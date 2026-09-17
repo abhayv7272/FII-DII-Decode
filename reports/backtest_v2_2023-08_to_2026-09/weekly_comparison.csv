@@ -1,0 +1,9 @@
+version,status,period,samples,exact_accuracy_pct,majority_baseline_pct,directional_calls,directional_coverage_pct,directional_hit_rate_including_flat_misses_pct,nonflat_samples,nonflat_sign_hits,nonflat_sign_accuracy_pct,ci95_low_pct,ci95_high_pct
+v1,production,full,753,29.88,43.96,299,39.71,45.48,238,136,57.14,50.79,63.27
+v1,production,2023-2024 development,338,28.4,50.59,138,40.83,45.65,105,63,60.0,50.44,68.86
+v1,production,2025 validation,248,32.26,41.13,88,35.48,44.32,71,39,54.93,43.4,65.95
+v1,production,2026 confirmation,167,29.34,49.7,73,43.71,46.58,62,34,54.84,42.53,66.58
+v2_candidate,rejected_candidate,full,753,32.14,43.96,336,44.62,45.83,274,154,56.2,50.28,61.95
+v2_candidate,rejected_candidate,2023-2024 development,338,32.54,50.59,152,44.97,46.71,125,71,56.8,48.04,65.15
+v2_candidate,rejected_candidate,2025 validation,248,33.47,41.13,105,42.34,47.62,80,50,62.5,51.55,72.31
+v2_candidate,rejected_candidate,2026 confirmation,167,29.34,49.7,79,47.31,41.77,69,33,47.83,36.47,59.41

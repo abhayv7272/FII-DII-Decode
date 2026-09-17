@@ -1,0 +1,5 @@
+segment,samples,nonflat_directional_n,hits,sign_accuracy_pct,wilson_95_low,wilson_95_high
+2023,92,18,16,88.89,67.2,96.9
+2024,246,87,47,54.02,43.6,64.1
+2025,248,71,39,54.93,43.4,65.95
+2026,167,62,34,54.84,42.53,66.58

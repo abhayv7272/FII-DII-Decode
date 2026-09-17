@@ -7,11 +7,11 @@ NSE public endpoints reject "cold" requests. The pattern that works:
 
 This module centralises that so every fetcher behaves consistently.
 """
+
 from __future__ import annotations
 
-import time
 import logging
-from typing import Optional
+import time
 
 import requests
 
@@ -27,7 +27,8 @@ DEFAULT_HEADERS = {
     ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9,hi;q=0.8",
-    "Accept-Encoding": "gzip, deflate, br",
+    # Do not advertise Brotli unless a Brotli decoder is guaranteed installed.
+    "Accept-Encoding": "gzip, deflate",
     "Connection": "keep-alive",
     "Upgrade-Insecure-Requests": "1",
 }
@@ -48,22 +49,33 @@ class NseClient:
     def prime(self, referer: str = BASE + "/option-chain") -> None:
         """Warm up cookies by visiting the homepage + a referer page."""
         try:
-            self.session.get(BASE, timeout=self.timeout)
+            home = self.session.get(BASE, timeout=self.timeout)
+            home.raise_for_status()
             time.sleep(0.6)
-            self.session.get(referer, timeout=self.timeout)
+            page = self.session.get(referer, timeout=self.timeout)
+            page.raise_for_status()
             self.session.headers["Referer"] = referer
             self._primed = True
         except requests.RequestException as exc:  # pragma: no cover - network
+            self._primed = False
             log.warning("Cookie priming failed: %s", exc)
 
     # ------------------------------------------------------------------ #
-    def get(self, url: str, *, as_json: bool = False, referer: Optional[str] = None,
-            reprime_on_fail: bool = True):
+    def get(
+        self,
+        url: str,
+        *,
+        as_json: bool = False,
+        referer: str | None = None,
+        reprime_on_fail: bool = True,
+        prime_required: bool = True,
+    ):
         """GET a URL with retries. Returns Response, or parsed json if as_json."""
-        if not self._primed:
-            self.prime()
+        if prime_required and not self._primed:
+            self.prime(referer or BASE + "/option-chain")
 
-        last_exc: Optional[Exception] = None
+        last_exc: Exception | None = None
+        last_status: int | None = None
         for attempt in range(1, self.max_retries + 1):
             try:
                 headers = {}
@@ -72,24 +84,57 @@ class NseClient:
                     headers["Sec-Fetch-Site"] = "same-origin"
                     headers["Sec-Fetch-Mode"] = "cors"
                     headers["X-Requested-With"] = "XMLHttpRequest"
-                resp = self.session.get(url, timeout=self.timeout, headers=headers)
-                if resp.status_code == 200 and resp.content:
-                    return resp.json() if as_json else resp
-                log.warning("NSE %s -> HTTP %s (attempt %d)", url, resp.status_code, attempt)
-                if resp.status_code in (401, 403) and reprime_on_fail:
+                response = self.session.get(url, timeout=self.timeout, headers=headers)
+                last_status = response.status_code
+                if response.status_code == 200 and response.content:
+                    return response.json() if as_json else response
+                log.warning(
+                    "NSE %s -> HTTP %s (attempt %d)",
+                    url,
+                    response.status_code,
+                    attempt,
+                )
+                # Missing dated archive files and permanent client errors should
+                # fall through to the next source immediately, not burn all retries.
+                if response.status_code == 404 or (
+                    400 <= response.status_code < 500
+                    and response.status_code not in (401, 403, 429)
+                ):
+                    raise RuntimeError(
+                        f"NSE returned HTTP {response.status_code} for {url}"
+                    )
+                if response.status_code in (401, 403) and reprime_on_fail:
                     self._primed = False
-                    self.prime()
+                    self.prime(referer or BASE + "/option-chain")
+            except RuntimeError:
+                raise
             except (requests.RequestException, ValueError) as exc:
                 last_exc = exc
                 log.warning("NSE %s failed (attempt %d): %s", url, attempt, exc)
-            time.sleep(self.backoff * attempt)
+            if attempt < self.max_retries:
+                time.sleep(self.backoff * attempt)
 
-        raise RuntimeError(f"Failed to fetch {url} after {self.max_retries} attempts: {last_exc}")
+        detail = f"HTTP {last_status}" if last_status else str(last_exc)
+        raise RuntimeError(
+            f"Failed to fetch {url} after {self.max_retries} attempts: {detail}"
+        )
 
     # ------------------------------------------------------------------ #
-    def get_text(self, url: str, referer: Optional[str] = None) -> str:
-        resp = self.get(url, as_json=False, referer=referer)
-        return resp.text
+    def get_text(
+        self,
+        url: str,
+        referer: str | None = None,
+        *,
+        prime_required: bool = True,
+    ) -> str:
+        response = self.get(
+            url,
+            as_json=False,
+            referer=referer,
+            prime_required=prime_required,
+            reprime_on_fail=prime_required,
+        )
+        return response.text
 
-    def get_json(self, url: str, referer: Optional[str] = None) -> dict:
+    def get_json(self, url: str, referer: str | None = None):
         return self.get(url, as_json=True, referer=referer)

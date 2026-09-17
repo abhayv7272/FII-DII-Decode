@@ -1,0 +1,80 @@
+{
+  "participant_oi": "/tmp/groww-market-data/nse_archives/participant_oi",
+  "ohlc": "/tmp/groww-market-data/nse_archives/index_close",
+  "daily_flat_threshold_pct": 0.15,
+  "weekly_flat_threshold_pct": 0.5,
+  "periods": {
+    "2023-2024 development": [
+      2023,
+      2024
+    ],
+    "2025 validation": [
+      2025
+    ],
+    "2026 confirmation": [
+      2026
+    ]
+  },
+  "v1_config": {
+    "symbol": "NIFTY",
+    "flat_threshold_pct": 0.15,
+    "level_touch_tolerance_pct": 0.05,
+    "from_date": null,
+    "to_date": null,
+    "decoder_version": "v1"
+  },
+  "v2_config": {
+    "symbol": "NIFTY",
+    "flat_threshold_pct": 0.15,
+    "level_touch_tolerance_pct": 0.05,
+    "from_date": null,
+    "to_date": null,
+    "decoder_version": "v2"
+  },
+  "v2_daily_rule": {
+    "direction_threshold": 0.1,
+    "conflict_threshold_per_participant": 0.15,
+    "closure_weight": 0.5,
+    "relative_index_flow_scale": 0.025,
+    "instrument_weights": {
+      "index_call": 0.4,
+      "index_put": 0.4,
+      "index_fut": 0.2
+    },
+    "participant_weights": {
+      "Pro": 0.5333333333333333,
+      "FII": 0.26666666666666666,
+      "Client": 0.2,
+      "DII": 0.0
+    }
+  },
+  "weekly_candidate": {
+    "status": "rejected_after_2026_confirmation",
+    "score_threshold": 0.2,
+    "lookback_sessions": 5,
+    "instrument_parameters": {
+      "index_call": [
+        "Option Index Call Long",
+        "Option Index Call Short",
+        1.0,
+        0.375,
+        0.05
+      ],
+      "index_put": [
+        "Option Index Put Long",
+        "Option Index Put Short",
+        -1.0,
+        0.375,
+        0.05
+      ],
+      "index_fut": [
+        "Future Index Long",
+        "Future Index Short",
+        1.0,
+        0.25,
+        0.1
+      ]
+    }
+  },
+  "source_note": "Public sahilempire/groww-market-data mirror pinned at commit 7d481cf1fcffe44be68852892028195c4f12dddd; provenance and hashes are in ../backtest_2023-08_to_2026-09/provenance.json."
+}
