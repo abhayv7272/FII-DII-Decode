@@ -4,11 +4,18 @@
 <body style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
  max-width:860px;margin:0 auto;padding:16px;color:#1c1c1c;background:#fff">
 <h1 style="margin-bottom:0">📊 FII/DII/Pro/Client Decode</h1>
-<div style="color:#666">NIFTY · 2026-08-03 · generated 2026-09-17 21:08 IST</div>
+<div style="color:#666">NIFTY · 2026-08-03 · generated 2026-09-17 21:49 IST</div>
 <div style="margin:14px 0;padding:10px 14px;border-radius:8px;background:#fff8e1;
  border-left:6px solid #f9a825;font-size:13px"><b>Validation warning:</b>
  EXPERIMENTAL / NOT VALIDATED FOR TRADING: the locked v2 rules reached 37.91% exact UP/FLAT/DOWN accuracy on 757 sessions versus a 42.14% majority baseline. Its next-open-to-close sign result remained approximately chance. Treat the OI lean as conditional context, never a standalone entry signal.</div>
 <div style='margin:12px 0;padding:10px 14px;border-radius:8px;background:#ffebee;border-left:6px solid #c62828;font-size:13px'><b>Demo warning:</b> DEMO FIXTURE: inputs are bundled synthetic/approximate sample values for pipeline testing. This report date is not a historical forecast or backtest observation.</div>
+
+<h2>🛰️ Data Fetch Health</h2>
+<p><b>Overall:</b> DEMO_FIXTURE &nbsp;|&nbsp;
+<b>Run date:</b> 2026-09-17 &nbsp;|&nbsp;
+<b>Report session:</b> 2026-08-03</p>
+<table border='0' cellpadding='5' width='100%' style='border-collapse:collapse;font-size:12px'><tr style='background:#f2f2f2'><th>Input</th><th>Status</th><th>Source</th><th>As of</th><th>Warning</th></tr><tr><td>participant oi current</td><td style='color:#0f8a3c'><b>available</b></td><td>bundled synthetic demo fixture</td><td>2026-08-03</td><td style='font-size:11px'>Synthetic/approximate values; not live market data.</td></tr><tr><td>participant oi previous</td><td style='color:#0f8a3c'><b>available</b></td><td>bundled synthetic demo fixture</td><td>2026-08-03</td><td style='font-size:11px'>Synthetic/approximate values; not live market data.</td></tr><tr><td>cash</td><td style='color:#0f8a3c'><b>available</b></td><td>bundled synthetic demo fixture</td><td>2026-08-03</td><td style='font-size:11px'>Synthetic/approximate values; not live market data.</td></tr><tr><td>option chain</td><td style='color:#0f8a3c'><b>available</b></td><td>bundled synthetic demo fixture</td><td>2026-08-03</td><td style='font-size:11px'>Synthetic/approximate values; not live market data.</td></tr><tr><td>index quote</td><td style='color:#c62828'><b>unavailable</b></td><td>—</td><td>—</td><td style='font-size:11px'>Demo fixture has option-chain spot but no independent index OHLC fetch.</td></tr><tr><td>participant volume</td><td style='color:#7a7a7a'><b>not_used</b></td><td>—</td><td>2026-08-03</td><td style='font-size:11px'>Participant volume is not an input to the locked v2 score.</td></tr><tr><td>institutional references</td><td style='color:#7a7a7a'><b>not_provided</b></td><td>—</td><td>—</td><td style='font-size:11px'>Optional exact references were not supplied; automatic levels remain option-chain proxies.</td></tr></table>
+<p style="font-size:11px;color:#666">A next-day OI lean requires complete current and previous participant OI. Actionable level branches additionally require a same-date option chain. Cash can alter setup strength but not the locked OI class; OHLC is an audit input.</p>
 
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 0">
   <div style="flex:1;min-width:240px;padding:14px 16px;border-radius:10px;
@@ -62,7 +69,8 @@ v2 next-day NIFTY score; carry is positional context, not the next-day trigger.<
 
 <h2>🧭 Level-by-Level Conditional Prediction</h2>
 <div style="margin:10px 0;padding:10px 14px;background:#fff8e1;border-left:5px solid #f9a825;font-size:12px">
-<b>Level-method disclosure:</b> The PDFs do not disclose the proprietary institutional-level formula; they refer viewers to an advanced course. Automatically drawn values are option-chain support/resistance proxies, not reconstructed proprietary levels. Any externally supplied exact references are identified separately.</div>
+<b>Level-method disclosure:</b> The PDFs do not disclose the proprietary institutional-level formula; they refer viewers to an advanced course. Automatically drawn values are option-chain support/resistance proxies, not reconstructed proprietary levels. Any externally supplied exact references are identified separately.<br>
+<b>Option-chain input source:</b> bundled synthetic demo fixture</div>
 <table border="0" cellpadding="6" cellspacing="0" width="100%"
  style="border-collapse:collapse;font-size:12px">
 <tr style="background:#f2f2f2;text-align:left">

@@ -1,7 +1,7 @@
 # FII-DII-Decode
 
-Decode **FII / DII / Pro / Client** positioning from official NSE data and get an
-automated **daily report** — emailed every weekday at **9 PM IST** — with a
+Decode **FII / DII / Pro / Client** positioning from validated, official-first market data and get a
+scheduled **daily report** — configured to run every weekday at **9 PM IST** — with a
 conditional **next-day OI lean**, **next-week carry context**, automatic
 option-chain level proxies, and gap-up/flat/gap-down plans. Every level includes
 confirmed hold/reject and break/role-flip branches with the next target. V2 can
@@ -78,21 +78,35 @@ Highlights:
 
 ## What it does
 
-1. **Fetches** (free, official NSE):
-   - Participant-wise Open Interest (Client / DII / FII / Pro, futures & options)
-   - FII/DII cash provisional net
-   - NIFTY option chain (strike-wise OI, ΔOI, IV) + spot
+1. **Fetches and validates** each input independently, official-first:
+   - Participant OI: NSE archive filename/host variants → same-date Groww GitHub
+     archive → date-checked Stocklyzer and NiftyTrader complete renderings. When
+     both renderings are reachable they must agree; their displayed daily changes
+     may reconstruct the preceding matrix as `current − change`.
+   - Previous OI: holiday-aware archive search; the runner never assumes that
+     calendar yesterday was a trading session.
+   - FII/DII cash: NSE provisional API → same-date MrChartist GitHub snapshot.
+   - NIFTY option chain: NSE API → same-date MarketNetra strike-wise chain.
+   - Index OHLC: NSE all-indices API → same-date Yahoo Finance daily bar.
+   Every accepted input records source URL, as-of date, fetch time, fallback flag,
+   and warnings in `data/fetch_status_<date>.json` and the report.
 2. **Decodes** it into a forced OI research lean, a separate actionability state,
    and deterministic setup strength (`src/fiidii/decode.py`).
 3. Ranks **option-chain support/resistance proxies** from relevant-side total OI
    plus change in OI, keeps exact supplied institutional references separate,
-   and reports confluence, max pain, and PCR (`src/fiidii/levels.py`).
+   and reports confluence, max pain, and PCR (`src/fiidii/levels.py`). The full
+   source/validation contract is in [`docs/data-fetching.md`](docs/data-fetching.md).
 4. Builds a conditional next-day plan, a decision tree at every level, and
    next-week carry context; v2 publishes no weekly direction because the
    candidate failed confirmation (`src/fiidii/predict.py`).
 5. **Reports** as HTML + Markdown (`reports/`) and **emails** it
    (`src/fiidii/email_send.py`).
-6. **Automates** all of the above via GitHub Actions at 9 PM IST, Mon–Fri.
+6. **Fails closed** if either complete current or previous participant-OI matrix
+   is unavailable. Cash may degrade the setup, while a missing same-date option
+   chain forces levels and gap plans to context-only instead of creating a
+   normal-looking actionable report.
+7. Defines GitHub Actions automation for 9 PM IST, Mon–Fri. A schedule only runs
+   after this workflow is merged to the default branch and Actions is enabled.
 
 ## Quick start (local)
 
@@ -103,7 +117,7 @@ pip install -r requirements.txt
 # Demo run (uses bundled fixtures, no network, no email):
 PYTHONPATH=src python -m fiidii.cli run --demo --no-email
 
-# Live run (needs NSE reachability — works on GitHub runners / most home IPs):
+# Live run (requires at least one validated source path per required input):
 PYTHONPATH=src python -m fiidii.cli run --no-email
 
 # Optional: add dated exact institutional references from an external chart/file:
@@ -113,9 +127,11 @@ PYTHONPATH=src python -m fiidii.cli run --no-email \
 
 Open `reports/latest.html` to view the result.
 
-> Note: NSE blocks many datacenter IPs (including this build sandbox), so use
-> `--demo` here. The scheduled **GitHub Actions runner can reach NSE**, so the
-> live daily job works there.
+> Note: NSE and some fallback sites block many datacenter IPs, including this
+> build sandbox. The live command now records the failures and exits non-zero
+> rather than generating a prediction from missing data. GitHub-runner
+> reachability is not assumed: it must be demonstrated by an actual workflow run
+> whose fetch manifest says `READY` or an explicitly described degraded state.
 
 ## Proper historical backtest
 
@@ -161,9 +177,12 @@ App passwords → create one for "Mail" → paste the 16-char code as `SMTP_PASS
 
 ## Schedule
 
-`.github/workflows/daily-report.yml` runs at **15:30 UTC = 21:00 IST**, Mon–Fri.
-You can also trigger it manually from the Actions tab (`workflow_dispatch`), with
-optional `demo` / `no_email` toggles.
+`.github/workflows/daily-report.yml` is configured for **15:30 UTC = 21:00 IST**,
+Mon–Fri. Scheduled workflows execute from the default branch, so branch-only
+changes do not affect the schedule. After merging, enable Actions and either wait
+for the schedule or trigger `workflow_dispatch` with optional `demo` / `no_email`
+toggles. Inspect the uploaded report and `fetch_status_*.json`; a green-looking
+HTML file alone is not proof that live data was complete.
 
 ## Project layout
 
@@ -184,6 +203,7 @@ backtest.py           # convenient backtest CLI entry point
 docs/methodology.md          # decoded signal methodology
 docs/institutional-levels.md # level-source audit + conditional reaction contract
 docs/backtesting.md          # historical data contract + metric definitions
+docs/data-fetching.md        # provider order, validation + fail-closed policy
 tests/                # fixtures + unit/smoke tests
 .github/workflows/    # daily 9 PM IST automation
 ```

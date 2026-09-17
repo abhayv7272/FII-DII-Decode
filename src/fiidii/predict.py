@@ -52,7 +52,7 @@ def _rolling_positional(hist: Optional[pd.DataFrame], n: int = 5) -> Optional[fl
         return None
     weights = list(range(1, len(tail) + 1))
     vals = tail["positional_composite"].astype(float).tolist()
-    return sum(v * w for v, w in zip(vals, weights)) / sum(weights)
+    return sum(v * w for v, w in zip(vals, weights, strict=True)) / sum(weights)
 
 
 def _carry_trend(hist: Optional[pd.DataFrame], n: int = 5) -> str:
@@ -122,8 +122,10 @@ def _next_target(ordered: list[dict], strike: float, upward: bool,
             candidates.append(level)
     if not candidates:
         return None
-    key = (lambda level: float(level["strike"]))
-    return min(candidates, key=key) if upward else max(candidates, key=key)
+    def strike_value(level: dict) -> float:
+        return float(level["strike"])
+
+    return (min if upward else max)(candidates, key=strike_value)
 
 
 def _level_predictions(levels: dict, decode_result) -> list[dict]:
@@ -264,8 +266,16 @@ def _gap_scenarios(levels: dict, decode_result) -> list:
     """The three-open scenario tree Amit builds (Gap Up / Flat / Gap Down)."""
     sup = levels.get("immediate_support")
     res = levels.get("immediate_resistance")
-    sup_s = f"{sup['strike']:.0f}" if sup else "nearest put wall"
-    res_s = f"{res['strike']:.0f}" if res else "nearest call wall"
+    if not sup or not res:
+        return [{
+            "open": "DATA BLOCK",
+            "plan": (
+                "No same-date support/resistance pair is available. Preserve the OI "
+                "lean as context only; do not create a gap or level trade from stale data."
+            ),
+        }]
+    sup_s = f"{sup['strike']:.0f}"
+    res_s = f"{res['strike']:.0f}"
     bullish = decode_result.composite > 0
 
     out = [

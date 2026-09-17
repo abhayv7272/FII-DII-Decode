@@ -88,6 +88,32 @@ def _gap_html(scenarios: list) -> str:
     )
 
 
+def _data_health_html(status: dict) -> str:
+    if not status:
+        return "<p>No fetch provenance was recorded.</p>"
+    rows = []
+    for name, item in status.get("inputs", {}).items():
+        state = item.get("status", "unknown")
+        color = "#0f8a3c" if state == "available" else (
+            "#7a7a7a" if state in {"not_used", "not_provided"} else "#c62828"
+        )
+        rows.append(
+            f"<tr><td>{name.replace('_',' ')}</td>"
+            f"<td style='color:{color}'><b>{state}</b></td>"
+            f"<td>{item.get('source') or '—'}</td>"
+            f"<td>{item.get('as_of') or '—'}</td>"
+            f"<td style='font-size:11px'>{item.get('warning','')}</td></tr>"
+        )
+    return (
+        "<table border='0' cellpadding='5' width='100%' "
+        "style='border-collapse:collapse;font-size:12px'>"
+        "<tr style='background:#f2f2f2'><th>Input</th><th>Status</th>"
+        "<th>Source</th><th>As of</th><th>Warning</th></tr>"
+        + "".join(rows)
+        + "</table>"
+    )
+
+
 def _participant_reads_html(reads: dict) -> str:
     if not reads:
         return ""
@@ -113,6 +139,7 @@ def render_html(dr: dict, predictions: dict, levels: dict,
     color = _BIAS_COLOR.get(bias, "#333")
     pcolor = _BIAS_COLOR.get(dr["positional_bias"], "#333")
     nd, nw = predictions["next_day"], predictions["next_week"]
+    data_status = dr.get("data_status", {})
     level_method_warning = levels.get(
         "level_method_warning",
         "No dated option-chain or supplied institutional levels were available.",
@@ -158,6 +185,13 @@ def render_html(dr: dict, predictions: dict, levels: dict,
  border-left:6px solid #f9a825;font-size:13px"><b>Validation warning:</b>
  {_VALIDATION_WARNING}</div>
 {demo_block}
+
+<h2>🛰️ Data Fetch Health</h2>
+<p><b>Overall:</b> {data_status.get('overall', 'NOT_RECORDED')} &nbsp;|&nbsp;
+<b>Run date:</b> {data_status.get('run_date', '—')} &nbsp;|&nbsp;
+<b>Report session:</b> {data_status.get('report_date', report_date)}</p>
+{_data_health_html(data_status)}
+<p style="font-size:11px;color:#666">{data_status.get('policy','')}</p>
 
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 0">
   <div style="flex:1;min-width:240px;padding:14px 16px;border-radius:10px;
@@ -206,7 +240,8 @@ v2 next-day NIFTY score; carry is positional context, not the next-day trigger.<
 
 <h2>🧭 Level-by-Level Conditional Prediction</h2>
 <div style="margin:10px 0;padding:10px 14px;background:#fff8e1;border-left:5px solid #f9a825;font-size:12px">
-<b>Level-method disclosure:</b> {level_method_warning}</div>
+<b>Level-method disclosure:</b> {level_method_warning}<br>
+<b>Option-chain input source:</b> {levels.get('option_chain_input_source') or 'unavailable'}</div>
 <table border="0" cellpadding="6" cellspacing="0" width="100%"
  style="border-collapse:collapse;font-size:12px">
 <tr style="background:#f2f2f2;text-align:left">
@@ -277,6 +312,25 @@ def render_markdown(dr: dict, predictions: dict, levels: dict,
         L[3:4] = [f"> 🧪 **Demo warning:** {_DEMO_WARNING}", ""]
     if dr.get("smart_money_conflict"):
         L += [f"> ⚠️ **Smart-money conflict:** {dr['conflict_note']}", ""]
+    data_status = dr.get("data_status", {})
+    L += [
+        "## Data Fetch Health",
+        "",
+        f"**Overall:** `{data_status.get('overall', 'NOT_RECORDED')}`",
+        (f"**Run date:** {data_status.get('run_date', '—')} · "
+         f"**Report session:** {data_status.get('report_date', report_date)}"),
+        "",
+        "| Input | Status | Source | As of | Warning |",
+        "|---|---|---|---|---|",
+    ]
+    for name, item in data_status.get("inputs", {}).items():
+        warning = str(item.get("warning", "")).replace("|", "/")
+        L.append(
+            f"| {name.replace('_',' ')} | {item.get('status','unknown')} | "
+            f"{item.get('source') or '—'} | {item.get('as_of') or '—'} | "
+            f"{warning} |"
+        )
+    L += ["", data_status.get("policy", ""), ""]
     L += [
         "## Institutional Data & Setup",
         f"- **Retail:** {dr.get('retail_note','')}",
@@ -302,6 +356,7 @@ def render_markdown(dr: dict, predictions: dict, levels: dict,
         "## Level-by-Level Conditional Prediction",
         "",
         f"> **Level-method disclosure:** {levels.get('level_method_warning', 'No dated level inputs available.')}",
+        f"> **Option-chain input source:** {levels.get('option_chain_input_source') or 'unavailable'}",
         "",
         (
             "The OI-lean preferred branch is conditional, not a probability. Without a "

@@ -50,6 +50,7 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           MAIL_TO: ${{ secrets.MAIL_TO }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           DEMO_FLAG=""
           EMAIL_FLAG=""
@@ -58,6 +59,7 @@ jobs:
           python -m fiidii.cli run --symbol NIFTY $DEMO_FLAG $EMAIL_FLAG
 
       - name: Commit data + reports
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -70,8 +72,18 @@ jobs:
           fi
 
       - name: Upload report artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: fiidii-report
           path: reports/
+          retention-days: 30
+
+      - name: Upload fetch diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fiidii-fetch-status
+          path: data/fetch_status_*.json
+          if-no-files-found: warn
           retention-days: 30

@@ -6,6 +6,23 @@
 **Next-day OI lean (Pro-led):** STRONG BULLISH  ·  score `+0.77`  ·  setup strength 100/100  ·  UP  ·  CONDITIONAL_BULLISH_SETUP
 **Positional carry context (FII-led):** BULLISH  ·  score `+0.45`  ·  NO-VALIDATED-EDGE  ·  research lean SIDEWAYS-UP
 
+## Data Fetch Health
+
+**Overall:** `DEMO_FIXTURE`
+**Run date:** 2026-09-17 · **Report session:** 2026-08-03
+
+| Input | Status | Source | As of | Warning |
+|---|---|---|---|---|
+| participant oi current | available | bundled synthetic demo fixture | 2026-08-03 | Synthetic/approximate values; not live market data. |
+| participant oi previous | available | bundled synthetic demo fixture | 2026-08-03 | Synthetic/approximate values; not live market data. |
+| cash | available | bundled synthetic demo fixture | 2026-08-03 | Synthetic/approximate values; not live market data. |
+| option chain | available | bundled synthetic demo fixture | 2026-08-03 | Synthetic/approximate values; not live market data. |
+| index quote | unavailable | — | — | Demo fixture has option-chain spot but no independent index OHLC fetch. |
+| participant volume | not_used | — | 2026-08-03 | Participant volume is not an input to the locked v2 score. |
+| institutional references | not_provided | — | — | Optional exact references were not supplied; automatic levels remain option-chain proxies. |
+
+A next-day OI lean requires complete current and previous participant OI. Actionable level branches additionally require a same-date option chain. Cash can alter setup strength but not the locked OI class; OHLC is an audit input.
+
 ## Institutional Data & Setup
 - **Retail:** Retail fresh index positioning is bearish (contra-positive), which supports a market bounce only after price confirmation.
 - **Move quality:** FII: fresh index-future longs (full-strength bullish), 17,150 contracts; Pro: fresh index-future longs (full-strength bullish), 18,500 contracts
@@ -31,6 +48,7 @@
 ## Level-by-Level Conditional Prediction
 
 > **Level-method disclosure:** The PDFs do not disclose the proprietary institutional-level formula; they refer viewers to an advanced course. Automatically drawn values are option-chain support/resistance proxies, not reconstructed proprietary levels. Any externally supplied exact references are identified separately.
+> **Option-chain input source:** bundled synthetic demo fixture
 
 The OI-lean preferred branch is conditional, not a probability. Without a confirming candle: **WAIT / NO TRADE AT THIS LEVEL**.
 
