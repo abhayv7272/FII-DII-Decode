@@ -32,8 +32,27 @@ breakdown, and weekly rejection evidence:
 **[`reports/backtest_v2_2023-08_to_2026-09/report.md`](reports/backtest_v2_2023-08_to_2026-09/report.md)**.
 The prior v1 audit remains intact at
 **[`reports/backtest_2023-08_to_2026-09/report.md`](reports/backtest_2023-08_to_2026-09/report.md)**.
-Historical option-chain snapshots were unavailable, so level-reaction accuracy
-remains unknown.
+
+### Level reactions now measured — and they show no edge either
+
+Historical option-chain JSON is not published anywhere, so levels were previously
+untested. Dated snapshots were therefore rebuilt from public NSE **F&O bhavcopy**
+archives (`research/bhavcopy_to_option_chain.py`) and the replay re-run with all
+757 sessions carrying a same-date chain:
+**[`reports/backtest_v2_levels_2023-08_to_2026-09/report.md`](reports/backtest_v2_levels_2023-08_to_2026-09/report.md)**.
+
+| Daily-bar level proxy (±0.05% band) | Tests | Holds | Accuracy |
+|---|---:|---:|---:|
+| All levels | 685 | 337 | 49.20% |
+| Support | 346 | 162 | 46.82% |
+| Resistance | 339 | 175 | 51.62% |
+
+Direction metrics are byte-identical to the chain-less run, as expected: the
+locked v2 score does not consume levels. Level holds land on a coin flip, so
+there is **still no validated edge**. This is a *daily* proxy — bhavcopy carries
+EOD close (no LTP, no IV) and daily OHLC cannot verify 10-15 minute candle
+confirmation, sweep-then-reclaim, touch order, stops, or slippage. Intraday data
+is still required for a real trade-level test.
 
 ---
 
@@ -69,10 +88,11 @@ Highlights:
 ### Still needed from you
 
 1. **GitHub secrets for email** (see below) so the 9 PM job can actually send mail.
-2. Genuine dated **historical option-chain, exact institutional-level, intraday
-   candle, and cash-flow snapshots** are still needed to test level reactions and
-   the complete live pipeline. The direction-only OI/OHLC result is published
-   above; bundled fixtures remain demo/test-only.
+2. **Intraday candles (10-15 minute)**, exact institutional levels, and
+   historical cash-flow snapshots are still needed. Level reactions now have a
+   published *daily* proxy (above), but confirmation-candle behaviour, sweeps,
+   and slippage cannot be tested without intraday data. Bundled fixtures remain
+   demo/test-only.
 
 ---
 
@@ -156,8 +176,9 @@ hit rate, majority-class baseline, and a clearly labelled **daily-OHLC proxy** f
 level reactions.
 
 See **[`docs/backtesting.md`](docs/backtesting.md)** for the data contract, exact
-metric definitions, no-look-ahead rules, and limitations. The published real-data
-result is explicitly OI-only; no option-chain level accuracy is claimed.
+metric definitions, no-look-ahead rules, and limitations — including the
+bhavcopy-to-option-chain rebuild steps used for the level-enabled run and its
+converter limitations.
 
 ## Email setup (GitHub → Settings → Secrets and variables → Actions)
 

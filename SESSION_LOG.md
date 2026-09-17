@@ -67,6 +67,35 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 4 — Arena agent, branch `arena/01a0b0db-fii-dii-decode`)
+- Network was available again in this sandbox (previous session was cut off),
+  so the saved level-backtest plan was executed end to end.
+- Confirmed the pending verification: scheduled live run **35263293001 =
+  SUCCESS** (main `9947ea5`). The empty-SMTP-secret fix from PR #3 holds; the
+  workflow no longer fails. Live fetch was `DEGRADED_MISSING_LEVEL_INPUT`
+  (Stocklyzer participant-OI fallback only, no same-date option chain) — that
+  is the intended fail-safe behaviour, not a bug.
+- Added `research/bhavcopy_to_option_chain.py`: rebuilds dated NSE-shaped
+  option-chain JSON from F&O bhavcopy archives. Handles both the legacy
+  `fo<DDMONYYYY>bhav.csv` and the 2024+ UDiFF `BhavCopy_NSE_FO_*` layouts,
+  emits only the nearest non-expired expiry, and takes `underlyingValue` from
+  the same-date index close (never a later session).
+- Built 759 snapshots from the pinned mirror
+  (`sahilempire/groww-market-data` @ `7d481cf1...`, 760 bhavcopy files, 1 skip).
+- Re-ran the 757-session v2 replay **with** chains →
+  `reports/backtest_v2_levels_2023-08_to_2026-09/`:
+  exact 37.91%, directional 43.72% (identical to the chain-less run — correct
+  control, v2 score does not consume levels), and the first real level numbers:
+  **685 tests, 49.20% hold** (support 46.82%, resistance 51.62%). Coin flip →
+  **no level edge**.
+- Added `tests/test_bhavcopy_convert.py` (5 tests, both layouts + fallback +
+  backtester round-trip). Full suite: **47 passed**.
+- README + `docs/backtesting.md` updated with the result, reproduction steps,
+  and the converter's honest limitations (EOD close not LTP, IV=0, daily proxy
+  only — no 10-15 min candle / sweep / slippage verification).
+- Next session: intraday (10-15 min) candles are the only remaining blocker for
+  a genuine trade-level test; everything else is published.
+
 ### 2026-09-17 (session 3 — Arena agent, branch `arena/01a0b0b7-fii-dii-decode`)
 - User asked to continue from previous session; no chat backup file existed,
   so state was reconstructed from repo + GitHub (this file now exists so that
