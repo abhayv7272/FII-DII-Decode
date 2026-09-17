@@ -1,0 +1,15 @@
+{
+  "pair": {
+    "rule_pool_size": 800,
+    "total_pairs_checked": 319600,
+    "qualified_pairs_exported": 13213,
+    "pairs_ge_75_exact_both_holdouts_n10": 0,
+    "pairs_ge_75_sign_both_holdouts_sign_n10": 0
+  },
+  "price": {
+    "price_rows": 4136,
+    "price_rules_exported": 2562,
+    "price_rules_ge_75_exact_both_holdouts_n20": 0,
+    "price_rules_ge_75_sign_both_holdouts_sign_n20": 0
+  }
+}

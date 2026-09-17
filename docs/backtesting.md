@@ -124,6 +124,18 @@ The published v5 run again rejects promotion: no ≥75% exact rule/combination
 survived 2026 with ≥20 calls, and no leakage-guarded v3 meta-gate exceeded 70%
 precision with ≥20 holdout calls.
 
+`research/v6_realworld_selective_search.py` adds pair/conjunction tests and a
+long price-only regime search:
+
+```bash
+python research/v6_realworld_selective_search.py --out reports/v6_realworld_selective
+```
+
+It checks whether two independent OI/psychology rules agreeing, or 10+ years of
+NIFTY price history, can create a practical high-precision next-day filter. The
+published run rejects that too: 319,600 pairs and 2,562 price-only rules produced
+no robust ≥75% holdout result with minimum sample guards.
+
 ## Direction labels and metrics
 
 Prediction classes are normalised as follows:

@@ -22,8 +22,10 @@
   `reports/v3_deep_dive/REPORT.md`. **V4/V5 aggressive psychology/manipulation
   search** tested 26,049 dev-fitted threshold rules over 4,764 engineered columns
   (`reports/v4_psychology_search/`) plus a 2023-2025-fit / 2026-holdout combo,
-  meta-gate, and recent intraday audit (`reports/v5_holdout_combo_meta/`). No
-  honest 75-85% production-ready rule survived the holdout/sample/leakage guards.
+  meta-gate, and recent intraday audit (`reports/v5_holdout_combo_meta/`), plus
+  v6 pair/conjunction + 10-year price-regime search
+  (`reports/v6_realworld_selective/`). No honest 75-85% production-ready rule
+  survived the holdout/sample/leakage guards.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
   in `reports/v3_forward_validation/gate_report.md` — state
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
@@ -45,7 +47,22 @@
 ### 2026-09-18 (session 9 — user requested backup + continue toward real-world next-day use)
 - User asked to backup chat to GitHub, verify session is not closed, and continue the 75-85% accuracy hunt for real-world present next-day prediction.
 - Status before continuing: branch `arena/01a0b16b-fii-dii-decode`; session still active; no PR merge/close/branch switch.
-- Next: continue research with stricter leakage guards and practical/selective next-day signal ideas; keep production default unchanged unless evidence survives holdout/forward checks.
+- First backup commit for this request: `e848da1` (`docs: backup session before
+  v6 research`), pushed to `arena/01a0b16b-fii-dii-decode`.
+- Continued with `research/v6_realworld_selective_search.py`: pair/conjunction
+  search over the v4 dev-fitted psychology rule pool and long NIFTY
+  price-regime search from 2010 onward.
+- V6 results (`reports/v6_realworld_selective/`): 800-rule pool, **319,600**
+  pair/conjunctions checked, **13,213** passed the dev screen; **0** pairs
+  reached ≥75% exact on both 2025/2026 holdouts with n≥10 each and **0** reached
+  ≥75% sign on both holdouts with sign-n≥10 each. Price-only long-history
+  search: **4,136** daily rows, **2,562** rules exported; **0** robust ≥75%
+  exact/sign rules on both 2023-24 and 2025-26 holdouts with minimum sample
+  guards.
+- Honest real-world conclusion unchanged: no production-ready 75-85% next-day
+  signal exists from the available EOD/OI data. Next credible route is a longer
+  dated 10-15m intraday + exact institutional-level dataset; otherwise keep
+  v3/v4/v5/v6 pockets as forward-watch tags only.
 
 ### 2026-09-18 (session 8 — user requested backup + continue)
 - User asked: **"Chat backup karo to github then dekho session close to nhi hoa ager nhi hoa then continue karo task"**.

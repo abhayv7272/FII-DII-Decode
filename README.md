@@ -101,6 +101,12 @@ combos at that bar, and **0** leakage-guarded meta-gates above 70% precision wit
 ≥20 holdout calls. A few 2026-only sign pockets reached ≥75% on ~20 calls, but
 were not stable enough on the training window to promote.
 
+The **v6 real-world selective search** then tried pair/conjunction rules from the
+v4 psychology pool and 10+ years of NIFTY daily price-regime history:
+[`reports/v6_realworld_selective/report.md`](reports/v6_realworld_selective/report.md).
+It checked **319,600** OI/psychology rule pairs and **2,562** price-only rules;
+again **0** reached ≥75% robust holdout accuracy with minimum sample guards.
+
 To keep future sessions reproducible after Arena wipes external directories, a
 compact historical bundle is committed under [`historical/`](historical/) with
 participant OI, participant volume, canonical NIFTY OHLC, long price-regime OHLC,
