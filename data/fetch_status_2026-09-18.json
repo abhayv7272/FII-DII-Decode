@@ -15,7 +15,7 @@
       "url": null,
       "as_of": "2026-09-18",
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T19:45:47.835916+00:00",
+      "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
       "warning": "Synthetic/approximate values; not live market data."
     },
     "participant_oi_previous": {
@@ -24,7 +24,7 @@
       "url": null,
       "as_of": "2026-09-18",
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T19:45:47.835916+00:00",
+      "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
       "warning": "Synthetic/approximate values; not live market data."
     },
     "cash": {
@@ -33,7 +33,7 @@
       "url": null,
       "as_of": "2026-09-18",
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T19:45:47.835916+00:00",
+      "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
       "warning": "Synthetic/approximate values; not live market data."
     },
     "option_chain": {
@@ -42,7 +42,7 @@
       "url": null,
       "as_of": "2026-09-18",
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T19:45:47.835916+00:00",
+      "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
       "warning": "Synthetic/approximate values; not live market data."
     },
     "index_quote": {
@@ -51,7 +51,7 @@
       "url": null,
       "as_of": null,
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T19:45:47.835929+00:00",
+      "fetched_at_utc": "2026-09-17T20:03:54.003026+00:00",
       "warning": "Demo fixture has option-chain spot but no independent index OHLC fetch."
     },
     "participant_volume": {
