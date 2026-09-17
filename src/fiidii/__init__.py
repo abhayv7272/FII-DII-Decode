@@ -8,6 +8,7 @@ Package layout
 - decode.py     : the decode engine (methodology from the channel transcript)
 - levels.py     : option-chain based institutional level derivation
 - predict.py    : next-day & next-week prediction assembly
+- backtest.py   : point-in-time historical replay + accuracy metrics
 - report.py     : render HTML/markdown report
 - email_send.py : deliver report via email (SMTP)
 - cli.py        : entry point wiring everything together

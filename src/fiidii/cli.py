@@ -21,7 +21,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
@@ -55,16 +55,43 @@ def _load_demo():
     return today, prev, cash, oc
 
 
+def _quote_number(quote: dict, *keys: str):
+    for key in keys:
+        value = quote.get(key)
+        try:
+            return float(str(value).replace(",", ""))
+        except (TypeError, ValueError):
+            continue
+    return None
+
+
+def _persist_index_ohlc(quote: dict, symbol: str, report_date: str) -> None:
+    """Append the live session's index bar for eventual forward testing."""
+    close = _quote_number(quote, "last", "lastPrice", "close")
+    if close is None:
+        return
+    row = pd.DataFrame([{
+        "date": report_date,
+        "symbol": symbol.upper(),
+        "open": _quote_number(quote, "open"),
+        "high": _quote_number(quote, "high"),
+        "low": _quote_number(quote, "low"),
+        "close": close,
+        "previous_close": _quote_number(quote, "previousClose", "previous_close"),
+    }])
+    store.append_df(row, "index_ohlc", dedup_on=["date", "symbol"])
+
+
 def run(args) -> int:
     today_date = date.today()
     symbol = args.symbol.upper()
 
+    quote = None
     if args.demo:
         oi_today, oi_prev, cash, oc = _load_demo()
         report_date = args.date or today_date.isoformat()
     else:
         client = NseClient()
-        d = _prev_trading_day(today_date) if today_date.weekday() < 5 else _prev_trading_day(today_date)
         # Participant OI is published for the *current* completed trading session.
         d_today = today_date if today_date.weekday() < 5 else _prev_trading_day(today_date)
         oi_today = fetch.fetch_participant_oi(client, d_today)
@@ -78,15 +105,27 @@ def run(args) -> int:
             print("ERROR: could not fetch participant OI.", file=sys.stderr)
             return 2
         oi_prev = fetch.fetch_participant_oi(client, _prev_trading_day(d_today))
-        cash = fetch.fetch_fii_dii_cash(client)
-        oc = fetch.fetch_option_chain(client, symbol)
+        # Cash/option-chain/quote endpoints expose the current session only. If
+        # participant OI fell back to an older date, omitting them is safer than
+        # contaminating that date with a future snapshot.
+        if d_today == today_date:
+            cash = fetch.fetch_fii_dii_cash(client)
+            oc = fetch.fetch_option_chain(client, symbol)
+            quote = fetch.fetch_index_quote(client, symbol)
+        else:
+            cash, oc, quote = None, None, None
         report_date = d_today.isoformat()
-        # persist raw
+        # Persist point-in-time inputs. index_ohlc.csv plus dated option-chain
+        # snapshots make future forward tests reproducible without refetching.
         store.append_df(oi_today, "participant_oi", dedup_on=["date", "ClientType"])
         if oi_prev is not None:
             store.append_df(oi_prev, "participant_oi", dedup_on=["date", "ClientType"])
         if oc:
             store.save_option_chain(oc, symbol, d_today)
+        # Do not stamp a current quote onto an older fallback OI date. Scheduled
+        # weekday runs normally satisfy this; weekend/manual fallback runs skip it.
+        if quote and d_today == today_date:
+            _persist_index_ohlc(quote, symbol, report_date)
 
     # --- Levels first (feed into decode metrics) ---
     levels = derive_levels(oc) if oc else {"levels": [], "max_pain": None,
@@ -148,6 +187,54 @@ def run(args) -> int:
     return 0
 
 
+def run_backtest_command(args) -> int:
+    """Load historical inputs, run a point-in-time replay, and write artifacts."""
+    from .backtest import (
+        BacktestConfig,
+        load_ohlc,
+        load_option_chains,
+        load_participant_oi,
+        run_backtest,
+        write_backtest_outputs,
+    )
+
+    try:
+        participant_oi = load_participant_oi(args.participant_oi)
+        ohlc = load_ohlc(args.ohlc, symbol=args.symbol)
+        option_chains = (
+            load_option_chains(args.option_chains, symbol=args.symbol)
+            if args.option_chains else {}
+        )
+        config = BacktestConfig(
+            symbol=args.symbol.upper(),
+            flat_threshold_pct=args.flat_threshold_pct,
+            level_touch_tolerance_pct=args.level_touch_tolerance_pct,
+            from_date=args.from_date,
+            to_date=args.to_date,
+        )
+        result = run_backtest(participant_oi, ohlc, option_chains, config)
+        paths = write_backtest_outputs(result, args.output_dir)
+    except (FileNotFoundError, ValueError, OSError) as exc:
+        print(f"ERROR: backtest failed: {exc}", file=sys.stderr)
+        return 2
+
+    metrics = result.metrics
+    print(f"Backtest complete: {metrics.get('signals_evaluated', 0)} evaluable signals; "
+          f"{len(result.skipped)} skipped.")
+    if metrics.get("status") == "ok":
+        exact = metrics.get("exact_3_class_accuracy_pct")
+        directional = metrics.get("directional_hit_rate_pct")
+        exact_text = f"{exact:.2f}%" if exact is not None else "n/a"
+        directional_text = f"{directional:.2f}%" if directional is not None else "n/a"
+        print(f"  Exact 3-class accuracy: {exact_text}")
+        print(f"  Directional hit rate:   {directional_text}")
+    else:
+        print("  No accuracy reported because no signals were evaluable.")
+    print(f"  Report: {paths['report']}")
+    print(f"  Per-date CSV: {paths['predictions']}")
+    return 0
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(prog="fiidii", description="FII/DII/Pro/Client decode + daily report")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -157,6 +244,34 @@ def main(argv=None) -> int:
     r.add_argument("--symbol", default="NIFTY")
     r.add_argument("--date", default=None, help="override report date (demo mode)")
     r.set_defaults(func=run)
+
+    b = sub.add_parser("backtest", help="replay historical OI and score next-session predictions")
+    b.add_argument(
+        "--participant-oi", required=True, metavar="PATH",
+        help="consolidated CSV, directory of fao_participant_oi_DDMMYYYY.csv, or ZIP",
+    )
+    b.add_argument(
+        "--ohlc", required=True, metavar="CSV",
+        help="daily index OHLC CSV (Date and Close required; Open/High/Low recommended)",
+    )
+    b.add_argument(
+        "--option-chains", "--option-chain-dir", dest="option_chains", metavar="PATH",
+        help="optional directory or ZIP of dated option-chain JSON snapshots",
+    )
+    b.add_argument("--symbol", default="NIFTY", help="index symbol (default: NIFTY)")
+    b.add_argument(
+        "--flat-threshold-pct", type=float, default=0.15, metavar="PCT",
+        help="absolute close-to-close move labelled FLAT (default: 0.15)",
+    )
+    b.add_argument(
+        "--level-touch-tolerance-pct", type=float, default=0.05, metavar="PCT",
+        help="daily range tolerance around an option level (default: 0.05)",
+    )
+    b.add_argument("--from-date", help="first signal date, inclusive (YYYY-MM-DD)")
+    b.add_argument("--to-date", help="last signal date, inclusive (YYYY-MM-DD)")
+    b.add_argument("--output-dir", default="reports/backtest", metavar="DIR")
+    b.set_defaults(func=run_backtest_command)
+
     args = p.parse_args(argv)
     return args.func(args)
 

@@ -7,6 +7,7 @@ Layout:
   data/participant_oi.csv      # appended daily, one block of rows per date
   data/participant_vol.csv
   data/fii_dii_cash.csv
+  data/index_ohlc.csv          # live session bars accumulated for forward tests
   data/option_chain/<SYMBOL>_<DATE>.json
   data/decoded.csv             # decoded metrics per date (the "signal" history)
 """

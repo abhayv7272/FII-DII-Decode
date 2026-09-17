@@ -45,17 +45,21 @@ def _parse_participant_csv(text: str) -> pd.DataFrame:
             break
     df = pd.read_csv(io.StringIO("\n".join(lines[header_idx:])))
     df.columns = [c.strip() for c in df.columns]
-    # Normalise the participant label column name.
-    for cand in ("Client Type", "ClientType", "Client_Type"):
-        if cand in df.columns:
-            df = df.rename(columns={cand: "ClientType"})
-            break
+    # Normalise participant/date labels. Preserving a date column lets the same
+    # parser consume the consolidated data/participant_oi.csv history as well as
+    # NSE's one-file-per-day archives.
+    normalised = {c.lower().replace(" ", "").replace("_", ""): c for c in df.columns}
+    if "clienttype" in normalised:
+        df = df.rename(columns={normalised["clienttype"]: "ClientType"})
+    if "date" in normalised and normalised["date"] != "date":
+        df = df.rename(columns={normalised["date"]: "date"})
     if "ClientType" in df.columns:
         df["ClientType"] = df["ClientType"].astype(str).str.strip()
         df = df[df["ClientType"].str.upper().isin(["CLIENT", "DII", "FII", "PRO", "TOTAL"])]
-    # Coerce numeric columns.
+    # Coerce only position columns. A consolidated history's ISO date must not be
+    # turned into NaN by numeric conversion.
     for c in df.columns:
-        if c != "ClientType":
+        if c not in ("ClientType", "date"):
             df[c] = pd.to_numeric(df[c].astype(str).str.replace(",", "", regex=False),
                                   errors="coerce")
     return df.reset_index(drop=True)
@@ -117,13 +121,29 @@ def fetch_option_chain(client: NseClient, symbol: str = "NIFTY") -> Optional[dic
 
 
 def fetch_index_quote(client: NseClient, symbol: str = "NIFTY 50") -> Optional[dict]:
-    """Spot / index level and change."""
+    """Current daily index quote, including OHLC when supplied by NSE.
+
+    Option-chain symbols and the all-indices API use different spellings (for
+    example NIFTY vs NIFTY 50), so match their common aliases explicitly.
+    """
+    def norm(value: str) -> str:
+        return "".join(ch for ch in str(value).upper() if ch.isalnum())
+
+    aliases = {
+        "NIFTY": {"NIFTY", "NIFTY50"},
+        "NIFTY50": {"NIFTY", "NIFTY50"},
+        "BANKNIFTY": {"BANKNIFTY", "NIFTYBANK"},
+        "NIFTYBANK": {"BANKNIFTY", "NIFTYBANK"},
+        "FINNIFTY": {"FINNIFTY", "NIFTYFINANCIALSERVICES"},
+        "MIDCPNIFTY": {"MIDCPNIFTY", "NIFTYMIDSELECT"},
+    }
+    wanted = aliases.get(norm(symbol), {norm(symbol)})
     url = f"{BASE}/api/allIndices"
     try:
         data = client.get_json(url, referer=BASE + "/")
         for row in data.get("data", []):
-            if row.get("index", "").upper() == symbol.upper():
+            if norm(row.get("index", "")) in wanted:
                 return row
     except RuntimeError as exc:
-        log.warning("index quote fetch failed: %s", exc)
+        log.warning("index quote failed: %s", exc)
     return None

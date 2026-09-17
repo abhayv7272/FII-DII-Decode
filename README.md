@@ -30,6 +30,9 @@ reconstructed line-by-line from the two source PDFs (`full_transcript.pdf` and
 ### Still needed from you
 
 1. **GitHub secrets for email** (see below) so the 9 PM job can actually send mail.
+2. A genuine multi-session **historical participant-OI + NIFTY OHLC archive** is
+   needed before any honest backtest accuracy can be reported. The repo's bundled
+   fixture is synthetic and is used only for tests/demo output.
 
 ---
 
@@ -69,6 +72,32 @@ Open `reports/latest.html` to view the result.
 > `--demo` here. The scheduled **GitHub Actions runner can reach NSE**, so the
 > live daily job works there.
 
+## Proper historical backtest
+
+The harness replays each date with only that day's OI, the exact previous trading
+session's OI, and a same-date option-chain snapshot. It then scores the next
+trading session's NIFTY close-to-close direction:
+
+```bash
+python backtest.py \
+  --participant-oi historical/participant_oi/ \
+  --ohlc historical/nifty_ohlc.csv \
+  --option-chains historical/option_chain/ \
+  --output-dir reports/backtest
+```
+
+`--participant-oi` also accepts a consolidated CSV or ZIP; `--option-chains` is
+optional. Outputs include per-date predictions/skips CSVs, `metrics.json`, a
+confidence-vs-accuracy CSV, and an auditable Markdown report. Definitions include
+a configurable FLAT band (default ±0.15%), per-class precision/recall, directional
+hit rate, majority-class baseline, and a clearly labelled **daily-OHLC proxy** for
+level reactions.
+
+See **[`docs/backtesting.md`](docs/backtesting.md)** for the data contract, exact
+metric definitions, no-look-ahead rules, and limitations. No accuracy percentage
+is claimed until genuine historical data is supplied or enough forward-test data
+has accumulated.
+
 ## Email setup (GitHub → Settings → Secrets and variables → Actions)
 
 Add these repository **secrets**:
@@ -101,11 +130,14 @@ src/fiidii/
   decode.py      # the decode engine (bias + confidence)
   levels.py      # option-chain institutional levels + reactions
   predict.py     # next-day / next-week predictions + scenarios
+  backtest.py    # point-in-time replay, metrics, CSV/JSON/Markdown outputs
   report.py      # HTML + Markdown rendering
   email_send.py  # SMTP delivery
-  cli.py         # end-to-end runner
-docs/methodology.md   # how the decode works (tuned to the PDF once provided)
-tests/                # fixtures + smoke tests
+  cli.py         # daily runner + historical backtest commands
+backtest.py           # convenient backtest CLI entry point
+docs/methodology.md   # decoded signal methodology
+docs/backtesting.md   # historical data contract + metric definitions
+tests/                # fixtures + unit/smoke tests
 .github/workflows/    # daily 9 PM IST automation
 ```
 
