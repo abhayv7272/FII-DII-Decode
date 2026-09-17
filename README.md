@@ -92,6 +92,15 @@ The closest research-only pockets are low-coverage (~10-30 calls) and therefore
 not promotable. See
 [`reports/v4_psychology_search/report.md`](reports/v4_psychology_search/report.md).
 
+A follow-up **v5 holdout/combo/meta audit** then refit rules on 2023-2025 and
+kept 2026 as the final holdout, added voting-rule combinations, a leakage-guarded
+v3 meta-gate, and a recent 1-minute intraday first-candle confirmation check:
+[`reports/v5_holdout_combo_meta/report.md`](reports/v5_holdout_combo_meta/report.md).
+It found **0** 2026-holdout exact rules at ≥75% with ≥20 calls, **0** voting
+combos at that bar, and **0** leakage-guarded meta-gates above 70% precision with
+≥20 holdout calls. A few 2026-only sign pockets reached ≥75% on ~20 calls, but
+were not stable enough on the training window to promote.
+
 To keep future sessions reproducible after Arena wipes external directories, a
 compact historical bundle is committed under [`historical/`](historical/) with
 participant OI, participant volume, canonical NIFTY OHLC, long price-regime OHLC,

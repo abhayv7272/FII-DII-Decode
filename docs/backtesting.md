@@ -111,6 +111,19 @@ The published run exports `threshold_rules.csv` and ranked holdout views in
 find any rule that honestly reached the requested 75-85% zone on both holdouts
 with minimum sample guards.
 
+`research/v5_holdout_combo_meta.py` continues the hunt by fitting rules on
+2023-2025 and reserving 2026 as the final holdout. It also tests voting-rule
+combinations, a leakage-guarded v3 meta-gate, and whatever recent NIFTY 1-minute
+intraday file is available:
+
+```bash
+python research/v5_holdout_combo_meta.py --out reports/v5_holdout_combo_meta
+```
+
+The published v5 run again rejects promotion: no ≥75% exact rule/combination
+survived 2026 with ≥20 calls, and no leakage-guarded v3 meta-gate exceeded 70%
+precision with ≥20 holdout calls.
+
 ## Direction labels and metrics
 
 Prediction classes are normalised as follows:

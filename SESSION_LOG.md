@@ -19,10 +19,11 @@
   overnight-gap channel and it still needs an untouched forward window
   (sessions after 2026-09-04). Evidence:
   `reports/backtest_v3_candidate_2023-08_to_2026-09/` + full search log
-  `reports/v3_deep_dive/REPORT.md`. **V4 aggressive psychology/manipulation
-  search** (`reports/v4_psychology_search/`) tested 26,049 threshold rules over
-  4,764 engineered columns; no honest 75-85% rule survived both 2025/2026
-  holdouts with minimum sample guards.
+  `reports/v3_deep_dive/REPORT.md`. **V4/V5 aggressive psychology/manipulation
+  search** tested 26,049 dev-fitted threshold rules over 4,764 engineered columns
+  (`reports/v4_psychology_search/`) plus a 2023-2025-fit / 2026-holdout combo,
+  meta-gate, and recent intraday audit (`reports/v5_holdout_combo_meta/`). No
+  honest 75-85% production-ready rule survived the holdout/sample/leakage guards.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
   in `reports/v3_forward_validation/gate_report.md` — state
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
@@ -43,8 +44,28 @@
 
 ### 2026-09-18 (session 8 — user requested backup + continue)
 - User asked: **"Chat backup karo to github then dekho session close to nhi hoa ager nhi hoa then continue karo task"**.
-- Status check before continuing: branch is `arena/01a0b16b-fii-dii-decode`, working tree clean after commit `6368986`, and the session/branch is still active. No PR merge/close or branch switch performed.
-- Next in this session: continue the accuracy hunt from v4, with more aggressive but leak-safe rule-combo / intraday-confirmation research, and keep backing up changes to GitHub.
+- Immediate chat backup committed/pushed first: `60df61a` on fixed branch
+  `arena/01a0b16b-fii-dii-decode`; branch/session remained active. No PR
+  merge/close or branch switch performed.
+- Continued the accuracy hunt with `research/v5_holdout_combo_meta.py`:
+  refit threshold rules on 2023-2025 and kept 2026 as final holdout; tested
+  simple rule-voting combinations; added a leakage-guarded v3 meta-gate; and
+  audited the available recent NIFTY 1-minute data for first 15/30/60-minute
+  confirmation after the OI signal.
+- V5 results (`reports/v5_holdout_combo_meta/`): 13,944 train-fitted threshold
+  rules; **0** 2026-holdout exact rules ≥75% with ≥20 calls; **7** 2026-only
+  sign rules ≥75% with ≥20 non-FLAT calls but not stable/promotable; **0**
+  voting combos ≥75% exact with ≥20 holdout calls; **0** leakage-guarded v3
+  meta-gates ≥70% precision with ≥20 holdout calls. Recent 1-minute intraday
+  first-window confirmation did not improve materially (best v3+15m agreement
+  ~53.85% on 13 calls).
+- Important guardrail: a scratch meta-gate briefly showed fake 100% only because
+  `exact_hit`/`direction_hit` had been accidentally included; this was caught and
+  formal v5 excludes all target/outcome columns. Do not use any target-outcome
+  field as a production feature.
+- Current honest conclusion: still no validated 70-85% EOD/OI edge. Next path is
+  longer intraday 10-15m candles plus exact/date-stamped institutional levels,
+  or prospective forward validation of the small v4/v5 pockets.
 
 ### 2026-09-18 (session 7 — full-freedom v4 accuracy hunt + GitHub backup)
 - User set the stretch goal: push daily accuracy toward **70-85%+** using every
