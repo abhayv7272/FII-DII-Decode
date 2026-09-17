@@ -1,0 +1,82 @@
+{
+  "overall": "DEGRADED_MISSING_LEVEL_INPUT",
+  "run_date": "2026-09-18",
+  "report_date": "2026-09-17",
+  "direction_inputs_ready": true,
+  "level_inputs_ready": false,
+  "fallback_inputs": [
+    "participant_oi_current",
+    "participant_oi_previous"
+  ],
+  "unavailable_inputs": [
+    "cash",
+    "option_chain",
+    "index_quote",
+    "participant_volume"
+  ],
+  "inputs": {
+    "participant_oi_current": {
+      "status": "available",
+      "source": "Stocklyzer EOD participant table",
+      "url": "https://www.stocklyzer.com/participant-wise",
+      "as_of": "2026-09-17",
+      "fallback": true,
+      "fetched_at_utc": "2026-09-17T19:10:51.098056+00:00",
+      "warning": "Third-party rendering of NSE data; matrix passed completeness and long/short balance checks. Previous session derived from displayed deltas. Independent corroborator unavailable: NiftyTrader participant fallback rejected: NiftyTrader participant matrix table not found"
+    },
+    "cash": {
+      "status": "unavailable",
+      "source": null,
+      "url": null,
+      "as_of": null,
+      "fallback": false,
+      "fetched_at_utc": "2026-09-17T19:10:51.098069+00:00",
+      "warning": "Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in."
+    },
+    "option_chain": {
+      "status": "unavailable",
+      "source": null,
+      "url": null,
+      "as_of": null,
+      "fallback": false,
+      "fetched_at_utc": "2026-09-17T19:10:51.098073+00:00",
+      "warning": "Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in."
+    },
+    "index_quote": {
+      "status": "unavailable",
+      "source": null,
+      "url": null,
+      "as_of": null,
+      "fallback": false,
+      "fetched_at_utc": "2026-09-17T19:10:51.098075+00:00",
+      "warning": "Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in."
+    },
+    "participant_volume": {
+      "status": "unavailable",
+      "source": null,
+      "url": null,
+      "as_of": null,
+      "fallback": false,
+      "fetched_at_utc": "2026-09-17T19:10:51.098078+00:00",
+      "warning": "Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in."
+    },
+    "participant_oi_previous": {
+      "status": "available",
+      "source": "Stocklyzer EOD participant table \u2014 previous session from displayed deltas",
+      "url": "https://www.stocklyzer.com/participant-wise",
+      "as_of": "immediately preceding trading session",
+      "fallback": true,
+      "fetched_at_utc": "2026-09-17T19:10:51.098056+00:00",
+      "warning": "Third-party rendering of NSE data; matrix passed completeness and long/short balance checks. Previous session derived from displayed deltas. Independent corroborator unavailable: NiftyTrader participant fallback rejected: NiftyTrader participant matrix table not found Previous values equal current minus provider-displayed daily change; no holiday-sensitive date was guessed."
+    },
+    "institutional_references": {
+      "status": "not_provided",
+      "source": null,
+      "url": null,
+      "as_of": null,
+      "fallback": false,
+      "warning": "Optional exact references were not supplied; automatic levels remain option-chain proxies."
+    }
+  },
+  "policy": "A next-day OI lean requires complete current and previous participant OI. Actionable level branches additionally require a same-date option chain. Cash can alter setup strength but not the locked OI class; OHLC is an audit input."
+}

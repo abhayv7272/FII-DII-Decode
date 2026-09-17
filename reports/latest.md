@@ -1,65 +1,56 @@
 # FII/DII/Pro/Client Decode — NIFTY — 2026-09-17
 
 > ⚠️ **Validation warning:** EXPERIMENTAL / NOT VALIDATED FOR TRADING: the locked v2 rules reached 37.91% exact UP/FLAT/DOWN accuracy on 757 sessions versus a 42.14% majority baseline. Its next-open-to-close sign result remained approximately chance. Treat the OI lean as conditional context, never a standalone entry signal.
-> 🧪 **Demo warning:** DEMO FIXTURE: inputs are bundled synthetic/approximate sample values for pipeline testing. This report date is not a historical forecast or backtest observation.
 
-**Next-day OI lean (Pro-led):** STRONG BULLISH  ·  score `+0.77`  ·  setup strength 100/100  ·  UP  ·  CONDITIONAL_BULLISH_SETUP
-**Positional carry context (FII-led):** BULLISH  ·  score `+0.45`  ·  NO-VALIDATED-EDGE  ·  research lean SIDEWAYS-UP
+**Next-day OI lean (Pro-led):** BEARISH  ·  score `-0.22`  ·  setup strength 48/100  ·  SIDEWAYS-DOWN  ·  CONTEXT_ONLY_MISSING_SAME_DATE_OPTION_CHAIN
+**Positional carry context (FII-led):** STRONG BEARISH  ·  score `-0.51`  ·  NO-VALIDATED-EDGE  ·  research lean RANGE
 
 ## Data Fetch Health
 
-**Overall:** `DEMO_FIXTURE`
-**Run date:** 2026-09-17 · **Report session:** 2026-09-17
+**Overall:** `DEGRADED_MISSING_LEVEL_INPUT`
+**Run date:** 2026-09-18 · **Report session:** 2026-09-17
 
 | Input | Status | Source | As of | Warning |
 |---|---|---|---|---|
-| participant oi current | available | bundled synthetic demo fixture | 2026-09-17 | Synthetic/approximate values; not live market data. |
-| participant oi previous | available | bundled synthetic demo fixture | 2026-09-17 | Synthetic/approximate values; not live market data. |
-| cash | available | bundled synthetic demo fixture | 2026-09-17 | Synthetic/approximate values; not live market data. |
-| option chain | available | bundled synthetic demo fixture | 2026-09-17 | Synthetic/approximate values; not live market data. |
-| index quote | unavailable | — | — | Demo fixture has option-chain spot but no independent index OHLC fetch. |
-| participant volume | not_used | — | 2026-09-17 | Participant volume is not an input to the locked v2 score. |
+| participant oi current | available | Stocklyzer EOD participant table | 2026-09-17 | Third-party rendering of NSE data; matrix passed completeness and long/short balance checks. Previous session derived from displayed deltas. Independent corroborator unavailable: NiftyTrader participant fallback rejected: NiftyTrader participant matrix table not found |
+| cash | unavailable | — | — | Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in. |
+| option chain | unavailable | — | — | Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in. |
+| index quote | unavailable | — | — | Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in. |
+| participant volume | unavailable | — | — | Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in. |
+| participant oi previous | available | Stocklyzer EOD participant table — previous session from displayed deltas | immediately preceding trading session | Third-party rendering of NSE data; matrix passed completeness and long/short balance checks. Previous session derived from displayed deltas. Independent corroborator unavailable: NiftyTrader participant fallback rejected: NiftyTrader participant matrix table not found Previous values equal current minus provider-displayed daily change; no holiday-sensitive date was guessed. |
 | institutional references | not_provided | — | — | Optional exact references were not supplied; automatic levels remain option-chain proxies. |
 
 A next-day OI lean requires complete current and previous participant OI. Actionable level branches additionally require a same-date option chain. Cash can alter setup strength but not the locked OI class; OHLC is an audit input.
 
 ## Institutional Data & Setup
-- **Retail:** Retail fresh index positioning is bearish (contra-positive), which supports a market bounce only after price confirmation.
-- **Move quality:** FII: fresh index-future longs (full-strength bullish), 17,150 contracts; Pro: fresh index-future longs (full-strength bullish), 18,500 contracts
+- **Retail:** Retail fresh index positioning is bullish (contra-negative): upside can remain capped until those longs/short puts unwind.
+- **Move quality:** FII: fresh index-future shorts (full-strength bearish), 2,040 contracts; Pro: index-future long unwinding (weaker bearish), 4,025 contracts
 
 ## Next-Day Conditional Plan (Gap Up / Flat / Gap Down)
-- Forced research class: **UP** (setup strength 100/100)
-- Actionability: **CONDITIONAL_BULLISH_SETUP**
-- OI-only next-day research lean +0.77 (STRONG BULLISH), Pro-led (ultra-short). OI-only bullish lean. It becomes actionable only after the relevant option-chain/price level confirms with a 10-15 minute candle; a decisive break activates the opposite backup plan. Cash flow confirms the OI lean, but was not part of historical v2 scoring. Retail fresh index positioning is bearish (contra-positive), which supports a market bounce only after price confirmation. Move quality: FII: fresh index-future longs (full-strength bullish), 17,150 contracts; Pro: fresh index-future longs (full-strength bullish), 18,500 contracts. PCR 1.027 — Put/call OI is comparatively balanced. Use confirmed support/resistance branches; PCR alone supplies no direction.
-  - **PRIMARY:** Bullish OI context prefers a confirmed hold/reclaim at 24600 or a confirmed break/retest above 25150; it does not forecast that either path must occur.
-  - **GAP DOWN:** Evaluate support 24600; do not buy merely because price reached it. A liquidity sweep followed by a confirmed reclaim activates the bounce branch. Independently supplied institutional/psychological confluence strengthens the setup. A sustained bearish break BELOW 24600 flips it to resistance and activates the next lower level.
-  - **FLAT:** Treat 24600 to 25150 as the decision band. A confirmed support reclaim activates the bounce branch; confirmed resistance rejection activates the fade branch. Without either candle, wait. Direction changes only when a wall breaks and sustains.
-  - **GAP UP:** Evaluate resistance 25150. Confirmed rejection activates a move toward 24600; a decisive 15-minute close and retest ABOVE 25150 means the call-side concentration gave way and activates the next upper level.
+- Forced research class: **SIDEWAYS-DOWN** (setup strength 48/100)
+- Actionability: **CONTEXT_ONLY_MISSING_SAME_DATE_OPTION_CHAIN**
+- OI-only next-day research lean -0.22 (BEARISH), Pro-led (ultra-short). OI-only bearish lean. It becomes actionable only after the relevant option-chain/price level confirms with a 10-15 minute candle; a decisive break activates the opposite backup plan. Same-date option-chain data is unavailable, so no level entry is actionable. Retail fresh index positioning is bullish (contra-negative): upside can remain capped until those longs/short puts unwind. Move quality: FII: fresh index-future shorts (full-strength bearish), 2,040 contracts; Pro: index-future long unwinding (weaker bearish), 4,025 contracts. PCR None — 
+  - **DATA BLOCK:** No same-date support/resistance pair is available. Preserve the OI lean as context only; do not create a gap or level trade from stale data.
 
 ## Next-Week / Positional Context (Mon–Fri)
 - Forecast status: **NO-VALIDATED-EDGE**
-- Unvalidated research lean: **SIDEWAYS-UP**
+- Unvalidated research lean: **RANGE**
 - Actionability: **CONTEXT_ONLY_WAIT_FOR_MULTI_SESSION_CONFIRMATION**
-- Positional carry context +0.45 (research lean SIDEWAYS-UP), FII-led with Pro support required. Momentum +0.45.  Big positional moves come only 2-3x a year; otherwise the week trades between the put wall (support) and call wall (resistance) unless a wall breaks decisively. Retail must unwind longs before a sustained up-leg. The carry/trend lean is shown as research context only: its locked five-session candidate did not survive the 2026 confirmation period.
+- Positional carry context -0.08 (research lean RANGE), FII-led with Pro support required. Momentum +0.45.  Big positional moves come only 2-3x a year; otherwise the week trades between the put wall (support) and call wall (resistance) unless a wall breaks decisively. Retail must unwind longs before a sustained up-leg. The carry/trend lean is shown as research context only: its locked five-session candidate did not survive the 2026 confirmation period.
   - **FII carry longs build over several sessions + Pro supports** → Bullish context only; require price/level confirmation.
   - **FII carry shorts build over several sessions + Pro supports** → Bearish context only; require price/level confirmation.
   - **FII and Pro oppose, or Retail remains crowded** → No positional entry; expect range/whipsaw until the conflict resolves.
 
 ## Level-by-Level Conditional Prediction
 
-> **Level-method disclosure:** The PDFs do not disclose the proprietary institutional-level formula; they refer viewers to an advanced course. Automatically drawn values are option-chain support/resistance proxies, not reconstructed proprietary levels. Any externally supplied exact references are identified separately.
-> **Option-chain input source:** bundled synthetic demo fixture
+> **Level-method disclosure:** No dated option chain was available, so no automatic level proxy or level-by-level prediction was generated.
+> **Option-chain input source:** unavailable
 
 The OI-lean preferred branch is conditional, not a probability. Without a confirming candle: **WAIT / NO TRADE AT THIS LEVEL**.
 
 | Level | Role | Source | Priority | OI-lean preferred branch | Hold/reject branch | Break/flip branch |
 |---:|---|---|---|---|---|---|
-| 24250 | support | option_chain_proxy | SECONDARY | HOLD_OR_RECLAIM | **BOUNCE_OR_RECLAIM_UP**: 10-15 minute bullish rejection/reclaim; enter only on the confirming candle high break → 24450 (option chain proxy) | **BREAK_DOWN_AND_ROLE_FLIP**: 10-15 minute bearish close below, failed reclaim, and candle low break → next lower level not available |
-| 24450 | support | option_chain_proxy | SECONDARY | HOLD_OR_RECLAIM | **BOUNCE_OR_RECLAIM_UP**: 10-15 minute bullish rejection/reclaim; enter only on the confirming candle high break → 24600 (option chain proxy) | **BREAK_DOWN_AND_ROLE_FLIP**: 10-15 minute bearish close below, failed reclaim, and candle low break → 24250 (option chain proxy) |
-| 24600 | support | option_chain_proxy | IMMEDIATE | HOLD_OR_RECLAIM | **BOUNCE_OR_RECLAIM_UP**: 10-15 minute bullish rejection/reclaim; enter only on the confirming candle high break → 25150 (option chain proxy) | **BREAK_DOWN_AND_ROLE_FLIP**: 10-15 minute bearish close below, failed reclaim, and candle low break → 24450 (option chain proxy) |
-| 25150 | resistance | option_chain_proxy | IMMEDIATE | BREAK_UP_AND_ROLE_FLIP | **REJECTION_DOWN**: 10-15 minute bearish rejection; enter only on the confirming candle low break → 24600 (option chain proxy) | **BREAK_UP_AND_ROLE_FLIP**: 10-15 minute bullish close above, successful retest, and candle high break → 25300 (option chain proxy) |
-| 25300 | resistance | option_chain_proxy | SECONDARY | BREAK_UP_AND_ROLE_FLIP | **REJECTION_DOWN**: 10-15 minute bearish rejection; enter only on the confirming candle low break → 25150 (option chain proxy) | **BREAK_UP_AND_ROLE_FLIP**: 10-15 minute bullish close above, successful retest, and candle high break → 25350 (option chain proxy) |
-| 25350 | resistance | option_chain_proxy | SECONDARY | BREAK_UP_AND_ROLE_FLIP | **REJECTION_DOWN**: 10-15 minute bearish rejection; enter only on the confirming candle low break → 25300 (option chain proxy) | **BREAK_UP_AND_ROLE_FLIP**: 10-15 minute bullish close above, successful retest, and candle high break → next upper level not available |
+| n/a | n/a | n/a | n/a | NO DATED LEVELS | Wait | Wait |
 
 Every row also uses this gap rule: if price opens and sustains beyond the level, treat that level as skipped/flipped and evaluate the next level. Once an opposite-direction break invalidates the original OI lean, later preferred branches are void; follow confirmed price action only.
 
@@ -67,24 +58,17 @@ Every row also uses this gap rule: if price opens and sustains beyond the level,
 
 | Strike | Role | Source | Basis | OI | ΔOI | Evidence score | Evidence grade | Confluence |
 |---:|---|---|---|---:|---:|---:|---|---|
-| 24250 | support | option_chain_proxy (put-side concentration) | put_oi_total_plus_change | 172,400 | +11,557 | 82.7 | HIGH_RELATIVE_CONCENTRATION | — |
-| 24450 | support | option_chain_proxy (put-side concentration) | put_oi_total_plus_change | 207,774 | +10,044 | 87.7 | HIGH_RELATIVE_CONCENTRATION | — |
-| 24600 | support | option_chain_proxy (put-side concentration) | put_oi_total_plus_change | 143,253 | +13,047 | 79.3 | HIGH_RELATIVE_CONCENTRATION | — |
-| 25150 | resistance | option_chain_proxy (call-side concentration) | call_oi_total_plus_change | 197,680 | +12,944 | 93.0 | HIGH_RELATIVE_CONCENTRATION | — |
-| 25300 | resistance | option_chain_proxy (call-side concentration) | call_oi_total_plus_change | 189,478 | +8,323 | 77.9 | HIGH_RELATIVE_CONCENTRATION | — |
-| 25350 | resistance | option_chain_proxy (call-side concentration) | call_oi_total_plus_change | 158,275 | +13,031 | 81.8 | HIGH_RELATIVE_CONCENTRATION | — |
 
-**Max Pain:** 24850.0 · **PCR:** 1.027 — Put/call OI is comparatively balanced. Use confirmed support/resistance branches; PCR alone supplies no direction.
+**Max Pain:** None · **PCR:** None — 
 
 ## Decode Signals
 
 | Signal | Score | Weight | Note |
 |---|---|---|---|
-| Pro_fresh_index | +0.74 | 0.53 | ultra-short driver; relative-OI quality score [index_fut +0.90, index_call +0.76, index_put +0.64] |
-| FII_fresh_index | +0.74 | 0.27 | secondary next-day / positional participant; relative-OI quality score [index_fut +0.93, index_call +0.76, index_put +0.64] |
-| Client_fresh_index | +0.86 | 0.20 | contra confirmation; relative-OI quality score [index_call +0.92, index_fut +0.85, index_put +0.81] |
-| DII_fresh_index | -0.00 | 0.00 | F&O direction ignored (arbitrage contamination); relative-OI quality score [index_fut -0.01, index_call -0.00, index_put -0.00] |
-| cash_confirmation | +0.57 | 0.00 | Confirmation only (not fitted in v2 backtest): FII 1,150 Cr, DII 1,350 Cr. |
+| Pro_fresh_index | -0.22 | 0.53 | ultra-short driver; relative-OI quality score [index_put -0.48, index_fut -0.18, index_call +0.01] |
+| FII_fresh_index | -0.12 | 0.27 | secondary next-day / positional participant; relative-OI quality score [index_put -0.26, index_fut -0.17, index_call +0.04] |
+| Client_fresh_index | -0.34 | 0.20 | contra confirmation; relative-OI quality score [index_put -0.68, index_fut -0.45, index_call +0.06] |
+| DII_fresh_index | -0.01 | 0.00 | F&O direction ignored (arbitrage contamination); relative-OI quality score [index_put -0.04, index_fut +0.02, index_call +0.01] |
 
 ## Trading Strategy & Risk Management
 
