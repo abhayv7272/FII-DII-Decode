@@ -1,46 +1,49 @@
 {
-  "overall": "DEGRADED_MISSING_LEVEL_INPUT",
+  "overall": "DEMO_FIXTURE",
   "run_date": "2026-09-18",
-  "report_date": "2026-09-17",
+  "report_date": "2026-09-18",
   "direction_inputs_ready": true,
-  "level_inputs_ready": false,
-  "fallback_inputs": [
-    "participant_oi_current",
-    "participant_oi_previous"
-  ],
+  "level_inputs_ready": true,
+  "fallback_inputs": [],
   "unavailable_inputs": [
-    "cash",
-    "option_chain",
-    "index_quote",
-    "participant_volume"
+    "index_quote"
   ],
   "inputs": {
     "participant_oi_current": {
       "status": "available",
-      "source": "Stocklyzer EOD participant table",
-      "url": "https://www.stocklyzer.com/participant-wise",
-      "as_of": "2026-09-17",
-      "fallback": true,
-      "fetched_at_utc": "2026-09-17T19:10:51.098056+00:00",
-      "warning": "Third-party rendering of NSE data; matrix passed completeness and long/short balance checks. Previous session derived from displayed deltas. Independent corroborator unavailable: NiftyTrader participant fallback rejected: NiftyTrader participant matrix table not found"
+      "source": "bundled synthetic demo fixture",
+      "url": null,
+      "as_of": "2026-09-18",
+      "fallback": false,
+      "fetched_at_utc": "2026-09-17T19:45:47.835916+00:00",
+      "warning": "Synthetic/approximate values; not live market data."
+    },
+    "participant_oi_previous": {
+      "status": "available",
+      "source": "bundled synthetic demo fixture",
+      "url": null,
+      "as_of": "2026-09-18",
+      "fallback": false,
+      "fetched_at_utc": "2026-09-17T19:45:47.835916+00:00",
+      "warning": "Synthetic/approximate values; not live market data."
     },
     "cash": {
-      "status": "unavailable",
-      "source": null,
+      "status": "available",
+      "source": "bundled synthetic demo fixture",
       "url": null,
-      "as_of": null,
+      "as_of": "2026-09-18",
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T19:10:51.098069+00:00",
-      "warning": "Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in."
+      "fetched_at_utc": "2026-09-17T19:45:47.835916+00:00",
+      "warning": "Synthetic/approximate values; not live market data."
     },
     "option_chain": {
-      "status": "unavailable",
-      "source": null,
+      "status": "available",
+      "source": "bundled synthetic demo fixture",
       "url": null,
-      "as_of": null,
+      "as_of": "2026-09-18",
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T19:10:51.098073+00:00",
-      "warning": "Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in."
+      "fetched_at_utc": "2026-09-17T19:45:47.835916+00:00",
+      "warning": "Synthetic/approximate values; not live market data."
     },
     "index_quote": {
       "status": "unavailable",
@@ -48,26 +51,15 @@
       "url": null,
       "as_of": null,
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T19:10:51.098075+00:00",
-      "warning": "Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in."
+      "fetched_at_utc": "2026-09-17T19:45:47.835929+00:00",
+      "warning": "Demo fixture has option-chain spot but no independent index OHLC fetch."
     },
     "participant_volume": {
-      "status": "unavailable",
+      "status": "not_used",
       "source": null,
-      "url": null,
-      "as_of": null,
+      "as_of": "2026-09-18",
       "fallback": false,
-      "fetched_at_utc": "2026-09-17T19:10:51.098078+00:00",
-      "warning": "Latest validated participant OI is 2026-09-17, not target session 2026-09-18; current-only endpoint was deliberately not mixed in."
-    },
-    "participant_oi_previous": {
-      "status": "available",
-      "source": "Stocklyzer EOD participant table \u2014 previous session from displayed deltas",
-      "url": "https://www.stocklyzer.com/participant-wise",
-      "as_of": "immediately preceding trading session",
-      "fallback": true,
-      "fetched_at_utc": "2026-09-17T19:10:51.098056+00:00",
-      "warning": "Third-party rendering of NSE data; matrix passed completeness and long/short balance checks. Previous session derived from displayed deltas. Independent corroborator unavailable: NiftyTrader participant fallback rejected: NiftyTrader participant matrix table not found Previous values equal current minus provider-displayed daily change; no holiday-sensitive date was guessed."
+      "warning": "Participant volume is not an input to the locked v2 score."
     },
     "institutional_references": {
       "status": "not_provided",
