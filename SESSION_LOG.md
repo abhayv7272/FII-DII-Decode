@@ -42,6 +42,11 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 9 — user requested backup + continue toward real-world next-day use)
+- User asked to backup chat to GitHub, verify session is not closed, and continue the 75-85% accuracy hunt for real-world present next-day prediction.
+- Status before continuing: branch `arena/01a0b16b-fii-dii-decode`; session still active; no PR merge/close/branch switch.
+- Next: continue research with stricter leakage guards and practical/selective next-day signal ideas; keep production default unchanged unless evidence survives holdout/forward checks.
+
 ### 2026-09-18 (session 8 — user requested backup + continue)
 - User asked: **"Chat backup karo to github then dekho session close to nhi hoa ager nhi hoa then continue karo task"**.
 - Immediate chat backup committed/pushed first: `60df61a` on fixed branch
@@ -239,6 +244,11 @@
   exits 0 when credentials are absent/blank — email can no longer fail a run.
 
 ## Log (newest first)
+
+### 2026-09-18 (session 9 — user requested backup + continue toward real-world next-day use)
+- User asked to backup chat to GitHub, verify session is not closed, and continue the 75-85% accuracy hunt for real-world present next-day prediction.
+- Status before continuing: branch `arena/01a0b16b-fii-dii-decode`; session still active; no PR merge/close/branch switch.
+- Next: continue research with stricter leakage guards and practical/selective next-day signal ideas; keep production default unchanged unless evidence survives holdout/forward checks.
 
 ### 2026-09-18 (session 8 — user requested backup + continue)
 - User asked: **"Chat backup karo to github then dekho session close to nhi hoa ager nhi hoa then continue karo task"**.
