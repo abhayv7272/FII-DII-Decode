@@ -1,0 +1,5 @@
+period,b_v3_correct_v2_wrong,c_v2_correct_v3_wrong,p_value
+2023-2024 development,47,23,0.0056
+2025 validation,36,21,0.0627
+2026 confirmation,26,11,0.0201
+full,109,55,0.0

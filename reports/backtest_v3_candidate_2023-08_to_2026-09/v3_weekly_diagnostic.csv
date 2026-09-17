@@ -1,0 +1,5 @@
+period,n,majority_baseline_pct,nonflat_sign_pct,nonflat_sign_n
+2023-2024 development,338,50.59,54.78,272
+2025 validation,248,41.13,58.42,190
+2026 confirmation,167,49.7,49.65,141
+full,753,43.96,54.73,603

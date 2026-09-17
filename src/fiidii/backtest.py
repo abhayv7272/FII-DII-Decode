@@ -28,6 +28,7 @@ import zipfile
 import pandas as pd
 
 from .decode import decode
+from .decode_v3 import decode as decode_v3
 from .legacy_v1 import decode as decode_v1
 from .fetch import _parse_participant_csv
 from .levels import derive_levels
@@ -64,8 +65,8 @@ class BacktestConfig:
     decoder_version: str = "v2"
 
     def __post_init__(self) -> None:
-        if self.decoder_version not in {"v1", "v2"}:
-            raise ValueError("decoder_version must be 'v1' or 'v2'")
+        if self.decoder_version not in {"v1", "v2", "v3"}:
+            raise ValueError("decoder_version must be 'v1', 'v2', or 'v3'")
         if self.flat_threshold_pct < 0:
             raise ValueError("flat_threshold_pct must be >= 0")
         if self.level_touch_tolerance_pct < 0:
@@ -554,7 +555,12 @@ def run_backtest(participant_oi: pd.DataFrame, ohlc: pd.DataFrame,
                 bad_chain_dates.append(f"{signal_date.isoformat()} ({exc})")
                 chain = None
 
-        decoder = decode_v1 if config.decoder_version == "v1" else decode
+        if config.decoder_version == "v1":
+            decoder = decode_v1
+        elif config.decoder_version == "v3":
+            decoder = decode_v3
+        else:
+            decoder = decode
         decoded = decoder(today_oi, previous_oi, cash=None,
                           option_levels=levels if chain else None,
                           date_str=signal_date.isoformat())
@@ -709,7 +715,7 @@ def compute_metrics(predictions: pd.DataFrame,
     direction_hits = int(directional["direction_hit"].fillna(False).astype(bool).sum())
     exact_hits = int(predictions["exact_hit"].astype(bool).sum())
 
-    if config.decoder_version == "v2" and "actionability" in predictions:
+    if config.decoder_version in {"v2", "v3"} and "actionability" in predictions:
         eligible_mask = (
             directional_mask
             & predictions["actionability"].astype(str).str.startswith("CONDITIONAL_")
@@ -855,7 +861,7 @@ def render_backtest_markdown(result: BacktestResult) -> str:
         selection_note = (
             "V2 trigger-eligible means `CONDITIONAL_*`; conflict/wait and no-edge "
             "states abstain."
-            if cfg.decoder_version == "v2"
+            if cfg.decoder_version in {"v2", "v3"}
             else "V1 has no abstention contract, so every forced directional call is eligible."
         )
         lines += [
@@ -897,7 +903,7 @@ def render_backtest_markdown(result: BacktestResult) -> str:
         for actual in CLASSES:
             lines.append(f"| {actual} | {matrix[actual]['UP']} | {matrix[actual]['FLAT']} | {matrix[actual]['DOWN']} |")
 
-        score_name = "Setup strength" if cfg.decoder_version == "v2" else "Legacy confidence"
+        score_name = ("Setup strength" if cfg.decoder_version in {"v2", "v3"} else "Legacy confidence")
         lines += ["", f"## {score_name} vs accuracy", ""]
         if result.confidence_curve.empty:
             lines.append(f"No {score_name.lower()} buckets available.")

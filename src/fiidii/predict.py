@@ -343,7 +343,7 @@ def build_predictions(decode_result, levels: Optional[dict],
     key_levels = _levels_summary(levels)
     level_predictions = _level_predictions(levels, decode_result)
     version = getattr(decode_result, "method_version", "v1")
-    threshold = 0.12 if version == "v1" else 0.10
+    threshold = {"v1": 0.12, "v3": 0.0}.get(version, 0.10)
 
     # ---- Next day (Pro-led) ----
     # This is the forced OI-only research class used by the historical audit. V2
