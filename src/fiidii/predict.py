@@ -10,7 +10,7 @@ five-session candidate failed confirmation, so production emits
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass, field
 from typing import Optional
 
 import pandas as pd
@@ -26,6 +26,7 @@ class Prediction:
     key_levels: dict
     actionability: str = ""
     research_lean: str = ""
+    level_predictions: list = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -75,13 +76,188 @@ def _carry_trend(hist: Optional[pd.DataFrame], n: int = 5) -> str:
 
 def _levels_summary(levels: dict) -> dict:
     return {
-        "support": [l for l in levels.get("levels", []) if l["kind"] == "support"][:4],
-        "resistance": [l for l in levels.get("levels", []) if l["kind"] == "resistance"][:4],
+        "support": [
+            level for level in levels.get("levels", [])
+            if level["kind"] == "support"
+        ][:4],
+        "resistance": [
+            level for level in levels.get("levels", [])
+            if level["kind"] == "resistance"
+        ][:4],
         "max_pain": levels.get("max_pain"),
         "pcr": levels.get("pcr"),
         "immediate_support": levels.get("immediate_support"),
         "immediate_resistance": levels.get("immediate_resistance"),
+        "level_method": levels.get("level_method"),
+        "level_method_warning": levels.get("level_method_warning"),
+        "exact_institutional_formula_available": levels.get(
+            "exact_institutional_formula_available", False
+        ),
+        "supplied_institutional_level_count": levels.get(
+            "supplied_institutional_level_count", 0
+        ),
     }
+
+
+def _level_name(level: dict | None, fallback: str) -> str:
+    if not level:
+        return fallback
+    source = str(level.get("source", "level")).replace("_", " ")
+    return f"{float(level['strike']):.0f} ({source})"
+
+
+def _next_target(ordered: list[dict], strike: float, upward: bool,
+                 confluence_tolerance: float = 0.0,
+                 source: str = "") -> dict | None:
+    """Find the next level, skipping cross-source records in the same zone."""
+    candidates = []
+    for level in ordered:
+        candidate_strike = float(level["strike"])
+        is_in_direction = candidate_strike > strike if upward else candidate_strike < strike
+        same_confluence_zone = (
+            level.get("source", "") != source
+            and abs(candidate_strike - strike) <= confluence_tolerance
+        )
+        if is_in_direction and not same_confluence_zone:
+            candidates.append(level)
+    if not candidates:
+        return None
+    key = (lambda level: float(level["strike"]))
+    return min(candidates, key=key) if upward else max(candidates, key=key)
+
+
+def _level_predictions(levels: dict, decode_result) -> list[dict]:
+    """Build a conditional decision tree for every disclosed level.
+
+    A preferred branch reflects only the OI lean; it remains inactive until its
+    stated candle/hold condition occurs. This is deliberately not a claim that
+    price must react at the level.
+    """
+    ordered = sorted(
+        [
+            level for level in levels.get("levels", [])
+            if level.get("kind") in {"support", "resistance", "pivot"}
+            and level.get("strike") is not None
+        ],
+        key=lambda level: float(level["strike"]),
+    )
+    if not ordered:
+        return []
+
+    immediate_support = levels.get("immediate_support") or {}
+    immediate_resistance = levels.get("immediate_resistance") or {}
+    immediate_support_strike = immediate_support.get("strike")
+    immediate_resistance_strike = immediate_resistance.get("strike")
+    composite = float(decode_result.composite)
+    conflict = bool(getattr(decode_result, "smart_money_conflict", False))
+    zone_tolerance = float(levels.get("confluence_tolerance_points", 0.0) or 0.0)
+
+    predictions = []
+    for level in ordered:
+        strike = float(level["strike"])
+        kind = level["kind"]
+        lower = _next_target(
+            ordered,
+            strike,
+            upward=False,
+            confluence_tolerance=zone_tolerance,
+            source=level.get("source", ""),
+        )
+        upper = _next_target(
+            ordered,
+            strike,
+            upward=True,
+            confluence_tolerance=zone_tolerance,
+            source=level.get("source", ""),
+        )
+        lower_name = _level_name(lower, "next lower level not available")
+        upper_name = _level_name(upper, "next upper level not available")
+
+        if kind == "support":
+            hold = {
+                "outcome": "BOUNCE_OR_RECLAIM_UP",
+                "confirmation": (
+                    "10-15 minute bullish rejection/reclaim; enter only on the "
+                    "confirming candle high break"
+                ),
+                "target": upper_name,
+            }
+            break_branch = {
+                "outcome": "BREAK_DOWN_AND_ROLE_FLIP",
+                "confirmation": (
+                    "10-15 minute bearish close below, failed reclaim, and candle low break"
+                ),
+                "target": lower_name,
+            }
+            if conflict or abs(composite) < 0.10:
+                preferred = "WAIT_FOR_CONFIRMED_BRANCH"
+            else:
+                preferred = (
+                    "HOLD_OR_RECLAIM" if composite > 0 else "BREAK_DOWN_AND_ROLE_FLIP"
+                )
+        elif kind == "resistance":
+            hold = {
+                "outcome": "REJECTION_DOWN",
+                "confirmation": (
+                    "10-15 minute bearish rejection; enter only on the confirming "
+                    "candle low break"
+                ),
+                "target": lower_name,
+            }
+            break_branch = {
+                "outcome": "BREAK_UP_AND_ROLE_FLIP",
+                "confirmation": (
+                    "10-15 minute bullish close above, successful retest, and candle high break"
+                ),
+                "target": upper_name,
+            }
+            if conflict or abs(composite) < 0.10:
+                preferred = "WAIT_FOR_CONFIRMED_BRANCH"
+            else:
+                preferred = (
+                    "BREAK_UP_AND_ROLE_FLIP" if composite > 0 else "REJECTION_DOWN"
+                )
+        else:
+            hold = {
+                "outcome": "HOLD_ABOVE",
+                "confirmation": "10-15 minute hold/retest above with bullish candle high break",
+                "target": upper_name,
+            }
+            break_branch = {
+                "outcome": "HOLD_BELOW",
+                "confirmation": "10-15 minute hold/retest below with bearish candle low break",
+                "target": lower_name,
+            }
+            preferred = "WAIT_FOR_CONFIRMED_BRANCH"
+
+        is_immediate = strike in {
+            float(immediate_support_strike) if immediate_support_strike is not None else None,
+            float(immediate_resistance_strike) if immediate_resistance_strike is not None else None,
+        }
+        predictions.append({
+            "strike": strike,
+            "kind": kind,
+            "source": level.get("source", "option_chain_proxy"),
+            "basis": level.get("basis", ""),
+            "evidence_grade": level.get("evidence_grade", ""),
+            "evidence_score": level.get("evidence_score"),
+            "confluence": bool(level.get("confluence", False)),
+            "confluence_note": level.get("confluence_note", ""),
+            "priority": "IMMEDIATE" if is_immediate else "SECONDARY",
+            "oi_lean_preferred_branch": preferred,
+            "hold_or_reject_branch": hold,
+            "break_branch": break_branch,
+            "gap_rule": (
+                "If price opens and sustains beyond this level, do not assume a delayed "
+                "reaction here; treat it as skipped/flipped and evaluate the next level."
+            ),
+            "cascade_rule": (
+                "Once an opposite-direction break invalidates the original OI lean, ignore "
+                "its preferred branches at later levels and follow confirmed price action only."
+            ),
+            "no_confirmation": "WAIT / NO TRADE AT THIS LEVEL",
+        })
+    return predictions
 
 
 def _gap_scenarios(levels: dict, decode_result) -> list:
@@ -96,41 +272,58 @@ def _gap_scenarios(levels: dict, decode_result) -> list:
         {
             "open": "GAP DOWN",
             "plan": (
-                f"Ideal for a long setup if Smart Money is bullish. Market likely digs "
-                f"toward support {sup_s} (may even SWEEP liquidity just below a round "
-                f"figure to grab retail stop-losses), then REVERSES up — that liquidity "
-                f"sweep + institutional level + psychological level is the transcript's "
-                f"preferred long confluence. A sustained close BELOW {sup_s} with bearish volume "
-                f"flips it to resistance → continuation DOWN.")
+                f"Evaluate support {sup_s}; do not buy merely because price reached it. "
+                f"A liquidity sweep followed by a confirmed reclaim activates the bounce "
+                f"branch. Independently supplied institutional/psychological confluence "
+                f"strengthens the setup. A sustained bearish break BELOW {sup_s} flips it "
+                f"to resistance and activates the next lower level.")
         },
         {
             "open": "FLAT",
             "plan": (
-                f"Trade the band: buy dips into support {sup_s} (hold → bounce), sell "
-                f"rallies into resistance {res_s} (reject → fade). Direction resolves on "
-                f"which wall breaks with follow-through.")
+                f"Treat {sup_s} to {res_s} as the decision band. A confirmed support "
+                f"reclaim activates the bounce branch; confirmed resistance rejection "
+                f"activates the fade branch. Without either candle, wait. Direction changes "
+                f"only when a wall breaks and sustains.")
         },
         {
             "open": "GAP UP",
             "plan": (
-                f"Watch resistance {res_s}. Rejection → fade back toward {sup_s}. A "
-                f"decisive 15-min close ABOVE {res_s} (call writers unwinding) → "
-                f"breakout continuation UP toward the next call wall.")
+                f"Evaluate resistance {res_s}. Confirmed rejection activates a move toward "
+                f"{sup_s}; a decisive 15-minute close and retest ABOVE {res_s} means the "
+                f"call-side concentration gave way and activates the next upper level.")
         },
     ]
-    # Emphasise the likely primary path.
-    if decode_result.smart_money_conflict:
+    # Emphasise a conditional branch without forecasting the opening path.
+    if getattr(decode_result, "smart_money_conflict", False):
         out.insert(0, {"open": "NOTE",
                        "plan": decode_result.conflict_note})
+    elif abs(decode_result.composite) < 0.10:
+        out.insert(0, {
+            "open": "PRIMARY",
+            "plan": (
+                "No OI branch is preferred. Wait for a confirmed hold/rejection or "
+                "break/role-flip at the relevant level."
+            ),
+        })
     elif bullish:
-        out.insert(0, {"open": "PRIMARY",
-                       "plan": (f"Bias up but if retail is crowded long, the transcript's "
-                                f"preferred 'sell-on-rise / dip-then-recover' path is a dip "
-                                f"into {sup_s} followed by a confirmed reversal.")})
+        out.insert(0, {
+            "open": "PRIMARY",
+            "plan": (
+                f"Bullish OI context prefers a confirmed hold/reclaim at {sup_s} or a "
+                f"confirmed break/retest above {res_s}; it does not forecast that either "
+                f"path must occur."
+            ),
+        })
     else:
-        out.insert(0, {"open": "PRIMARY",
-                       "plan": (f"Bias down: rallies into {res_s} likely sold; "
-                                f"a break below {sup_s} opens further downside.")})
+        out.insert(0, {
+            "open": "PRIMARY",
+            "plan": (
+                f"Bearish OI context prefers a confirmed rejection at {res_s} or a "
+                f"confirmed break/failed reclaim below {sup_s}; it does not forecast "
+                f"that either path must occur."
+            ),
+        })
     return out
 
 
@@ -138,6 +331,7 @@ def build_predictions(decode_result, levels: Optional[dict],
                       decoded_history: Optional[pd.DataFrame] = None) -> dict:
     levels = levels or {}
     key_levels = _levels_summary(levels)
+    level_predictions = _level_predictions(levels, decode_result)
     version = getattr(decode_result, "method_version", "v1")
     threshold = 0.12 if version == "v1" else 0.10
 
@@ -161,6 +355,7 @@ def build_predictions(decode_result, levels: Optional[dict],
         key_levels=key_levels,
         actionability=nd_action,
         research_lean=nd_dir,
+        level_predictions=level_predictions,
     )
 
     # ---- Next week / positional (FII-led) ----

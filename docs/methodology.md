@@ -221,17 +221,56 @@ strong contradiction adds a warning; agreement adds a confirmation note. It does
 not change the daily class because historical cash inputs were unavailable for
 the locked v2 replay.
 
-### Option chain
+### Option-chain proxy versus exact institutional levels
 
-When supplied, option-chain logic identifies support, resistance, max pain, and
-PCR for the report's scenario plan. Levels do not alter the locked OI class.
-Historical date-matched chains were unavailable, so no option-level reaction
-accuracy is claimed for v2.
+The complete PDF review found that the speaker does not disclose the formula for
+his exact institutional levels; he explicitly refers that construction to an
+Advanced Course. He also distinguishes non-strike institutional values such as
+24,076 from round-number option-chain levels such as 24,000. See
+[institutional-levels.md](institutional-levels.md) for page/timestamp evidence.
 
-Both total OI and change in OI matter when interpreting a live level. A large put
-wall can act as support and a large call wall as resistance, but a sustained break
-can flip the role. Aggregate end-of-day chain data cannot identify every buyer,
-writer, hedge, roll, or manipulation pattern.
+Accordingly, automatic values are labelled `option_chain_proxy`, never exact
+institutional levels. Put concentrations below spot are support candidates and
+call concentrations above spot are resistance candidates. Relevant-side strikes
+are ranked with both disclosed inputs:
+
+```text
+level_evidence =
+    0.60 * (strike total OI / maximum side total OI)
+  + 0.40 * (positive strike OI change / maximum side positive OI change)
+```
+
+The 60/40 split is an engineering ranking rule, not probability and not a
+transcript percentage. Positive OI change is not called “writing,” because OI
+alone cannot identify the buyer or seller.
+
+Exact external references can be supplied with `--institutional-levels`. They
+remain labelled `supplied_institutional_reference` and are never presented as
+repository-derived. A supplied reference near an option-chain proxy is marked as
+confluence.
+
+Levels do not alter the locked OI class. Historical date-matched chains and exact
+institutional-level series were unavailable, so no option-level reaction accuracy
+is claimed for v2.
+
+### Level-by-level prediction
+
+Every retained level receives a structured decision tree in
+`predictions.next_day.level_predictions`:
+
+- support hold/reclaim with a bullish 10–15 minute candle → bounce toward the
+  next upper level;
+- support break, failed reclaim, and bearish candle → role flip and next lower
+  level;
+- resistance rejection with a bearish candle → next lower level;
+- resistance break/retest with a bullish candle → role flip and next upper level;
+- open and sustain beyond a level → treat it as skipped/flipped and evaluate the
+  next level;
+- no confirmation → `WAIT / NO TRADE AT THIS LEVEL`.
+
+The participant-OI lean selects a preferred branch, not a guaranteed outcome. A
+confirmed opposite-direction break invalidates that preference for later levels;
+from that point the report follows confirmed price action only.
 
 ### Gap-up / flat / gap-down branches
 

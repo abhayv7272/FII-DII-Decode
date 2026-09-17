@@ -1,15 +1,15 @@
 """Smoke tests for the decode pipeline using bundled fixtures (no network)."""
 import json
+import sys
 from pathlib import Path
 
 import pandas as pd
 
-import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from fiidii.cli import _history_for_method
-from fiidii.fetch import _parse_participant_csv
 from fiidii.decode import _fresh_pressure, decode
+from fiidii.fetch import _parse_participant_csv
 from fiidii.levels import derive_levels
 from fiidii.predict import build_predictions
 from fiidii.report import render_markdown
@@ -141,12 +141,61 @@ def test_unvalidated_confirmation_inputs_do_not_change_v2_class_score():
     assert cash_signal.weight == 0.0
 
 
+def test_supplied_institutional_reference_stays_distinct_and_marks_confluence():
+    today, previous, option_chain = _load()
+    levels = derive_levels(
+        option_chain,
+        institutional_levels=[{
+            "strike": 24_610,
+            "kind": "support",
+            "label": "external chart level",
+        }],
+    )
+    assert levels["supplied_institutional_level_count"] == 1
+    supplied = next(
+        level for level in levels["levels"]
+        if level["source"] == "supplied_institutional_reference"
+    )
+    assert supplied["basis"] == "supplied_reference_not_derived"
+    assert supplied["evidence_score"] is None
+    assert supplied["confluence"]
+    assert any(
+        level["source"] == "option_chain_proxy" and level["confluence"]
+        for level in levels["levels"]
+    )
+    result = decode(today, previous, cash={"fii_net": 1150, "dii_net": 1350})
+    plans = build_predictions(result, levels)["next_day"]["level_predictions"]
+    supplied_plan = next(
+        plan for plan in plans
+        if plan["source"] == "supplied_institutional_reference"
+    )
+    assert supplied_plan["hold_or_reject_branch"]["confirmation"]
+    assert "24600" not in supplied_plan["break_branch"]["target"]
+    proxy_plan = next(
+        plan for plan in plans
+        if plan["source"] == "option_chain_proxy" and plan["strike"] == 24_600
+    )
+    assert "24610" not in proxy_plan["hold_or_reject_branch"]["target"]
+    assert supplied_plan["no_confirmation"] == "WAIT / NO TRADE AT THIS LEVEL"
+
+
 def test_levels_and_predictions():
     today, prev, oc = _load()
     res = decode(today, prev, date_str="2026-09-17")
     levels = derive_levels(oc)
     assert levels["max_pain"] > 0
     assert levels["pcr"] > 0
+    assert levels["level_method"] == "transcript_disclosed_option_chain_proxy_v2"
+    assert not levels["exact_institutional_formula_available"]
+    assert levels["immediate_support"]["strike"] < levels["spot"]
+    assert levels["immediate_resistance"]["strike"] > levels["spot"]
+    assert all(
+        level["source"] == "option_chain_proxy" for level in levels["levels"]
+    )
+    assert all(
+        "writing" not in (level["evidence"] + level["reaction"]).lower()
+        for level in levels["levels"]
+    )
     preds = build_predictions(res, levels)
     assert preds["next_day"]["direction"] in {
         "UP", "DOWN", "SIDEWAYS-UP", "SIDEWAYS-DOWN", "RANGE"}
@@ -154,10 +203,19 @@ def test_levels_and_predictions():
     assert preds["next_week"]["confidence"] == 0.0
     assert "CONTEXT_ONLY" in preds["next_week"]["actionability"]
     assert "scenarios" in preds["next_day"]
+    level_plans = preds["next_day"]["level_predictions"]
+    assert len(level_plans) == len(levels["levels"])
+    assert any(plan["priority"] == "IMMEDIATE" for plan in level_plans)
+    assert all(plan["no_confirmation"].startswith("WAIT") for plan in level_plans)
+    assert all(plan["hold_or_reject_branch"]["target"] for plan in level_plans)
+    assert all(plan["break_branch"]["target"] for plan in level_plans)
     demo_report = render_markdown(
         res.to_dict(), preds, levels, "2026-09-17", demo=True
     )
     assert "DEMO FIXTURE" in demo_report
+    assert "Level-by-Level Conditional Prediction" in demo_report
+    assert "option-chain support/resistance proxies" in demo_report
+    assert "WAIT / NO TRADE AT THIS LEVEL" in demo_report
 
 
 if __name__ == "__main__":

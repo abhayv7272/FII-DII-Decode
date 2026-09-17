@@ -137,100 +137,124 @@
       "horizon": "next_day",
       "direction": "UP",
       "confidence": 100.0,
-      "rationale": "OI-only next-day research lean +0.77 (STRONG BULLISH), Pro-led (ultra-short). OI-only bullish lean. It becomes actionable only after the relevant option-chain/price level confirms with a 10-15 minute candle; a decisive break activates the opposite backup plan. Cash flow confirms the OI lean, but was not part of historical v2 scoring. Retail fresh index positioning is bearish (contra-positive), which supports a market bounce only after price confirmation. Move quality: FII: fresh index-future longs (full-strength bullish), 17,150 contracts; Pro: fresh index-future longs (full-strength bullish), 18,500 contracts. PCR 1.027 \u2014 Neutral PCR: range-bound; trade the support/resistance band.",
+      "rationale": "OI-only next-day research lean +0.77 (STRONG BULLISH), Pro-led (ultra-short). OI-only bullish lean. It becomes actionable only after the relevant option-chain/price level confirms with a 10-15 minute candle; a decisive break activates the opposite backup plan. Cash flow confirms the OI lean, but was not part of historical v2 scoring. Retail fresh index positioning is bearish (contra-positive), which supports a market bounce only after price confirmation. Move quality: FII: fresh index-future longs (full-strength bullish), 17,150 contracts; Pro: fresh index-future longs (full-strength bullish), 18,500 contracts. PCR 1.027 \u2014 Put/call OI is comparatively balanced. Use confirmed support/resistance branches; PCR alone supplies no direction.",
       "scenarios": [
         {
           "open": "PRIMARY",
-          "plan": "Bias up but if retail is crowded long, the transcript's preferred 'sell-on-rise / dip-then-recover' path is a dip into 24600 followed by a confirmed reversal."
+          "plan": "Bullish OI context prefers a confirmed hold/reclaim at 24600 or a confirmed break/retest above 25150; it does not forecast that either path must occur."
         },
         {
           "open": "GAP DOWN",
-          "plan": "Ideal for a long setup if Smart Money is bullish. Market likely digs toward support 24600 (may even SWEEP liquidity just below a round figure to grab retail stop-losses), then REVERSES up \u2014 that liquidity sweep + institutional level + psychological level is the transcript's preferred long confluence. A sustained close BELOW 24600 with bearish volume flips it to resistance \u2192 continuation DOWN."
+          "plan": "Evaluate support 24600; do not buy merely because price reached it. A liquidity sweep followed by a confirmed reclaim activates the bounce branch. Independently supplied institutional/psychological confluence strengthens the setup. A sustained bearish break BELOW 24600 flips it to resistance and activates the next lower level."
         },
         {
           "open": "FLAT",
-          "plan": "Trade the band: buy dips into support 24600 (hold \u2192 bounce), sell rallies into resistance 25150 (reject \u2192 fade). Direction resolves on which wall breaks with follow-through."
+          "plan": "Treat 24600 to 25150 as the decision band. A confirmed support reclaim activates the bounce branch; confirmed resistance rejection activates the fade branch. Without either candle, wait. Direction changes only when a wall breaks and sustains."
         },
         {
           "open": "GAP UP",
-          "plan": "Watch resistance 25150. Rejection \u2192 fade back toward 24600. A decisive 15-min close ABOVE 25150 (call writers unwinding) \u2192 breakout continuation UP toward the next call wall."
+          "plan": "Evaluate resistance 25150. Confirmed rejection activates a move toward 24600; a decisive 15-minute close and retest ABOVE 25150 means the call-side concentration gave way and activates the next upper level."
         }
       ],
       "key_levels": {
         "support": [
           {
-            "strike": 24400.0,
+            "strike": 24250.0,
             "kind": "support",
-            "basis": "put_oi",
-            "oi": 218945.0,
-            "oi_change": -4597.0,
-            "distance_pct": -1.81,
-            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
-          },
-          {
-            "strike": 24350.0,
-            "kind": "support",
-            "basis": "put_oi",
-            "oi": 211591.0,
-            "oi_change": -3576.0,
-            "distance_pct": -2.01,
-            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+            "basis": "put_oi_total_plus_change",
+            "oi": 172400.0,
+            "oi_change": 11557.0,
+            "distance_pct": -2.41,
+            "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 82.7,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "PUT total OI 172,400; OI change +11,557 (increased); relative evidence score 82.7/100. OI alone does not identify buyer/writer.",
+            "label": "put-side concentration",
+            "confluence": false,
+            "confluence_note": ""
           },
           {
             "strike": 24450.0,
             "kind": "support",
-            "basis": "put_oi",
+            "basis": "put_oi_total_plus_change",
             "oi": 207774.0,
             "oi_change": 10044.0,
             "distance_pct": -1.61,
-            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+            "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 87.7,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "PUT total OI 207,774; OI change +10,044 (increased); relative evidence score 87.7/100. OI alone does not identify buyer/writer.",
+            "label": "put-side concentration",
+            "confluence": false,
+            "confluence_note": ""
           },
           {
             "strike": 24600.0,
             "kind": "support",
-            "basis": "put_oi_change",
+            "basis": "put_oi_total_plus_change",
             "oi": 143253.0,
             "oi_change": 13047.0,
             "distance_pct": -1.01,
-            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+            "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 79.3,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "PUT total OI 143,253; OI change +13,047 (increased); relative evidence score 79.3/100. OI alone does not identify buyer/writer.",
+            "label": "put-side concentration",
+            "confluence": false,
+            "confluence_note": ""
           }
         ],
         "resistance": [
           {
-            "strike": 25250.0,
-            "kind": "resistance",
-            "basis": "call_oi",
-            "oi": 206583.0,
-            "oi_change": 6150.0,
-            "distance_pct": 1.61,
-            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
-          },
-          {
-            "strike": 25200.0,
-            "kind": "resistance",
-            "basis": "call_oi",
-            "oi": 201323.0,
-            "oi_change": -642.0,
-            "distance_pct": 1.41,
-            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
-          },
-          {
             "strike": 25150.0,
             "kind": "resistance",
-            "basis": "call_oi",
+            "basis": "call_oi_total_plus_change",
             "oi": 197680.0,
             "oi_change": 12944.0,
             "distance_pct": 1.21,
-            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+            "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 93.0,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "CALL total OI 197,680; OI change +12,944 (increased); relative evidence score 93.0/100. OI alone does not identify buyer/writer.",
+            "label": "call-side concentration",
+            "confluence": false,
+            "confluence_note": ""
           },
           {
-            "strike": 24600.0,
+            "strike": 25300.0,
             "kind": "resistance",
-            "basis": "call_oi_change",
-            "oi": 14514.0,
-            "oi_change": 14656.0,
-            "distance_pct": -1.01,
-            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel)."
+            "basis": "call_oi_total_plus_change",
+            "oi": 189478.0,
+            "oi_change": 8323.0,
+            "distance_pct": 1.81,
+            "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 77.9,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "CALL total OI 189,478; OI change +8,323 (increased); relative evidence score 77.9/100. OI alone does not identify buyer/writer.",
+            "label": "call-side concentration",
+            "confluence": false,
+            "confluence_note": ""
+          },
+          {
+            "strike": 25350.0,
+            "kind": "resistance",
+            "basis": "call_oi_total_plus_change",
+            "oi": 158275.0,
+            "oi_change": 13031.0,
+            "distance_pct": 2.01,
+            "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 81.8,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "CALL total OI 158,275; OI change +13,031 (increased); relative evidence score 81.8/100. OI alone does not identify buyer/writer.",
+            "label": "call-side concentration",
+            "confluence": false,
+            "confluence_note": ""
           }
         ],
         "max_pain": 24850.0,
@@ -238,24 +262,194 @@
         "immediate_support": {
           "strike": 24600.0,
           "kind": "support",
-          "basis": "put_oi_change",
+          "basis": "put_oi_total_plus_change",
           "oi": 143253.0,
           "oi_change": 13047.0,
           "distance_pct": -1.01,
-          "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+          "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+          "source": "option_chain_proxy",
+          "evidence_score": 79.3,
+          "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+          "evidence": "PUT total OI 143,253; OI change +13,047 (increased); relative evidence score 79.3/100. OI alone does not identify buyer/writer.",
+          "label": "put-side concentration",
+          "confluence": false,
+          "confluence_note": ""
         },
         "immediate_resistance": {
           "strike": 25150.0,
           "kind": "resistance",
-          "basis": "call_oi",
+          "basis": "call_oi_total_plus_change",
           "oi": 197680.0,
           "oi_change": 12944.0,
           "distance_pct": 1.21,
-          "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
-        }
+          "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+          "source": "option_chain_proxy",
+          "evidence_score": 93.0,
+          "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+          "evidence": "CALL total OI 197,680; OI change +12,944 (increased); relative evidence score 93.0/100. OI alone does not identify buyer/writer.",
+          "label": "call-side concentration",
+          "confluence": false,
+          "confluence_note": ""
+        },
+        "level_method": "transcript_disclosed_option_chain_proxy_v2",
+        "level_method_warning": "The PDFs do not disclose the proprietary institutional-level formula; they refer viewers to an advanced course. Automatically drawn values are option-chain support/resistance proxies, not reconstructed proprietary levels. Any externally supplied exact references are identified separately.",
+        "exact_institutional_formula_available": false,
+        "supplied_institutional_level_count": 0
       },
       "actionability": "CONDITIONAL_BULLISH_SETUP",
-      "research_lean": "UP"
+      "research_lean": "UP",
+      "level_predictions": [
+        {
+          "strike": 24250.0,
+          "kind": "support",
+          "source": "option_chain_proxy",
+          "basis": "put_oi_total_plus_change",
+          "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+          "evidence_score": 82.7,
+          "confluence": false,
+          "confluence_note": "",
+          "priority": "SECONDARY",
+          "oi_lean_preferred_branch": "HOLD_OR_RECLAIM",
+          "hold_or_reject_branch": {
+            "outcome": "BOUNCE_OR_RECLAIM_UP",
+            "confirmation": "10-15 minute bullish rejection/reclaim; enter only on the confirming candle high break",
+            "target": "24450 (option chain proxy)"
+          },
+          "break_branch": {
+            "outcome": "BREAK_DOWN_AND_ROLE_FLIP",
+            "confirmation": "10-15 minute bearish close below, failed reclaim, and candle low break",
+            "target": "next lower level not available"
+          },
+          "gap_rule": "If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level.",
+          "cascade_rule": "Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only.",
+          "no_confirmation": "WAIT / NO TRADE AT THIS LEVEL"
+        },
+        {
+          "strike": 24450.0,
+          "kind": "support",
+          "source": "option_chain_proxy",
+          "basis": "put_oi_total_plus_change",
+          "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+          "evidence_score": 87.7,
+          "confluence": false,
+          "confluence_note": "",
+          "priority": "SECONDARY",
+          "oi_lean_preferred_branch": "HOLD_OR_RECLAIM",
+          "hold_or_reject_branch": {
+            "outcome": "BOUNCE_OR_RECLAIM_UP",
+            "confirmation": "10-15 minute bullish rejection/reclaim; enter only on the confirming candle high break",
+            "target": "24600 (option chain proxy)"
+          },
+          "break_branch": {
+            "outcome": "BREAK_DOWN_AND_ROLE_FLIP",
+            "confirmation": "10-15 minute bearish close below, failed reclaim, and candle low break",
+            "target": "24250 (option chain proxy)"
+          },
+          "gap_rule": "If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level.",
+          "cascade_rule": "Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only.",
+          "no_confirmation": "WAIT / NO TRADE AT THIS LEVEL"
+        },
+        {
+          "strike": 24600.0,
+          "kind": "support",
+          "source": "option_chain_proxy",
+          "basis": "put_oi_total_plus_change",
+          "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+          "evidence_score": 79.3,
+          "confluence": false,
+          "confluence_note": "",
+          "priority": "IMMEDIATE",
+          "oi_lean_preferred_branch": "HOLD_OR_RECLAIM",
+          "hold_or_reject_branch": {
+            "outcome": "BOUNCE_OR_RECLAIM_UP",
+            "confirmation": "10-15 minute bullish rejection/reclaim; enter only on the confirming candle high break",
+            "target": "25150 (option chain proxy)"
+          },
+          "break_branch": {
+            "outcome": "BREAK_DOWN_AND_ROLE_FLIP",
+            "confirmation": "10-15 minute bearish close below, failed reclaim, and candle low break",
+            "target": "24450 (option chain proxy)"
+          },
+          "gap_rule": "If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level.",
+          "cascade_rule": "Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only.",
+          "no_confirmation": "WAIT / NO TRADE AT THIS LEVEL"
+        },
+        {
+          "strike": 25150.0,
+          "kind": "resistance",
+          "source": "option_chain_proxy",
+          "basis": "call_oi_total_plus_change",
+          "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+          "evidence_score": 93.0,
+          "confluence": false,
+          "confluence_note": "",
+          "priority": "IMMEDIATE",
+          "oi_lean_preferred_branch": "BREAK_UP_AND_ROLE_FLIP",
+          "hold_or_reject_branch": {
+            "outcome": "REJECTION_DOWN",
+            "confirmation": "10-15 minute bearish rejection; enter only on the confirming candle low break",
+            "target": "24600 (option chain proxy)"
+          },
+          "break_branch": {
+            "outcome": "BREAK_UP_AND_ROLE_FLIP",
+            "confirmation": "10-15 minute bullish close above, successful retest, and candle high break",
+            "target": "25300 (option chain proxy)"
+          },
+          "gap_rule": "If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level.",
+          "cascade_rule": "Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only.",
+          "no_confirmation": "WAIT / NO TRADE AT THIS LEVEL"
+        },
+        {
+          "strike": 25300.0,
+          "kind": "resistance",
+          "source": "option_chain_proxy",
+          "basis": "call_oi_total_plus_change",
+          "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+          "evidence_score": 77.9,
+          "confluence": false,
+          "confluence_note": "",
+          "priority": "SECONDARY",
+          "oi_lean_preferred_branch": "BREAK_UP_AND_ROLE_FLIP",
+          "hold_or_reject_branch": {
+            "outcome": "REJECTION_DOWN",
+            "confirmation": "10-15 minute bearish rejection; enter only on the confirming candle low break",
+            "target": "25150 (option chain proxy)"
+          },
+          "break_branch": {
+            "outcome": "BREAK_UP_AND_ROLE_FLIP",
+            "confirmation": "10-15 minute bullish close above, successful retest, and candle high break",
+            "target": "25350 (option chain proxy)"
+          },
+          "gap_rule": "If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level.",
+          "cascade_rule": "Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only.",
+          "no_confirmation": "WAIT / NO TRADE AT THIS LEVEL"
+        },
+        {
+          "strike": 25350.0,
+          "kind": "resistance",
+          "source": "option_chain_proxy",
+          "basis": "call_oi_total_plus_change",
+          "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+          "evidence_score": 81.8,
+          "confluence": false,
+          "confluence_note": "",
+          "priority": "SECONDARY",
+          "oi_lean_preferred_branch": "BREAK_UP_AND_ROLE_FLIP",
+          "hold_or_reject_branch": {
+            "outcome": "REJECTION_DOWN",
+            "confirmation": "10-15 minute bearish rejection; enter only on the confirming candle low break",
+            "target": "25300 (option chain proxy)"
+          },
+          "break_branch": {
+            "outcome": "BREAK_UP_AND_ROLE_FLIP",
+            "confirmation": "10-15 minute bullish close above, successful retest, and candle high break",
+            "target": "next upper level not available"
+          },
+          "gap_rule": "If price opens and sustains beyond this level, do not assume a delayed reaction here; treat it as skipped/flipped and evaluate the next level.",
+          "cascade_rule": "Once an opposite-direction break invalidates the original OI lean, ignore its preferred branches at later levels and follow confirmed price action only.",
+          "no_confirmation": "WAIT / NO TRADE AT THIS LEVEL"
+        }
+      ]
     },
     "next_week": {
       "horizon": "next_week",
@@ -279,78 +473,102 @@
       "key_levels": {
         "support": [
           {
-            "strike": 24400.0,
+            "strike": 24250.0,
             "kind": "support",
-            "basis": "put_oi",
-            "oi": 218945.0,
-            "oi_change": -4597.0,
-            "distance_pct": -1.81,
-            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
-          },
-          {
-            "strike": 24350.0,
-            "kind": "support",
-            "basis": "put_oi",
-            "oi": 211591.0,
-            "oi_change": -3576.0,
-            "distance_pct": -2.01,
-            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+            "basis": "put_oi_total_plus_change",
+            "oi": 172400.0,
+            "oi_change": 11557.0,
+            "distance_pct": -2.41,
+            "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 82.7,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "PUT total OI 172,400; OI change +11,557 (increased); relative evidence score 82.7/100. OI alone does not identify buyer/writer.",
+            "label": "put-side concentration",
+            "confluence": false,
+            "confluence_note": ""
           },
           {
             "strike": 24450.0,
             "kind": "support",
-            "basis": "put_oi",
+            "basis": "put_oi_total_plus_change",
             "oi": 207774.0,
             "oi_change": 10044.0,
             "distance_pct": -1.61,
-            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+            "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 87.7,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "PUT total OI 207,774; OI change +10,044 (increased); relative evidence score 87.7/100. OI alone does not identify buyer/writer.",
+            "label": "put-side concentration",
+            "confluence": false,
+            "confluence_note": ""
           },
           {
             "strike": 24600.0,
             "kind": "support",
-            "basis": "put_oi_change",
+            "basis": "put_oi_total_plus_change",
             "oi": 143253.0,
             "oi_change": 13047.0,
             "distance_pct": -1.01,
-            "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+            "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 79.3,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "PUT total OI 143,253; OI change +13,047 (increased); relative evidence score 79.3/100. OI alone does not identify buyer/writer.",
+            "label": "put-side concentration",
+            "confluence": false,
+            "confluence_note": ""
           }
         ],
         "resistance": [
           {
-            "strike": 25250.0,
-            "kind": "resistance",
-            "basis": "call_oi",
-            "oi": 206583.0,
-            "oi_change": 6150.0,
-            "distance_pct": 1.61,
-            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
-          },
-          {
-            "strike": 25200.0,
-            "kind": "resistance",
-            "basis": "call_oi",
-            "oi": 201323.0,
-            "oi_change": -642.0,
-            "distance_pct": 1.41,
-            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
-          },
-          {
             "strike": 25150.0,
             "kind": "resistance",
-            "basis": "call_oi",
+            "basis": "call_oi_total_plus_change",
             "oi": 197680.0,
             "oi_change": 12944.0,
             "distance_pct": 1.21,
-            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+            "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 93.0,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "CALL total OI 197,680; OI change +12,944 (increased); relative evidence score 93.0/100. OI alone does not identify buyer/writer.",
+            "label": "call-side concentration",
+            "confluence": false,
+            "confluence_note": ""
           },
           {
-            "strike": 24600.0,
+            "strike": 25300.0,
             "kind": "resistance",
-            "basis": "call_oi_change",
-            "oi": 14514.0,
-            "oi_change": 14656.0,
-            "distance_pct": -1.01,
-            "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel)."
+            "basis": "call_oi_total_plus_change",
+            "oi": 189478.0,
+            "oi_change": 8323.0,
+            "distance_pct": 1.81,
+            "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 77.9,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "CALL total OI 189,478; OI change +8,323 (increased); relative evidence score 77.9/100. OI alone does not identify buyer/writer.",
+            "label": "call-side concentration",
+            "confluence": false,
+            "confluence_note": ""
+          },
+          {
+            "strike": 25350.0,
+            "kind": "resistance",
+            "basis": "call_oi_total_plus_change",
+            "oi": 158275.0,
+            "oi_change": 13031.0,
+            "distance_pct": 2.01,
+            "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+            "source": "option_chain_proxy",
+            "evidence_score": 81.8,
+            "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+            "evidence": "CALL total OI 158,275; OI change +13,031 (increased); relative evidence score 81.8/100. OI alone does not identify buyer/writer.",
+            "label": "call-side concentration",
+            "confluence": false,
+            "confluence_note": ""
           }
         ],
         "max_pain": 24850.0,
@@ -358,158 +576,184 @@
         "immediate_support": {
           "strike": 24600.0,
           "kind": "support",
-          "basis": "put_oi_change",
+          "basis": "put_oi_total_plus_change",
           "oi": 143253.0,
           "oi_change": 13047.0,
           "distance_pct": -1.01,
-          "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+          "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+          "source": "option_chain_proxy",
+          "evidence_score": 79.3,
+          "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+          "evidence": "PUT total OI 143,253; OI change +13,047 (increased); relative evidence score 79.3/100. OI alone does not identify buyer/writer.",
+          "label": "put-side concentration",
+          "confluence": false,
+          "confluence_note": ""
         },
         "immediate_resistance": {
           "strike": 25150.0,
           "kind": "resistance",
-          "basis": "call_oi",
+          "basis": "call_oi_total_plus_change",
           "oi": 197680.0,
           "oi_change": 12944.0,
           "distance_pct": 1.21,
-          "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
-        }
+          "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+          "source": "option_chain_proxy",
+          "evidence_score": 93.0,
+          "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+          "evidence": "CALL total OI 197,680; OI change +12,944 (increased); relative evidence score 93.0/100. OI alone does not identify buyer/writer.",
+          "label": "call-side concentration",
+          "confluence": false,
+          "confluence_note": ""
+        },
+        "level_method": "transcript_disclosed_option_chain_proxy_v2",
+        "level_method_warning": "The PDFs do not disclose the proprietary institutional-level formula; they refer viewers to an advanced course. Automatically drawn values are option-chain support/resistance proxies, not reconstructed proprietary levels. Any externally supplied exact references are identified separately.",
+        "exact_institutional_formula_available": false,
+        "supplied_institutional_level_count": 0
       },
       "actionability": "CONTEXT_ONLY_WAIT_FOR_MULTI_SESSION_CONFIRMATION",
-      "research_lean": "SIDEWAYS-UP"
+      "research_lean": "SIDEWAYS-UP",
+      "level_predictions": []
     }
   },
   "levels": {
     "spot": 24850.0,
     "expiry": "25-Sep-2026",
+    "level_method": "transcript_disclosed_option_chain_proxy_v2",
+    "level_method_warning": "The PDFs do not disclose the proprietary institutional-level formula; they refer viewers to an advanced course. Automatically drawn values are option-chain support/resistance proxies, not reconstructed proprietary levels. Any externally supplied exact references are identified separately.",
+    "exact_institutional_formula_available": false,
+    "supplied_institutional_level_count": 0,
+    "confluence_tolerance_points": 100.0,
     "max_pain": 24850.0,
     "pcr": 1.027,
-    "pcr_signal": "Neutral PCR: range-bound; trade the support/resistance band.",
+    "pcr_signal": "Put/call OI is comparatively balanced. Use confirmed support/resistance branches; PCR alone supplies no direction.",
     "immediate_support": {
       "strike": 24600.0,
       "kind": "support",
-      "basis": "put_oi_change",
+      "basis": "put_oi_total_plus_change",
       "oi": 143253.0,
       "oi_change": 13047.0,
       "distance_pct": -1.01,
-      "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+      "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+      "source": "option_chain_proxy",
+      "evidence_score": 79.3,
+      "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+      "evidence": "PUT total OI 143,253; OI change +13,047 (increased); relative evidence score 79.3/100. OI alone does not identify buyer/writer.",
+      "label": "put-side concentration",
+      "confluence": false,
+      "confluence_note": ""
     },
     "immediate_resistance": {
       "strike": 25150.0,
       "kind": "resistance",
-      "basis": "call_oi",
+      "basis": "call_oi_total_plus_change",
       "oi": 197680.0,
       "oi_change": 12944.0,
       "distance_pct": 1.21,
-      "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+      "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+      "source": "option_chain_proxy",
+      "evidence_score": 93.0,
+      "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+      "evidence": "CALL total OI 197,680; OI change +12,944 (increased); relative evidence score 93.0/100. OI alone does not identify buyer/writer.",
+      "label": "call-side concentration",
+      "confluence": false,
+      "confluence_note": ""
     },
     "levels": [
       {
-        "strike": 25250.0,
-        "kind": "resistance",
-        "basis": "call_oi",
-        "oi": 206583.0,
-        "oi_change": 6150.0,
-        "distance_pct": 1.61,
-        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
-      },
-      {
-        "strike": 25200.0,
-        "kind": "resistance",
-        "basis": "call_oi",
-        "oi": 201323.0,
-        "oi_change": -642.0,
-        "distance_pct": 1.41,
-        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
-      },
-      {
-        "strike": 25150.0,
-        "kind": "resistance",
-        "basis": "call_oi",
-        "oi": 197680.0,
-        "oi_change": 12944.0,
-        "distance_pct": 1.21,
-        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
-      },
-      {
-        "strike": 24400.0,
+        "strike": 24250.0,
         "kind": "support",
-        "basis": "put_oi",
-        "oi": 218945.0,
-        "oi_change": -4597.0,
-        "distance_pct": -1.81,
-        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
-      },
-      {
-        "strike": 24350.0,
-        "kind": "support",
-        "basis": "put_oi",
-        "oi": 211591.0,
-        "oi_change": -3576.0,
-        "distance_pct": -2.01,
-        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
+        "basis": "put_oi_total_plus_change",
+        "oi": 172400.0,
+        "oi_change": 11557.0,
+        "distance_pct": -2.41,
+        "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+        "source": "option_chain_proxy",
+        "evidence_score": 82.7,
+        "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+        "evidence": "PUT total OI 172,400; OI change +11,557 (increased); relative evidence score 82.7/100. OI alone does not identify buyer/writer.",
+        "label": "put-side concentration",
+        "confluence": false,
+        "confluence_note": ""
       },
       {
         "strike": 24450.0,
         "kind": "support",
-        "basis": "put_oi",
+        "basis": "put_oi_total_plus_change",
         "oi": 207774.0,
         "oi_change": 10044.0,
         "distance_pct": -1.61,
-        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. A sustained break below => support becomes resistance."
-      },
-      {
-        "strike": 24600.0,
-        "kind": "resistance",
-        "basis": "call_oi_change",
-        "oi": 14514.0,
-        "oi_change": 14656.0,
-        "distance_pct": -1.01,
-        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel)."
-      },
-      {
-        "strike": 25550.0,
-        "kind": "resistance",
-        "basis": "call_oi_change",
-        "oi": 51626.0,
-        "oi_change": 14548.0,
-        "distance_pct": 2.82,
-        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel)."
-      },
-      {
-        "strike": 25450.0,
-        "kind": "resistance",
-        "basis": "call_oi_change",
-        "oi": 106034.0,
-        "oi_change": 14228.0,
-        "distance_pct": 2.41,
-        "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. Fresh call writing today => sellers active; a decisive break+close above flips it to support (short-covering fuel)."
+        "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+        "source": "option_chain_proxy",
+        "evidence_score": 87.7,
+        "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+        "evidence": "PUT total OI 207,774; OI change +10,044 (increased); relative evidence score 87.7/100. OI alone does not identify buyer/writer.",
+        "label": "put-side concentration",
+        "confluence": false,
+        "confluence_note": ""
       },
       {
         "strike": 24600.0,
         "kind": "support",
-        "basis": "put_oi_change",
+        "basis": "put_oi_total_plus_change",
         "oi": 143253.0,
         "oi_change": 13047.0,
         "distance_pct": -1.01,
-        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+        "reaction": "Conditional support level. A bullish 10-15 minute rejection/reclaim activates a bounce toward the next upper level. A sustained bearish break below flips this level to resistance and activates the next lower level.",
+        "source": "option_chain_proxy",
+        "evidence_score": 79.3,
+        "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+        "evidence": "PUT total OI 143,253; OI change +13,047 (increased); relative evidence score 79.3/100. OI alone does not identify buyer/writer.",
+        "label": "put-side concentration",
+        "confluence": false,
+        "confluence_note": ""
       },
       {
-        "strike": 24850.0,
-        "kind": "support",
-        "basis": "put_oi_change",
-        "oi": 37674.0,
-        "oi_change": 11927.0,
-        "distance_pct": 0.0,
-        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+        "strike": 25150.0,
+        "kind": "resistance",
+        "basis": "call_oi_total_plus_change",
+        "oi": 197680.0,
+        "oi_change": 12944.0,
+        "distance_pct": 1.21,
+        "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+        "source": "option_chain_proxy",
+        "evidence_score": 93.0,
+        "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+        "evidence": "CALL total OI 197,680; OI change +12,944 (increased); relative evidence score 93.0/100. OI alone does not identify buyer/writer.",
+        "label": "call-side concentration",
+        "confluence": false,
+        "confluence_note": ""
       },
       {
-        "strike": 25000.0,
-        "kind": "support",
-        "basis": "put_oi_change",
-        "oi": 23016.0,
-        "oi_change": 11674.0,
-        "distance_pct": 0.6,
-        "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+        "strike": 25300.0,
+        "kind": "resistance",
+        "basis": "call_oi_total_plus_change",
+        "oi": 189478.0,
+        "oi_change": 8323.0,
+        "distance_pct": 1.81,
+        "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+        "source": "option_chain_proxy",
+        "evidence_score": 77.9,
+        "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+        "evidence": "CALL total OI 189,478; OI change +8,323 (increased); relative evidence score 77.9/100. OI alone does not identify buyer/writer.",
+        "label": "call-side concentration",
+        "confluence": false,
+        "confluence_note": ""
+      },
+      {
+        "strike": 25350.0,
+        "kind": "resistance",
+        "basis": "call_oi_total_plus_change",
+        "oi": 158275.0,
+        "oi_change": 13031.0,
+        "distance_pct": 2.01,
+        "reaction": "Conditional resistance level. A bearish 10-15 minute rejection activates a move toward the next lower level. A sustained bullish break above flips this level to support and activates the next upper level.",
+        "source": "option_chain_proxy",
+        "evidence_score": 81.8,
+        "evidence_grade": "HIGH_RELATIVE_CONCENTRATION",
+        "evidence": "CALL total OI 158,275; OI change +13,031 (increased); relative evidence score 81.8/100. OI alone does not identify buyer/writer.",
+        "label": "call-side concentration",
+        "confluence": false,
+        "confluence_note": ""
       }
     ]
   }

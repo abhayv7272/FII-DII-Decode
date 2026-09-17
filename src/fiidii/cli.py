@@ -27,12 +27,12 @@ from pathlib import Path
 import pandas as pd
 
 from . import fetch, store
-from .nse import NseClient
 from .decode import decode
+from .email_send import send_report
 from .levels import derive_levels
+from .nse import NseClient
 from .predict import build_predictions
 from .report import render_html, render_markdown
-from .email_send import send_report
 
 REPORTS_DIR = Path("reports")
 FIXTURES = Path("tests/fixtures")
@@ -53,6 +53,19 @@ def _load_demo():
             {"category": "FII/FPI *", "netValue": "1150.25"}]
     oc = json.loads((FIXTURES / "option_chain_nifty.json").read_text())
     return today, prev, cash, oc
+
+
+def _load_institutional_levels(path: str | None):
+    if not path:
+        return None
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if isinstance(payload, dict):
+        payload = payload.get("levels")
+    if not isinstance(payload, list):
+        raise TypeError(
+            "institutional-level file must be a JSON list or {'levels': [...]}"
+        )
+    return payload
 
 
 def _quote_number(quote: dict, *keys: str):
@@ -143,8 +156,23 @@ def run(args) -> int:
             _persist_index_ohlc(quote, symbol, report_date)
 
     # --- Levels first (feed into decode metrics) ---
-    levels = derive_levels(oc) if oc else {"levels": [], "max_pain": None,
-                                           "pcr": None, "pcr_signal": ""}
+    supplied_levels = _load_institutional_levels(
+        getattr(args, "institutional_levels", None)
+    )
+    levels = (
+        derive_levels(oc, institutional_levels=supplied_levels)
+        if oc else {
+            "levels": [],
+            "max_pain": None,
+            "pcr": None,
+            "pcr_signal": "",
+            "level_method_warning": (
+                "No dated option chain was available, so no automatic level proxy "
+                "or level-by-level prediction was generated."
+            ),
+            "exact_institutional_formula_available": False,
+        }
+    )
 
     # --- Decode ---
     result = decode(oi_today, oi_prev, cash=cash, option_levels=levels,
@@ -270,6 +298,13 @@ def main(argv=None) -> int:
     r.add_argument("--no-email", action="store_true", help="do not send email")
     r.add_argument("--symbol", default="NIFTY")
     r.add_argument("--date", default=None, help="override report date (demo mode)")
+    r.add_argument(
+        "--institutional-levels", metavar="JSON",
+        help=(
+            "optional exact externally supplied institutional references; JSON list "
+            "of numbers or {strike, kind, label} objects"
+        ),
+    )
     r.set_defaults(func=run)
 
     b = sub.add_parser("backtest", help="replay historical OI and score next-session predictions")

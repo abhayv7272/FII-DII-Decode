@@ -1,17 +1,14 @@
 """Render the daily decode report (Amit Dhamija format) as HTML + Markdown.
 
-Sections mirror the "Market Analysis Academy — Decoded" PDF:
-  1. Headline bias (next-day + positional)
-  2. Institutional Data & Setup (FII/Pro/Retail/DII + cash + move quality)
-  3. Next-Day Prediction (Gap Up / Flat / Gap Down scenarios)
-  4. Next-Week / Positional Outlook
-  5. Institutional Levels & Expected Reaction (option chain)
-  6. Decode signals breakdown
-  7. Trading strategy & risk management + disclaimer
+Sections mirror the "Market Analysis Academy — Decoded" PDF while clearly
+separating the automatic option-chain proxy from externally supplied exact
+institutional references. Each level gets confirmed hold/reject and break/flip
+branches with its next target; no unconditional reaction is claimed.
 """
 from __future__ import annotations
 
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 _BIAS_COLOR = {
     "STRONG BULLISH": "#0f8a3c", "BULLISH": "#2fae5e",
@@ -44,13 +41,42 @@ _RISK = (
 
 
 def _levels_rows(levels: list) -> str:
+    if not levels:
+        return "<tr><td colspan='8'>No dated level inputs available.</td></tr>"
     return "\n".join(
-        f"<tr><td>{l['strike']:.0f}</td><td>{l['kind']}</td>"
-        f"<td>{l['basis']}</td><td>{l['oi']:,.0f}</td>"
-        f"<td>{l['oi_change']:+,.0f}</td><td>{l['distance_pct']:+.2f}%</td>"
-        f"<td style='font-size:12px'>{l['reaction']}</td></tr>"
-        for l in levels
+        f"<tr><td>{level['strike']:.0f}</td><td>{level['kind']}</td>"
+        f"<td>{level.get('source','')}<br><span style='font-size:11px'>"
+        f"{level.get('label','')}</span></td><td>{level.get('basis','')}</td>"
+        f"<td>{level.get('oi',0):,.0f}</td>"
+        f"<td>{level.get('oi_change',0):+,.0f}</td>"
+        f"<td>{level.get('evidence_grade','')}"
+        f"{' · CONFLUENCE' if level.get('confluence') else ''}</td>"
+        f"<td style='font-size:12px'>{level.get('evidence','')} "
+        f"{level.get('confluence_note','')}</td></tr>"
+        for level in levels
     )
+
+
+def _level_prediction_rows(predictions: list) -> str:
+    if not predictions:
+        return "<tr><td colspan='8'>No level-by-level prediction: dated levels unavailable.</td></tr>"
+    rows = []
+    for prediction in predictions:
+        hold = prediction["hold_or_reject_branch"]
+        broken = prediction["break_branch"]
+        rows.append(
+            f"<tr><td>{prediction['strike']:.0f}</td><td>{prediction['kind']}</td>"
+            f"<td>{prediction['source']}</td><td>{prediction['priority']}</td>"
+            f"<td><b>{prediction['oi_lean_preferred_branch']}</b></td>"
+            f"<td style='font-size:12px'><b>{hold['outcome']}</b>: "
+            f"{hold['confirmation']} → {hold['target']}</td>"
+            f"<td style='font-size:12px'><b>{broken['outcome']}</b>: "
+            f"{broken['confirmation']} → {broken['target']}</td>"
+            f"<td style='font-size:12px'>{prediction['gap_rule']} "
+            f"{prediction['cascade_rule']} Without confirmation: "
+            f"{prediction['no_confirmation']}.</td></tr>"
+        )
+    return "\n".join(rows)
 
 
 def _gap_html(scenarios: list) -> str:
@@ -87,6 +113,10 @@ def render_html(dr: dict, predictions: dict, levels: dict,
     color = _BIAS_COLOR.get(bias, "#333")
     pcolor = _BIAS_COLOR.get(dr["positional_bias"], "#333")
     nd, nw = predictions["next_day"], predictions["next_week"]
+    level_method_warning = levels.get(
+        "level_method_warning",
+        "No dated option-chain or supplied institutional levels were available.",
+    )
     demo_block = ""
     if demo:
         demo_block = (
@@ -109,6 +139,7 @@ def render_html(dr: dict, predictions: dict, levels: dict,
     )
 
     m = dr.get("metrics", {})
+    generated_at = datetime.now(ZoneInfo("Asia/Kolkata"))
     metric_items = "".join(
         (f"<span style='display:inline-block;margin:2px 10px 2px 0'><b>{k}</b>: "
          + (f"{v:,.0f}" if isinstance(v, (int, float)) else f"{v}") + "</span>")
@@ -122,7 +153,7 @@ def render_html(dr: dict, predictions: dict, levels: dict,
 <body style="font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;
  max-width:860px;margin:0 auto;padding:16px;color:#1c1c1c;background:#fff">
 <h1 style="margin-bottom:0">📊 FII/DII/Pro/Client Decode</h1>
-<div style="color:#666">{symbol} · {report_date} · generated {datetime.now():%Y-%m-%d %H:%M IST}</div>
+<div style="color:#666">{symbol} · {report_date} · generated {generated_at:%Y-%m-%d %H:%M IST}</div>
 <div style="margin:14px 0;padding:10px 14px;border-radius:8px;background:#fff8e1;
  border-left:6px solid #f9a825;font-size:13px"><b>Validation warning:</b>
  {_VALIDATION_WARNING}</div>
@@ -173,11 +204,26 @@ v2 next-day NIFTY score; carry is positional context, not the next-day trigger.<
 <p style="color:#444">{nw['rationale']}</p>
 <ul>{_gap_html(nw['scenarios'])}</ul>
 
-<h2>🧭 Institutional Levels & Expected Reaction</h2>
+<h2>🧭 Level-by-Level Conditional Prediction</h2>
+<div style="margin:10px 0;padding:10px 14px;background:#fff8e1;border-left:5px solid #f9a825;font-size:12px">
+<b>Level-method disclosure:</b> {level_method_warning}</div>
 <table border="0" cellpadding="6" cellspacing="0" width="100%"
- style="border-collapse:collapse;font-size:14px">
+ style="border-collapse:collapse;font-size:12px">
 <tr style="background:#f2f2f2;text-align:left">
- <th>Strike</th><th>Type</th><th>Basis</th><th>OI</th><th>ΔOI</th><th>Dist</th><th>Expected reaction</th></tr>
+ <th>Level</th><th>Role</th><th>Source</th><th>Priority</th>
+ <th>OI-lean preferred branch</th><th>Hold / reject confirmation</th>
+ <th>Break / flip confirmation</th><th>Gap / no-confirmation rule</th></tr>
+{_level_prediction_rows(nd.get('level_predictions', []))}
+</table>
+<p style="font-size:12px"><b>Preferred branch is conditional, not a probability.</b>
+ No confirming candle means no level trade.</p>
+
+<h2>📐 Level Evidence</h2>
+<table border="0" cellpadding="6" cellspacing="0" width="100%"
+ style="border-collapse:collapse;font-size:12px">
+<tr style="background:#f2f2f2;text-align:left">
+ <th>Strike</th><th>Role</th><th>Source</th><th>Basis</th><th>OI</th><th>ΔOI</th>
+ <th>Evidence grade</th><th>Evidence / confluence</th></tr>
 {_levels_rows(levels.get('levels', []))}
 </table>
 <p><b>Max Pain:</b> {levels.get('max_pain','n/a')} ·
@@ -214,12 +260,17 @@ def render_markdown(dr: dict, predictions: dict, levels: dict,
         "",
         f"> ⚠️ **Validation warning:** {_VALIDATION_WARNING}",
         "",
-        f"**Next-day OI lean (Pro-led):** {dr['bias']}  ·  score `{dr['composite']:+.2f}`  ·  "
-        f"setup strength {dr['confidence']:.0f}/100  ·  {nd['direction']}  ·  "
-        f"{nd.get('actionability','')}",
-        f"**Positional carry context (FII-led):** {dr['positional_bias']}  ·  "
-        f"score `{dr['positional_composite']:+.2f}`  ·  {nw['direction']}  ·  "
-        f"research lean {nw.get('research_lean','')}",
+        (
+            f"**Next-day OI lean (Pro-led):** {dr['bias']}  ·  score "
+            f"`{dr['composite']:+.2f}`  ·  setup strength "
+            f"{dr['confidence']:.0f}/100  ·  {nd['direction']}  ·  "
+            f"{nd.get('actionability','')}"
+        ),
+        (
+            f"**Positional carry context (FII-led):** {dr['positional_bias']}  ·  "
+            f"score `{dr['positional_composite']:+.2f}`  ·  {nw['direction']}  ·  "
+            f"research lean {nw.get('research_lean','')}"
+        ),
         "",
     ]
     if demo:
@@ -246,21 +297,84 @@ def render_markdown(dr: dict, predictions: dict, levels: dict,
           f"- {nw['rationale']}"]
     for s in nw["scenarios"]:
         L.append(f"  - **{s.get('trigger','')}** → {s.get('then','')}")
-    L += ["", "## Institutional Levels & Expected Reaction", "",
-          "| Strike | Type | Basis | OI | ΔOI | Dist | Expected reaction |",
-          "|---|---|---|---|---|---|---|"]
-    for l in levels.get("levels", []):
-        L.append(f"| {l['strike']:.0f} | {l['kind']} | {l['basis']} | "
-                 f"{l['oi']:,.0f} | {l['oi_change']:+,.0f} | {l['distance_pct']:+.2f}% | "
-                 f"{l['reaction']} |")
-    L += ["", f"**Max Pain:** {levels.get('max_pain','n/a')} · "
-          f"**PCR:** {levels.get('pcr','n/a')} — {levels.get('pcr_signal','')}", "",
-          "## Decode Signals", "",
-          "| Signal | Score | Weight | Note |", "|---|---|---|---|"]
+    L += [
+        "",
+        "## Level-by-Level Conditional Prediction",
+        "",
+        f"> **Level-method disclosure:** {levels.get('level_method_warning', 'No dated level inputs available.')}",
+        "",
+        (
+            "The OI-lean preferred branch is conditional, not a probability. Without a "
+            "confirming candle: **WAIT / NO TRADE AT THIS LEVEL**."
+        ),
+        "",
+        "| Level | Role | Source | Priority | OI-lean preferred branch | Hold/reject branch | Break/flip branch |",
+        "|---:|---|---|---|---|---|---|",
+    ]
+    level_predictions = nd.get("level_predictions", [])
+    if not level_predictions:
+        L.append("| n/a | n/a | n/a | n/a | NO DATED LEVELS | Wait | Wait |")
+    for prediction in level_predictions:
+        hold = prediction["hold_or_reject_branch"]
+        broken = prediction["break_branch"]
+        L.append(
+            f"| {prediction['strike']:.0f} | {prediction['kind']} | "
+            f"{prediction['source']} | {prediction['priority']} | "
+            f"{prediction['oi_lean_preferred_branch']} | "
+            f"**{hold['outcome']}**: {hold['confirmation']} → {hold['target']} | "
+            f"**{broken['outcome']}**: {broken['confirmation']} → {broken['target']} |"
+        )
+    L += [
+        "",
+        (
+            "Every row also uses this gap rule: if price opens and sustains beyond the "
+            "level, treat that level as skipped/flipped and evaluate the next level. "
+            "Once an opposite-direction break invalidates the original OI lean, later "
+            "preferred branches are void; follow confirmed price action only."
+        ),
+        "",
+        "## Level Evidence",
+        "",
+        "| Strike | Role | Source | Basis | OI | ΔOI | Evidence score | Evidence grade | Confluence |",
+        "|---:|---|---|---|---:|---:|---:|---|---|",
+    ]
+    for level in levels.get("levels", []):
+        confluence = level.get("confluence_note", "") or "—"
+        score = level.get("evidence_score")
+        score_text = f"{score:.1f}" if score is not None else "n/a"
+        source = level.get("source", "")
+        label = level.get("label", "")
+        source_text = f"{source} ({label})" if label else source
+        L.append(
+            f"| {level['strike']:.0f} | {level['kind']} | "
+            f"{source_text} | {level.get('basis','')} | "
+            f"{level.get('oi',0):,.0f} | {level.get('oi_change',0):+,.0f} | "
+            f"{score_text} | {level.get('evidence_grade','')} | {confluence} |"
+        )
+    L += [
+        "",
+        (
+            f"**Max Pain:** {levels.get('max_pain','n/a')} · "
+            f"**PCR:** {levels.get('pcr','n/a')} — {levels.get('pcr_signal','')}"
+        ),
+        "",
+        "## Decode Signals",
+        "",
+        "| Signal | Score | Weight | Note |",
+        "|---|---|---|---|",
+    ]
     for s in dr["signals"]:
         L.append(f"| {s['name']} | {s['score']:+.2f} | {s['weight']:.2f} | {s['note']} |")
-    L += ["", "## Trading Strategy & Risk Management", "", _RISK, "",
-          "---",
-          "_Auto-generated by FII-DII-Decode (participant-OI decode). "
-          "Educational only — not investment advice._"]
+    L += [
+        "",
+        "## Trading Strategy & Risk Management",
+        "",
+        _RISK,
+        "",
+        "---",
+        (
+            "_Auto-generated by FII-DII-Decode (participant-OI decode). "
+            "Educational only — not investment advice._"
+        ),
+    ]
     return "\n".join(L)

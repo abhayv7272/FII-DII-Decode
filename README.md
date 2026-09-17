@@ -2,9 +2,10 @@
 
 Decode **FII / DII / Pro / Client** positioning from official NSE data and get an
 automated **daily report** — emailed every weekday at **9 PM IST** — with a
-conditional **next-day OI lean**, **next-week carry context**, institutional
-option-chain levels, and gap-up/flat/gap-down plans. V2 can abstain; every
-possible entry remains conditional on price/level confirmation.
+conditional **next-day OI lean**, **next-week carry context**, automatic
+option-chain level proxies, and gap-up/flat/gap-down plans. Every level includes
+confirmed hold/reject and break/role-flip branches with the next target. V2 can
+abstain; every possible entry remains conditional on price/level confirmation.
 
 > ⚠️ Educational analysis of publicly available data. **Not investment advice.**
 
@@ -43,7 +44,10 @@ The v2 decoder follows a complete reread of both source PDFs
 `Market_Analysis_03_August_2026_Decoded-combined.pdf`). See the formula in
 **[`docs/methodology.md`](docs/methodology.md)** and page/timestamp evidence plus
 v1 mapping errors in
-**[`docs/transcript-audit-v2.md`](docs/transcript-audit-v2.md)**. Highlights:
+**[`docs/transcript-audit-v2.md`](docs/transcript-audit-v2.md)**. The separate
+[institutional-level review](docs/institutional-levels.md) documents why exact
+institutional levels and automatic option-chain proxies must remain distinct.
+Highlights:
 
 - Decomposes **fresh longs, fresh shorts, short covering, and long unwinding**;
   closures receive less weight than fresh additions.
@@ -54,15 +58,21 @@ v1 mapping errors in
   Client a minority contrary/crowding condition; DII F&O gets zero direction.
 - FII-vs-Pro conflict produces `WAIT_FOR_REVERSAL_CONFIRMATION`; a weak score
   produces `NO_DIRECTIONAL_EDGE`.
-- All other daily leans are conditional on an option/price level and a confirming
-  candle. Gap Up / Flat / Gap Down are scenario branches, not guaranteed paths.
+- The PDFs do not disclose the author's exact institutional-level formula; the
+  code does not fabricate it. Automatic levels are visibly labelled option-chain
+  proxies, while exact externally supplied references preserve their provenance.
+- Each level has both confirmed hold/reject and break/role-flip scenarios, a next
+  target, a gap-skip rule, and explicit `WAIT / NO TRADE` without a 10–15 minute
+  confirming candle. Gap Up / Flat / Gap Down are scenario branches, not
+  guaranteed paths.
 
 ### Still needed from you
 
 1. **GitHub secrets for email** (see below) so the 9 PM job can actually send mail.
-2. Genuine dated **historical option-chain and cash-flow snapshots** are still
-   needed to test level reactions and the complete live pipeline. The direction-only
-   OI/OHLC result is now published above; bundled fixtures remain demo/test-only.
+2. Genuine dated **historical option-chain, exact institutional-level, intraday
+   candle, and cash-flow snapshots** are still needed to test level reactions and
+   the complete live pipeline. The direction-only OI/OHLC result is published
+   above; bundled fixtures remain demo/test-only.
 
 ---
 
@@ -74,12 +84,12 @@ v1 mapping errors in
    - NIFTY option chain (strike-wise OI, ΔOI, IV) + spot
 2. **Decodes** it into a forced OI research lean, a separate actionability state,
    and deterministic setup strength (`src/fiidii/decode.py`).
-3. **Derives institutional levels** from the option chain — call/put walls,
-   fresh-OI levels, max pain, PCR — each with an **expected reaction**
-   (`src/fiidii/levels.py`).
-4. Builds a conditional next-day plan and next-week carry context with **if/then
-   scenarios**; v2 publishes no weekly direction because the candidate failed
-   confirmation (`src/fiidii/predict.py`).
+3. Ranks **option-chain support/resistance proxies** from relevant-side total OI
+   plus change in OI, keeps exact supplied institutional references separate,
+   and reports confluence, max pain, and PCR (`src/fiidii/levels.py`).
+4. Builds a conditional next-day plan, a decision tree at every level, and
+   next-week carry context; v2 publishes no weekly direction because the
+   candidate failed confirmation (`src/fiidii/predict.py`).
 5. **Reports** as HTML + Markdown (`reports/`) and **emails** it
    (`src/fiidii/email_send.py`).
 6. **Automates** all of the above via GitHub Actions at 9 PM IST, Mon–Fri.
@@ -95,6 +105,10 @@ PYTHONPATH=src python -m fiidii.cli run --demo --no-email
 
 # Live run (needs NSE reachability — works on GitHub runners / most home IPs):
 PYTHONPATH=src python -m fiidii.cli run --no-email
+
+# Optional: add dated exact institutional references from an external chart/file:
+PYTHONPATH=src python -m fiidii.cli run --no-email \
+  --institutional-levels /path/to/levels.json
 ```
 
 Open `reports/latest.html` to view the result.
@@ -160,15 +174,16 @@ src/fiidii/
   store.py       # CSV/JSON persistence + history
   decode.py      # v2 OI lean, actionability, setup strength, carry context
   legacy_v1.py   # frozen decoder used by the published v1 replay
-  levels.py      # option-chain institutional levels + reactions
-  predict.py     # next-day / next-week predictions + scenarios
+  levels.py      # option-chain proxies + supplied institutional references
+  predict.py     # next-day/weekly context + per-level decision trees
   backtest.py    # point-in-time replay, metrics, CSV/JSON/Markdown outputs
   report.py      # HTML + Markdown rendering
   email_send.py  # SMTP delivery
   cli.py         # daily runner + historical backtest commands
 backtest.py           # convenient backtest CLI entry point
-docs/methodology.md   # decoded signal methodology
-docs/backtesting.md   # historical data contract + metric definitions
+docs/methodology.md          # decoded signal methodology
+docs/institutional-levels.md # level-source audit + conditional reaction contract
+docs/backtesting.md          # historical data contract + metric definitions
 tests/                # fixtures + unit/smoke tests
 .github/workflows/    # daily 9 PM IST automation
 ```
