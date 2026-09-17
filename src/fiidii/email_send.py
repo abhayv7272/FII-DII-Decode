@@ -21,15 +21,46 @@ from email.mime.application import MIMEApplication
 from typing import Optional
 
 
+def _env_str(name: str, default: str = "") -> str:
+    """Read an env var, treating unset, empty, and whitespace-only as missing.
+
+    GitHub Actions renders ``${{ secrets.X }}`` as an EMPTY STRING (not unset)
+    when the secret is not configured, so ``os.environ.get(name, default)``
+    never applies its default on a runner. Always normalise here.
+    """
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    raw = raw.strip()
+    return raw or default
+
+
+def _env_int(name: str, default: int) -> int:
+    """Read an integer env var; blank or non-numeric values fall back safely.
+
+    A misconfigured secret must never crash the whole daily report run:
+    ``int("")`` raised ``ValueError`` and failed the workflow before this
+    guard existed.
+    """
+    raw = _env_str(name, "")
+    if not raw:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        print(f"[email] {name}={raw!r} is not numeric; using default {default}")
+        return default
+
+
 def send_report(subject: str, html_body: str,
                 attachments: Optional[list[tuple[str, bytes]]] = None,
                 text_body: Optional[str] = None) -> bool:
-    host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-    port = int(os.environ.get("SMTP_PORT", "465"))
-    user = os.environ.get("SMTP_USER")
-    password = os.environ.get("SMTP_PASS")
-    mail_from = os.environ.get("MAIL_FROM", user or "")
-    mail_to = os.environ.get("MAIL_TO", "abhayv72727@gmail.com")
+    host = _env_str("SMTP_HOST", "smtp.gmail.com")
+    port = _env_int("SMTP_PORT", 465)
+    user = _env_str("SMTP_USER")
+    password = _env_str("SMTP_PASS")
+    mail_from = _env_str("MAIL_FROM", user)
+    mail_to = _env_str("MAIL_TO", "abhayv72727@gmail.com")
 
     if not user or not password:
         print("[email] SMTP_USER/SMTP_PASS not set; skipping send. "
