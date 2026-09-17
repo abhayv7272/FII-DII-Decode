@@ -352,3 +352,41 @@ signal-close-to-day-close `post_entry_hit_rate` as the main honest metric. That
 post-entry edge did **not** clear the 70% gate. The best PDF-level first-candle
 branches reached high September-only rates on small samples, but failed the
 July-Aug training split, so they are forward-watch tags only.
+
+## V8 10/15-minute trade-level simulator
+
+V8 tests whether the intraday confirmation idea becomes useful when measured as
+an executable trade instead of a day-label prediction. It enters only after the
+confirmation window has closed and simulates symmetric percentage target/stop
+orders on the remaining bars. Ambiguous OHLC bars that touch target and stop in
+the same candle are counted as losses.
+
+Run:
+
+```bash
+.venv/bin/python research/build_intraday_candles.py \
+  --raw-root /home/user/historical/technovusin-nifty50-historical-data/1min \
+  --interval 10 \
+  --out historical/nifty_10m.csv
+
+.venv/bin/python research/v8_intraday_trade_sim.py \
+  --out reports/v8_intraday_trade_sim
+```
+
+Published V8 result:
+
+| Check | Result |
+|---|---:|
+| 10m bars loaded | 88,764 |
+| 15m bars loaded | 58,397 |
+| Usable sessions | 2,336 |
+| Generic first-window rule grid summaries | 980 |
+| PDF-level trade rule grid summaries | 1,680 |
+| Generic trade rules clearing 70% train/2025/2026 gate | 0 |
+| PDF-level trade rules clearing 70% July-Aug/Sep gate | 0 |
+
+The best 2026-looking generic pockets were downside first-window continuation
+rules around 70-71% in the 2026 slice, but their 2017-2024 and/or 2025 win rates
+were near 50-61%, so they are regime-specific, not robust. The best PDF-level
+pockets again showed 100% on only 2-3 September trades while losing in the
+July-Aug training split; they are not promotable.

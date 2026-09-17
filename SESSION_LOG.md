@@ -26,8 +26,10 @@
   v6 pair/conjunction + 10-year price-regime search
   (`reports/v6_realworld_selective/`), and v7 2017-2026 15-minute intraday +
   exact dated PDF-level confirmation research
-  (`reports/v7_intraday_institutional_levels/`). No honest 70-85%
-  production-ready rule survived the holdout/sample/leakage/post-entry guards.
+  (`reports/v7_intraday_institutional_levels/`), and v8 10/15-minute symmetric
+  target/stop trade-level simulation (`reports/v8_intraday_trade_sim/`). No
+  honest 70-85% production-ready rule survived the
+  holdout/sample/leakage/post-entry/trade-execution guards.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
   in `reports/v3_forward_validation/gate_report.md` — state
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
@@ -40,12 +42,20 @@
   `/home/user/historical`, `/home/user/features`, and venvs are wiped between
   turns. Re-create venv with
   `pip install -r requirements.txt scipy scikit-learn`. The compact historical
-  bundle needed for v3-v7 feature/research rebuilds is now committed under
+  bundle needed for v3-v8 feature/research rebuilds is now committed under
   `historical/`; bulky raw bhavcopy ZIPs and raw 1-minute intraday files still
   stay outside git and must be re-downloaded only when rebuilding chain snapshots
-  or 15-minute intraday candles from scratch.
+  or 10-/15-minute intraday candles from scratch.
 
 ## Log (newest first)
+
+### 2026-09-18 (session 11 — V8 10/15m trade-level simulator)
+- User said "continue" after V7. Verified first: branch/session still active on `arena/01a0b16b-fii-dii-decode`; previous V7 commit `ca0316b` was pushed; no merge/close/branch switch.
+- Built committed 10-minute NIFTY intraday bars (`historical/nifty_10m.csv`) from the same outside-Git 1-minute archive; coverage remains 2017-04-03 through 2026-09-17 with 88,764 usable 10m rows.
+- Added `research/v8_intraday_trade_sim.py`: enters only after the 10/15-minute confirmation candle closes, then simulates symmetric percentage target/stop outcomes on remaining intraday bars. Ambiguous target+stop candles are counted as losses.
+- Generated `reports/v8_intraday_trade_sim/`: 980 generic first-window rule summaries and 1,680 PDF-level trade summaries. Full generic raw trade table is intentionally omitted by default to keep repo artifacts small; a 5,000-row sample is saved and full raw can be regenerated with `--write-raw-trades`.
+- Honest V8 result: **0** generic trade rules cleared 70% win-rate across train 2017-24, validation 2025, and confirmation 2026 with sample guards and positive average points; **0** PDF-level trade rules cleared the July-Aug/Sep 70% gate. Best 2026 downside continuation pockets (~70-71%) failed older windows; best level pockets had only 2-3 September wins and lost in July-Aug training.
+- Validation after edits: py_compile + full pytest passed (`49 passed`). Production default remains v2; V3 remains opt-in only. Next real path remains untouched forward collection of exact institutional levels + new intraday bars.
 
 ### 2026-09-18 (session 10 — V7 intraday + exact dated-level path)
 - User approved the next strongest path: longer 10-15 minute intraday candles plus exact date-stamped institutional levels because EOD/OI-only curve-fitting had not cracked the edge.

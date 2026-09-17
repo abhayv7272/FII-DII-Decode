@@ -34,6 +34,14 @@
     "institutional_levels_pdf_2026.csv": {
       "bytes": 33037,
       "sha256": "d1c5ca2abb2e88801db10c813423d7ec7a1e88ef47cfbe624f6c88ab8efcc07a"
+    },
+    "nifty_10m.csv": {
+      "bytes": 10215149,
+      "sha256": "9d2d094cda2dd1161c9541af66e70cd6e67162b1e2c3ab038e624e14ac990b01"
+    },
+    "nifty_10m.csv.manifest.json": {
+      "bytes": 4215,
+      "sha256": "a0c58c46f8925fba76ac168fed18145b25db99ee503ebc5828514710402aa178"
     }
   },
   "additional_sources": {
@@ -49,6 +57,14 @@
       "source_doc": "Market_Analysis_03_August_2026_Decoded-combined.pdf",
       "method": "manual audit of Deep Decoded Summary sections; missing July years normalized to 2026",
       "consumer": "research/v7_intraday_institutional_levels.py"
+    },
+    "nifty_10m.csv": {
+      "source_repo": "technovusin/nifty50-historical-data",
+      "source_url": "https://github.com/technovusin/nifty50-historical-data",
+      "source_branch": "main",
+      "source_license": "MIT License per upstream repository metadata/README",
+      "raw_files_kept_outside_git": true,
+      "builder": "research/build_intraday_candles.py"
     }
   }
 }

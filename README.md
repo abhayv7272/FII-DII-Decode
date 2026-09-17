@@ -119,11 +119,17 @@ confirmation variants clearing a 70% July-Aug/Sep split. Some first-candle
 level branches showed 75-86% in the September slice, but July-Aug training was
 near coin flip, so these are forward-watch tags only, not production signals.
 
+The follow-up **v8 trade-level simulator** adds 10-minute candles and symmetric
+target/stop execution after the confirmation candle:
+[`reports/v8_intraday_trade_sim/report.md`](reports/v8_intraday_trade_sim/report.md).
+It again found **0** generic 10/15m trade rules clearing a 70% train/2025/2026
+win-rate gate and **0** PDF-level trade rules clearing the July-Aug/Sep gate.
+
 To keep future sessions reproducible after Arena wipes external directories, a
 compact historical bundle is committed under [`historical/`](historical/) with
 participant OI, participant volume, canonical NIFTY OHLC, long price-regime OHLC,
-chain aggregate features from the pinned Groww mirror, plus the V7 15-minute
-intraday and PDF-level datasets.
+chain aggregate features from the pinned Groww mirror, plus the V7/V8 10- and
+15-minute intraday and PDF-level datasets.
 
 ### Level reactions now measured — and they show no edge either
 

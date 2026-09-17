@@ -23,10 +23,11 @@ Files:
   source for published OI backtests).
 - `chain_features.csv` — same-date EOD option-chain aggregate features rebuilt
   from F&O bhavcopy via `research/v3_chain_features.py`.
-- `nifty_15m.csv` — 15-minute NIFTY 50 intraday OHLCV bars from 2017-04-03 to
-  2026-09-17, derived from the public `technovusin/nifty50-historical-data`
-  1-minute archive via `research/build_intraday_candles.py`. Raw 1-minute CSVs
-  are kept outside Git; `nifty_15m.csv.manifest.json` records their hashes.
+- `nifty_10m.csv` / `nifty_15m.csv` — 10-minute and 15-minute NIFTY 50
+  intraday OHLCV bars from 2017-04-03 to 2026-09-17, derived from the public
+  `technovusin/nifty50-historical-data` 1-minute archive via
+  `research/build_intraday_candles.py`. Raw 1-minute CSVs are kept outside Git;
+  each intraday CSV has a `.manifest.json` file with raw-file hashes.
 - `institutional_levels_pdf_2026.csv` — 140 manually audited, date-stamped
   NIFTY levels from the supplied `Market_Analysis_03_August_2026_Decoded-
   combined.pdf`; 60 rows are tagged as explicit institutional/institutional-zone
