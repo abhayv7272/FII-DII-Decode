@@ -1,0 +1,182 @@
+{
+  "config": {
+    "symbol": "NIFTY",
+    "flat_threshold_pct": 0.15,
+    "level_touch_tolerance_pct": 0.05,
+    "from_date": null,
+    "to_date": null,
+    "decoder_version": "v2"
+  },
+  "metrics": {
+    "status": "ok",
+    "signals_evaluated": 757,
+    "signal_date_start": "2023-08-08",
+    "signal_date_end": "2026-09-03",
+    "target_definition": "next trading session close / signal-session close - 1",
+    "flat_threshold_pct": 0.15,
+    "exact_3_class_hits": 287,
+    "exact_3_class_accuracy_pct": 37.91,
+    "directional_calls": 549,
+    "directional_coverage_pct": 72.52,
+    "directional_hits": 240,
+    "directional_hit_rate_pct": 43.72,
+    "actionability_counts": {
+      "CONDITIONAL_BEARISH_SETUP": 261,
+      "CONDITIONAL_BULLISH_SETUP": 256,
+      "NO_DIRECTIONAL_EDGE": 177,
+      "WAIT_FOR_REVERSAL_CONFIRMATION": 63
+    },
+    "trigger_eligible": {
+      "selection_policy": "v2 CONDITIONAL_* only",
+      "calls": 517,
+      "coverage_pct": 68.3,
+      "directional_hits_including_flat_misses": 227,
+      "directional_hit_rate_including_flat_misses_pct": 43.91,
+      "nonflat_samples": 411,
+      "nonflat_sign_hits": 227,
+      "nonflat_sign_accuracy_pct": 55.23
+    },
+    "actual_class_counts": {
+      "UP": 319,
+      "FLAT": 160,
+      "DOWN": 278
+    },
+    "predicted_class_counts": {
+      "UP": 267,
+      "FLAT": 208,
+      "DOWN": 282
+    },
+    "majority_class_baseline_accuracy_pct": 42.14,
+    "class_metrics": {
+      "UP": {
+        "support_actual": 319,
+        "calls_predicted": 267,
+        "true_positives": 118,
+        "precision_pct": 44.19,
+        "recall_pct": 36.99,
+        "f1_pct": 40.27
+      },
+      "FLAT": {
+        "support_actual": 160,
+        "calls_predicted": 208,
+        "true_positives": 47,
+        "precision_pct": 22.6,
+        "recall_pct": 29.38,
+        "f1_pct": 25.55
+      },
+      "DOWN": {
+        "support_actual": 278,
+        "calls_predicted": 282,
+        "true_positives": 122,
+        "precision_pct": 43.26,
+        "recall_pct": 43.88,
+        "f1_pct": 43.57
+      }
+    },
+    "confusion_matrix_actual_rows": {
+      "UP": {
+        "UP": 118,
+        "FLAT": 94,
+        "DOWN": 107
+      },
+      "FLAT": {
+        "UP": 60,
+        "FLAT": 47,
+        "DOWN": 53
+      },
+      "DOWN": {
+        "UP": 89,
+        "FLAT": 67,
+        "DOWN": 122
+      }
+    },
+    "level_reaction_daily_proxy": {
+      "definition": "next-session range enters the level tolerance band; support succeeds on close >= level and resistance on close <= level",
+      "touch_tolerance_pct": 0.05,
+      "tests": 685,
+      "holds": 337,
+      "hold_accuracy_pct": 49.2,
+      "support": {
+        "tests": 346,
+        "holds": 162,
+        "hold_accuracy_pct": 46.82
+      },
+      "resistance": {
+        "tests": 339,
+        "holds": 175,
+        "hold_accuracy_pct": 51.62
+      }
+    },
+    "return_by_prediction": {
+      "UP": {
+        "samples": 267,
+        "mean_next_session_return_pct": 0.0875,
+        "median_next_session_return_pct": 0.0649
+      },
+      "FLAT": {
+        "samples": 208,
+        "mean_next_session_return_pct": 0.1253,
+        "median_next_session_return_pct": 0.0887
+      },
+      "DOWN": {
+        "samples": 282,
+        "mean_next_session_return_pct": -0.0952,
+        "median_next_session_return_pct": -0.0326
+      }
+    },
+    "confidence_curve": [
+      {
+        "confidence_bin": "0-20",
+        "min_exclusive": 0,
+        "max_inclusive": 20,
+        "samples": 190,
+        "average_confidence": 10.05,
+        "exact_accuracy_pct": 23.68,
+        "directional_calls": 0,
+        "directional_hit_rate_pct": null
+      },
+      {
+        "confidence_bin": "20<x<=40",
+        "min_exclusive": 20,
+        "max_inclusive": 40,
+        "samples": 192,
+        "average_confidence": 30.71,
+        "exact_accuracy_pct": 39.06,
+        "directional_calls": 174,
+        "directional_hit_rate_pct": 41.95
+      },
+      {
+        "confidence_bin": "40<x<=60",
+        "min_exclusive": 40,
+        "max_inclusive": 60,
+        "samples": 119,
+        "average_confidence": 50.08,
+        "exact_accuracy_pct": 42.86,
+        "directional_calls": 119,
+        "directional_hit_rate_pct": 42.86
+      },
+      {
+        "confidence_bin": "60<x<=80",
+        "min_exclusive": 60,
+        "max_inclusive": 80,
+        "samples": 106,
+        "average_confidence": 69.9,
+        "exact_accuracy_pct": 42.45,
+        "directional_calls": 106,
+        "directional_hit_rate_pct": 42.45
+      },
+      {
+        "confidence_bin": "80<x<=100",
+        "min_exclusive": 80,
+        "max_inclusive": 100,
+        "samples": 150,
+        "average_confidence": 95.65,
+        "exact_accuracy_pct": 47.33,
+        "directional_calls": 150,
+        "directional_hit_rate_pct": 47.33
+      }
+    ]
+  },
+  "warnings": [],
+  "skipped_count": 3
+}

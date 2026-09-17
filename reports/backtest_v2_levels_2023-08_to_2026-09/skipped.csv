@@ -1,0 +1,4 @@
+signal_date,reason,detail
+2023-08-04,missing_signal_ohlc,
+2023-08-07,no_previous_market_session,
+2026-09-04,no_next_market_session,

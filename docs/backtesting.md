@@ -198,3 +198,63 @@ PYTHONPATH=src python research/compare_v1_v2.py \
 ```
 
 The v2 full close-to-close exact result should be 37.91%, versus v1's 36.20% and the 42.14% majority baseline. Compare aggregate source hashes in the published v1 `provenance.json` before treating a mismatch as a code regression. Direct NSE TLS was unavailable in the build sandbox, so the mirror limitation is part of the disclosed result.
+
+## Reproduce the level-enabled 757-session run (bhavcopy-derived option chains)
+
+Public archives do not publish historical option-chain JSON, so the level proxy
+was blank in the earlier audits. `research/bhavcopy_to_option_chain.py` rebuilds
+an EOD-equivalent snapshot per trading date from the NSE F&O bhavcopy archive.
+
+Fetch the three required directories from the same pinned mirror:
+
+```bash
+git clone --filter=blob:none --no-checkout --depth=1 \
+  https://github.com/sahilempire/groww-market-data.git /tmp/groww-market-data
+cd /tmp/groww-market-data
+git sparse-checkout init --cone
+git sparse-checkout set nse_archives/participant_oi nse_archives/index_close nse_archives/fo_bhavcopy
+git fetch --depth=1 origin 7d481cf1fcffe44be68852892028195c4f12dddd
+git checkout 7d481cf1fcffe44be68852892028195c4f12dddd
+```
+
+Build the snapshots (about 760 files, ~3.5 minutes), then replay:
+
+```bash
+python research/bhavcopy_to_option_chain.py \
+  --bhavcopy-dir /tmp/groww-market-data/nse_archives/fo_bhavcopy \
+  --index-close-dir /tmp/groww-market-data/nse_archives/index_close \
+  --output-dir /tmp/option_chain_hist
+
+python backtest.py \
+  --participant-oi /tmp/groww-market-data/nse_archives/participant_oi \
+  --ohlc /tmp/groww-market-data/nse_archives/index_close \
+  --option-chains /tmp/option_chain_hist \
+  --output-dir reports/backtest_v2_levels_2023-08_to_2026-09
+```
+
+Published result (`reports/backtest_v2_levels_2023-08_to_2026-09/`):
+
+| Metric | Result |
+|---|---:|
+| Evaluable signals | 757 (option chain matched on all 757) |
+| Exact 3-class accuracy | 37.91% (baseline 42.14%) |
+| Directional hit rate | 43.72% |
+| Level tests (±0.05% band) | 685, 49.20% hold |
+| Support | 346 tests, 46.82% hold |
+| Resistance | 339 tests, 51.62% hold |
+
+Direction metrics are unchanged from the chain-less run, which is the expected
+control: the locked v2 score does not consume levels. The new information is the
+level-reaction proxy — and at roughly a coin flip it provides **no evidence of a
+tradable level edge**.
+
+### Converter limitations (must be quoted with any level number)
+
+* Bhavcopy carries EOD close/settlement, not a 15:30 LTP; implied volatility is
+  absent and emitted as `0`.
+* `underlyingValue` is the same-date Nifty 50 close, not the snapshot-time spot.
+* Only the nearest non-expired expiry is emitted, mirroring the live fetcher's
+  `records.expiryDates[0]` behaviour.
+* Daily OHLC cannot verify 10-15 minute candle confirmation, sweep-then-reclaim,
+  touch sequencing, stops, or slippage. These are **daily proxy** numbers, not
+  trade simulation results.
