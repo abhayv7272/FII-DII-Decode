@@ -8,6 +8,26 @@ where a reaction is expected, and exactly **what happens at each level**
 
 > ⚠️ Educational analysis of publicly available data. **Not investment advice.**
 
+## ⚠️ Validation status: experimental, not a standalone trading signal
+
+A point-in-time OI-only replay on **757 real historical sessions** (8-Aug-2023 to
+3-Sep-2026) produced:
+
+- **36.20%** exact UP/FLAT/DOWN accuracy vs **42.14%** majority-class baseline;
+- **53.96%** sign accuracy only after excluding realised FLAT moves (95% CI
+  49.16–58.68%, so no reliable above-chance proof);
+- **46.72%** next-session open-to-close sign accuracy on non-FLAT directional cases.
+
+The strongest observed relationship was with the overnight gap, not the tradable
+next-session open-to-close move. Higher-confidence and five-session subsets showed
+some aggregate signal, but it weakened in yearly/latest-period checks. Therefore,
+**do not use the displayed forecast or confidence as a standalone entry signal.**
+
+Full result, per-date predictions, threshold sensitivity, yearly stability, and
+source hashes: **[`reports/backtest_2023-08_to_2026-09/report.md`](reports/backtest_2023-08_to_2026-09/report.md)**.
+Historical option-chain snapshots were unavailable, so level-reaction accuracy
+remains unknown.
+
 ---
 
 ## ✅ Methodology: decoded from your PDFs
@@ -30,9 +50,9 @@ reconstructed line-by-line from the two source PDFs (`full_transcript.pdf` and
 ### Still needed from you
 
 1. **GitHub secrets for email** (see below) so the 9 PM job can actually send mail.
-2. A genuine multi-session **historical participant-OI + NIFTY OHLC archive** is
-   needed before any honest backtest accuracy can be reported. The repo's bundled
-   fixture is synthetic and is used only for tests/demo output.
+2. Genuine dated **historical option-chain and cash-flow snapshots** are still
+   needed to test level reactions and the complete live pipeline. The direction-only
+   OI/OHLC result is now published above; bundled fixtures remain demo/test-only.
 
 ---
 
@@ -94,9 +114,8 @@ hit rate, majority-class baseline, and a clearly labelled **daily-OHLC proxy** f
 level reactions.
 
 See **[`docs/backtesting.md`](docs/backtesting.md)** for the data contract, exact
-metric definitions, no-look-ahead rules, and limitations. No accuracy percentage
-is claimed until genuine historical data is supplied or enough forward-test data
-has accumulated.
+metric definitions, no-look-ahead rules, and limitations. The published real-data
+result is explicitly OI-only; no option-chain level accuracy is claimed.
 
 ## Email setup (GitHub → Settings → Secrets and variables → Actions)
 

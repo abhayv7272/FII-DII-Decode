@@ -1,0 +1,5 @@
+confidence_bin,min_exclusive,max_inclusive,samples,average_confidence,exact_accuracy_pct,directional_calls,directional_hit_rate_pct
+0-20,0,20,69,5.03,26.09,6,66.67
+20<x<=40,20,40,423,31.88,30.73,257,36.96
+40<x<=60,40,60,259,46.93,48.26,259,48.26
+60<x<=80,60,80,6,63.82,16.67,6,16.67

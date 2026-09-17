@@ -45,6 +45,9 @@ def _parse_participant_csv(text: str) -> pd.DataFrame:
             break
     df = pd.read_csv(io.StringIO("\n".join(lines[header_idx:])))
     df.columns = [c.strip() for c in df.columns]
+    # Some archived files contain an empty trailing header (and one known source
+    # row contains an extra unnamed aggregate). It is not a decoder input.
+    df = df.loc[:, ~df.columns.str.match(r"^Unnamed:")]
     # Normalise participant/date labels. Preserving a date column lets the same
     # parser consume the consolidated data/participant_oi.csv history as well as
     # NSE's one-file-per-day archives.

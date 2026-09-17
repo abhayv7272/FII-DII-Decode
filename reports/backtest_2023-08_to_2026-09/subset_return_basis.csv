@@ -1,0 +1,10 @@
+subset,basis,samples,nonflat_directional_n,hits,sign_accuracy_pct
+all,close-to-close,757,417,225,53.96
+all,open-to-close,757,411,192,46.72
+all,overnight gap,757,340,213,62.65
+confidence >= 40,close-to-close,266,215,126,58.6
+confidence >= 40,open-to-close,266,206,105,50.97
+confidence >= 40,overnight gap,266,169,112,66.27
+raw strong UP/DOWN,close-to-close,61,47,29,61.7
+raw strong UP/DOWN,open-to-close,61,46,22,47.83
+raw strong UP/DOWN,overnight gap,61,47,32,68.09

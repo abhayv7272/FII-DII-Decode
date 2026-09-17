@@ -75,11 +75,33 @@ def test_load_raw_and_consolidated_participant_history(tmp_path):
 def test_load_ohlc_nse_style_columns_and_symbol_filter(tmp_path):
     path = tmp_path / "nifty.csv"
     pd.DataFrame([
-        {"Index Name": "NIFTY 50", "HistoricalDate": "01-Jan-2026", "OPEN ": "24,700", "HIGH ": "24,900", "LOW ": "24,600", "CLOSE ": "24,750"},
-    ]).rename(columns={"HistoricalDate": "Date"}).to_csv(path, index=False)
+        {"Index Name": "NIFTY 50", "Index Date": "01-01-2026",
+         "Open Index Value": "24,700", "High Index Value": "24,900",
+         "Low Index Value": "24,600", "Closing Index Value": "24,750"},
+    ]).to_csv(path, index=False)
     loaded = load_ohlc(path, "NIFTY")
     assert loaded.iloc[0]["close"] == 24750
     assert loaded.iloc[0]["date"].isoformat() == "2026-01-01"
+
+
+def test_load_raw_index_close_directory(tmp_path):
+    archive = tmp_path / "index_close"
+    archive.mkdir()
+    for token, date_text, close in (
+        ("20260101", "01-01-2026", 24750),
+        ("20260102", "02-01-2026", 24900),
+    ):
+        pd.DataFrame([
+            {"Index Name": "Nifty 50", "Index Date": date_text,
+             "Open Index Value": close - 50, "High Index Value": close + 100,
+             "Low Index Value": close - 100, "Closing Index Value": close},
+            {"Index Name": "Nifty Bank", "Index Date": date_text,
+             "Open Index Value": 55000, "High Index Value": 55200,
+             "Low Index Value": 54800, "Closing Index Value": 55100},
+        ]).to_csv(archive / f"ind_close_all_{token}.csv", index=False)
+    loaded = load_ohlc(archive, "NIFTY")
+    assert len(loaded) == 2
+    assert loaded["close"].tolist() == [24750, 24900]
 
 
 def test_load_dated_option_chain(tmp_path):

@@ -252,7 +252,7 @@ def main(argv=None) -> int:
     )
     b.add_argument(
         "--ohlc", required=True, metavar="CSV",
-        help="daily index OHLC CSV (Date and Close required; Open/High/Low recommended)",
+        help="daily OHLC CSV, raw ind_close_all CSV directory, or ZIP",
     )
     b.add_argument(
         "--option-chains", "--option-chain-dir", dest="option_chains", metavar="PATH",

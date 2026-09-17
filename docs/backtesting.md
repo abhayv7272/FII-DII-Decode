@@ -1,6 +1,6 @@
 # Historical backtesting
 
-The repository includes a point-in-time replay harness for the decoder's **next-session** call. It does not ship a claimed accuracy number because the repository currently contains only one synthetic/demo OI pair, not a genuine multi-month historical sample.
+The repository includes a point-in-time replay harness for the decoder's **next-session** call. A real OI-only evaluation on 757 sessions is published in [`reports/backtest_2023-08_to_2026-09/report.md`](../reports/backtest_2023-08_to_2026-09/report.md); its overall result is below the majority-class baseline, so the decoder remains experimental. The external raw archive is not vendored into this repository, while source commit and hashes are retained with the report.
 
 ## What is scored
 
@@ -33,7 +33,7 @@ The required participants are Client, FII, and Pro. DII is optional for directio
 
 ### 2. Index OHLC
 
-`--ohlc` accepts a daily CSV. `Date` and `Close` are required. `Open`, `High`, and `Low` are strongly recommended. Common NSE headings such as `TIMESTAMP`, `OPEN`, `HIGH`, `LOW`, and `CLOSE` are recognised case-insensitively.
+`--ohlc` accepts a consolidated daily CSV, a ZIP, or a directory of raw NSE `ind_close_all_YYYYMMDD.csv` files. For a consolidated file, `Date` and `Close` are required; `Open`, `High`, and `Low` are strongly recommended. Common NSE headings such as `Index Date`, `Open Index Value`, `TIMESTAMP`, `OPEN`, `HIGH`, `LOW`, and `CLOSE` are recognised case-insensitively. When all-index archive files are supplied, the requested `--symbol` row is selected from every date automatically.
 
 A minimal file is:
 
@@ -155,3 +155,28 @@ python backtest.py \
 ```
 
 Do not draw conclusions from a handful of observations. Report the sample size, date range, flat threshold, missing-date counts, and baseline alongside every accuracy figure.
+
+## Reproduce the published 757-session run
+
+The published audit used a third-party GitHub mirror of raw NSE archive-shaped reports, pinned to commit `7d481cf1fcffe44be68852892028195c4f12dddd`. The raw files are intentionally not vendored here. Fetch only the two required directories:
+
+```bash
+git clone --filter=blob:none --no-checkout --depth=1 \
+  https://github.com/sahilempire/groww-market-data.git /tmp/groww-market-data
+cd /tmp/groww-market-data
+git sparse-checkout init --cone
+git sparse-checkout set nse_archives/participant_oi nse_archives/index_close
+git checkout 7d481cf1fcffe44be68852892028195c4f12dddd
+```
+
+Then, from this repository:
+
+```bash
+python backtest.py \
+  --participant-oi /tmp/groww-market-data/nse_archives/participant_oi \
+  --ohlc /tmp/groww-market-data/nse_archives/index_close \
+  --flat-threshold-pct 0.15 \
+  --output-dir /tmp/reproduced-backtest
+```
+
+The primary metrics should be 757 evaluable signals, 36.20% exact three-class accuracy, and 42.61% directional hit rate when realised FLAT outcomes are counted as misses. Compare the aggregate source hashes in the published `provenance.json` before treating a mismatch as a code regression. Direct NSE TLS was unavailable in the build sandbox, so the mirror limitation is part of the disclosed result.

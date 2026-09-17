@@ -1,0 +1,20 @@
+{
+  "generated_at_date": "2026-09-17",
+  "source_repository": "https://github.com/sahilempire/groww-market-data",
+  "source_commit": "7d481cf1fcffe44be68852892028195c4f12dddd",
+  "source_commit_url": "https://github.com/sahilempire/groww-market-data/commit/7d481cf1fcffe44be68852892028195c4f12dddd",
+  "decoder_rules_commit": "85ce70a",
+  "participant_oi_path": "nse_archives/participant_oi",
+  "index_ohlc_path": "nse_archives/index_close",
+  "participant_files": 760,
+  "index_close_files": 759,
+  "participant_archive_sha256": "dc2ada88f56c97c7ed01ada6eecf630c2675b17f9d006819450bf70eb6fcb776",
+  "index_close_archive_sha256": "8e5d4db555a5676385082d1dc3438fb107aa3011bc63746b1eb0a57dc0d471a8",
+  "consolidated_nifty_ohlc_sha256": "24635348d6657d5e8bfebc3bd9be46712af4b95f4bcd02edb2097d53b6cd66f4",
+  "notes": [
+    "Third-party GitHub mirror of raw NSE archive-shaped reports; direct NSE TLS was unavailable in the sandbox.",
+    "Participant-OI title dates and index-close row dates were checked against all filenames: zero mismatches.",
+    "One 2024-02-22 FII source row has an extra trailing unnamed aggregate field; all named decoder input fields are complete.",
+    "Historical option-chain snapshots were not available, so institutional-level accuracy was not scored."
+  ]
+}

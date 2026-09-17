@@ -26,6 +26,17 @@ def test_parse_participants():
     assert "Future Index Long" in today.columns
 
 
+def test_parse_drops_irrelevant_trailing_unnamed_column():
+    text = (
+        "Participant wise Open Interest,,,\n"
+        "Client Type,Future Index Long,Future Index Short,\n"
+        "FII,100,90,190\n"
+    )
+    parsed = _parse_participant_csv(text)
+    assert list(parsed.columns) == ["ClientType", "Future Index Long", "Future Index Short"]
+    assert parsed.iloc[0]["Future Index Long"] == 100
+
+
 def test_decode_produces_bias():
     today, prev, _ = _load()
     res = decode(today, prev, date_str="2026-09-17")

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime
+import io
 import json
 from pathlib import Path
 import re
@@ -237,23 +238,13 @@ def _symbol_aliases(symbol: str) -> set[str]:
     return aliases.get(norm, {norm})
 
 
-def load_ohlc(path: str | Path, symbol: str = "NIFTY") -> pd.DataFrame:
-    """Load daily index prices from a CSV with flexible NSE-style headings.
-
-    Date and Close are mandatory. Open/High/Low are optional: direction metrics
-    still work without them, while level-reaction observations are left unscored.
-    """
-    source = Path(path)
-    if not source.exists():
-        raise FileNotFoundError(source)
-    if source.suffix.lower() != ".csv":
-        raise ValueError("OHLC input must be a CSV file")
-
-    raw = pd.read_csv(source)
+def _normalise_ohlc_frame(raw: pd.DataFrame, symbol: str, source_name: str) -> pd.DataFrame:
+    raw = raw.copy()
     raw.columns = [str(c).strip() for c in raw.columns]
     date_col = _find_column(
         raw.columns,
-        ("date", "historical date", "timestamp", "ch_timestamp", "eod_timestamp", "datetime"),
+        ("date", "index date", "historical date", "timestamp", "ch_timestamp",
+         "eod_timestamp", "datetime"),
     )
     close_col = _find_column(
         raw.columns,
@@ -261,7 +252,7 @@ def load_ohlc(path: str | Path, symbol: str = "NIFTY") -> pd.DataFrame:
          "eod close index val", "last"),
     )
     if not date_col or not close_col:
-        raise ValueError("OHLC CSV must contain Date and Close columns")
+        raise ValueError(f"{source_name}: Date and Close columns are required")
 
     symbol_col = _find_column(raw.columns, ("symbol", "index", "index name", "name"))
     if symbol_col:
@@ -270,13 +261,13 @@ def load_ohlc(path: str | Path, symbol: str = "NIFTY") -> pd.DataFrame:
         selected = raw[normalised.isin(wanted)].copy()
         if selected.empty:
             available = sorted(raw[symbol_col].dropna().astype(str).unique())[:10]
-            raise ValueError(f"symbol {symbol!r} not found in OHLC CSV; available: {available}")
+            raise ValueError(f"{source_name}: symbol {symbol!r} not found; available: {available}")
         raw = selected
 
     parsed_dates = raw[date_col].map(_parse_date)
     if parsed_dates.isna().any():
         bad = raw.loc[parsed_dates.isna(), date_col].astype(str).head(3).tolist()
-        raise ValueError(f"could not parse OHLC dates (examples: {bad})")
+        raise ValueError(f"{source_name}: could not parse dates (examples: {bad})")
 
     aliases = {
         "open": ("open", "open price", "open index value", "open index val",
@@ -295,6 +286,42 @@ def load_ohlc(path: str | Path, symbol: str = "NIFTY") -> pd.DataFrame:
             out[target] = pd.to_numeric(values, errors="coerce")
         else:
             out[target] = float("nan")
+    return out
+
+
+def load_ohlc(path: str | Path, symbol: str = "NIFTY") -> pd.DataFrame:
+    """Load daily index prices from CSV, raw NSE archive directory, or ZIP.
+
+    Date and Close are mandatory. Open/High/Low are optional: direction metrics
+    still work without them, while level-reaction observations are left unscored.
+    A directory/ZIP may contain daily ``ind_close_all_YYYYMMDD.csv`` files; the
+    requested index row is selected from every file and consolidated.
+    """
+    source = Path(path)
+    if not source.exists():
+        raise FileNotFoundError(source)
+
+    if source.is_dir() or source.suffix.lower() == ".zip":
+        texts = _file_texts(source, ".csv")
+        archive_files = [item for item in texts
+                         if "ind_close" in item[0].lower() or "index_close" in item[0].lower()]
+        texts = archive_files or texts
+        frames: list[pd.DataFrame] = []
+        failures: list[str] = []
+        for name, text in texts:
+            try:
+                raw = pd.read_csv(io.StringIO(text))
+                frames.append(_normalise_ohlc_frame(raw, symbol, name))
+            except (KeyError, TypeError, ValueError, pd.errors.ParserError) as exc:
+                failures.append(str(exc))
+        if not frames:
+            detail = "; ".join(failures[:3])
+            raise ValueError(f"no usable {symbol} OHLC data under {source}. {detail}")
+        out = pd.concat(frames, ignore_index=True)
+    elif source.suffix.lower() == ".csv":
+        out = _normalise_ohlc_frame(pd.read_csv(source), symbol, str(source))
+    else:
+        raise ValueError("OHLC input must be CSV, ZIP, or a directory of daily CSV files")
 
     if out["close"].isna().any() or (out["close"] <= 0).any():
         raise ValueError("OHLC Close contains missing, non-numeric, or non-positive values")

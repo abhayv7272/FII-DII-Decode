@@ -23,6 +23,12 @@ _DIR_EMOJI = {
     "SIDEWAYS-DOWN": "🔴↘️", "DOWN": "🔴⬇️",
 }
 
+_VALIDATION_WARNING = (
+    "EXPERIMENTAL / NOT VALIDATED FOR TRADING: a 757-session NIFTY OI-only "
+    "historical replay produced 36.20% exact UP/FLAT/DOWN accuracy versus a 42.14% "
+    "majority-class baseline. Treat this as context, not a standalone entry signal."
+)
+
 _RISK = (
     "Never average a losing option-buy (premium decays to zero) — average at most "
     "once, only with a pre-set stop. Risk ≤10–15% capital per trade; scale in "
@@ -103,6 +109,9 @@ def render_html(dr: dict, predictions: dict, levels: dict,
  max-width:860px;margin:0 auto;padding:16px;color:#1c1c1c;background:#fff">
 <h1 style="margin-bottom:0">📊 FII/DII/Pro/Client Decode</h1>
 <div style="color:#666">{symbol} · {report_date} · generated {datetime.now():%Y-%m-%d %H:%M IST}</div>
+<div style="margin:14px 0;padding:10px 14px;border-radius:8px;background:#fff8e1;
+ border-left:6px solid #f9a825;font-size:13px"><b>Validation warning:</b>
+ {_VALIDATION_WARNING}</div>
 
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 0">
   <div style="flex:1;min-width:240px;padding:14px 16px;border-radius:10px;
@@ -179,6 +188,8 @@ def render_markdown(dr: dict, predictions: dict, levels: dict,
     nd, nw = predictions["next_day"], predictions["next_week"]
     L = [
         f"# FII/DII/Pro/Client Decode — {symbol} — {report_date}",
+        "",
+        f"> ⚠️ **Validation warning:** {_VALIDATION_WARNING}",
         "",
         f"**Next-day (Pro-led):** {dr['bias']}  ·  score `{dr['composite']:+.2f}`  ·  "
         f"conf {dr['confidence']:.0f}%  ·  {nd['direction']}",
