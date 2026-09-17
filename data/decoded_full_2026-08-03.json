@@ -1,57 +1,88 @@
 {
   "decode": {
-    "date": "2026-09-17",
-    "bias": "BULLISH",
-    "composite": 0.274,
-    "confidence": 36.4,
+    "date": "2026-08-03",
+    "bias": "STRONG BULLISH",
+    "composite": 0.588,
+    "confidence": 59.3,
+    "positional_bias": "STRONG BULLISH",
+    "positional_composite": 0.596,
+    "positional_confidence": 59.7,
+    "smart_money_conflict": false,
+    "conflict_note": "",
+    "retail_note": "Retail is net BEARISH \u2192 contrarian POSITIVE for market (retail exiting longs is the fuel for a rally).",
+    "move_quality": "FII: fresh longs added (real strength); Pro: fresh longs added (real strength)",
     "signals": [
       {
-        "name": "fii_index_fut_net",
-        "score": 1.0,
-        "weight": 0.35,
-        "note": "FII index-fut net 40,150 (+33,050 vs prev): fresh longs."
+        "name": "Pro_composite",
+        "score": 0.564,
+        "weight": 0.5,
+        "note": "Pro (ultra-short, next-day driver): net +0.56 [index_call +0.90, index_fut +0.88, index_put +0.67]."
       },
       {
-        "name": "fii_index_fut_ratio",
-        "score": 0.28215038650737867,
-        "weight": 0.15,
-        "note": "FII index-fut long/short ratio 1.28 (bullish)."
+        "name": "FII_composite",
+        "score": 0.588,
+        "weight": 0.3,
+        "note": "FII (short-medium, positional driver): net +0.59 [index_fut +1.00, index_call +0.88, index_put +0.67]."
       },
       {
-        "name": "pro_index_fut_net",
-        "score": -0.8400000000000001,
-        "weight": 0.15,
-        "note": "Pro index-fut net -14,200 (-5,600 vs prev)."
+        "name": "Client_composite",
+        "score": 0.612,
+        "weight": 0.2,
+        "note": "Client/Retail (CONTRA \u2014 faded): net +0.61 [index_call +1.00, index_put +1.00, index_fut +0.88]."
       },
       {
-        "name": "option_writing_bias",
-        "score": -0.060834506945019746,
-        "weight": 0.15,
-        "note": "Institutional option writing: put-writing 1,700,500 vs call-writing 1,920,800 => resistance building (bearish)."
-      },
-      {
-        "name": "client_contra",
-        "score": 0.658625,
-        "weight": 0.1,
-        "note": "Client index-fut net -52,690; contrarian lean = bullish (fade the crowd)."
+        "name": "DII_composite",
+        "score": -0.002,
+        "weight": 0.0,
+        "note": "DII (arb \u2014 ignored for direction): net -0.00 [stock_fut -0.01, index_fut -0.00, index_call -0.00]."
       },
       {
         "name": "cash_flow",
-        "score": -0.49183333333333334,
-        "weight": 0.1,
-        "note": "Cash: FII net -2,101 Cr, DII net 1,250 Cr."
+        "score": 0.654,
+        "weight": 0.15,
+        "note": "Cash: FII net 1,150 Cr, DII net 1,350 Cr."
       }
     ],
+    "participant_reads": {
+      "FII": {
+        "index_fut": 1.0,
+        "stock_fut": 0.086,
+        "index_call": 0.882,
+        "stock_call": 0.089,
+        "index_put": 0.672,
+        "stock_put": 0.164
+      },
+      "Pro": {
+        "index_fut": 0.88,
+        "stock_fut": 0.024,
+        "index_call": 0.899,
+        "stock_call": 0.076,
+        "index_put": 0.673,
+        "stock_put": 0.174
+      },
+      "Client": {
+        "index_fut": 0.883,
+        "stock_fut": -0.017,
+        "index_call": 1.0,
+        "stock_call": 0.001,
+        "index_put": 0.998,
+        "stock_put": -0.123
+      },
+      "DII": {
+        "index_fut": -0.003,
+        "stock_fut": -0.009,
+        "index_call": -0.003,
+        "stock_call": 0.001,
+        "index_put": -0.001,
+        "stock_put": -0.0
+      }
+    },
     "metrics": {
+      "fii_cash_net": 1150.25,
+      "dii_cash_net": 1350.5,
       "fii_index_fut_net": 40150.0,
-      "fii_index_fut_net_change": 33050.0,
-      "fii_index_fut_ls_ratio": 1.282,
-      "pro_index_fut_net": -14200.0,
-      "pro_index_fut_net_change": -5600.0,
-      "inst_put_call_write_ratio": 0.885,
-      "client_index_fut_net": -52690.0,
-      "fii_cash_net": -2100.75,
-      "dii_cash_net": 1250.5,
+      "pro_index_fut_net": 25800.0,
+      "client_index_fut_net": -56690.0,
       "max_pain": 24850.0,
       "pcr": 1.027,
       "spot": 24850.0
@@ -60,17 +91,25 @@
   "predictions": {
     "next_day": {
       "horizon": "next_day",
-      "direction": "SIDEWAYS-UP",
-      "confidence": 36.4,
-      "rationale": "Composite bias +0.27 (BULLISH). PCR 1.027, Neutral PCR: range-bound; trade the support/resistance band.",
+      "direction": "UP",
+      "confidence": 59.3,
+      "rationale": "Next-day bias +0.59 (STRONG BULLISH), Pro-led (ultra-short). Retail is net BEARISH \u2192 contrarian POSITIVE for market (retail exiting longs is the fuel for a rally). Move quality: FII: fresh longs added (real strength); Pro: fresh longs added (real strength). PCR 1.027 \u2014 Neutral PCR: range-bound; trade the support/resistance band.",
       "scenarios": [
         {
-          "trigger": "Price rises to resistance 24850 (put_oi_change)",
-          "then": "Watch the reaction. Rejection here => reversal DOWN toward support. A 15-min close ABOVE with follow-through => resistance breaks, continuation UP (short-covering)."
+          "open": "PRIMARY",
+          "plan": "Bias up but if retail is crowded long, expect 'sell-on-rise / dip-then-recover': a dip into 24600 that reverses up is the high-probability path."
         },
         {
-          "trigger": "Price falls to support 24850 (put_oi_change)",
-          "then": "Watch the reaction. A hold/bounce => reversal UP toward resistance. A 15-min close BELOW with follow-through => support breaks, continuation DOWN (long unwinding)."
+          "open": "GAP DOWN",
+          "plan": "Ideal for a long setup if Smart Money is bullish. Market likely digs toward support 24600 (may even SWEEP liquidity just below a round figure to grab retail stop-losses), then REVERSES up \u2014 that liquidity sweep + institutional level + psychological level = high-probability long confluence. A sustained close BELOW 24600 with bearish volume flips it to resistance \u2192 continuation DOWN."
+        },
+        {
+          "open": "FLAT",
+          "plan": "Trade the band: buy dips into support 24600 (hold \u2192 bounce), sell rallies into resistance 25150 (reject \u2192 fade). Direction resolves on which wall breaks with follow-through."
+        },
+        {
+          "open": "GAP UP",
+          "plan": "Watch resistance 25150. Rejection \u2192 fade back toward 24600. A decisive 15-min close ABOVE 25150 (call writers unwinding) \u2192 breakout continuation UP toward the next call wall."
         }
       ],
       "key_levels": {
@@ -151,22 +190,44 @@
           }
         ],
         "max_pain": 24850.0,
-        "pcr": 1.027
+        "pcr": 1.027,
+        "immediate_support": {
+          "strike": 24600.0,
+          "kind": "support",
+          "basis": "put_oi_change",
+          "oi": 143253.0,
+          "oi_change": 13047.0,
+          "distance_pct": -1.01,
+          "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+        },
+        "immediate_resistance": {
+          "strike": 25150.0,
+          "kind": "resistance",
+          "basis": "call_oi",
+          "oi": 197680.0,
+          "oi_change": 12944.0,
+          "distance_pct": 1.21,
+          "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+        }
       }
     },
     "next_week": {
       "horizon": "next_week",
-      "direction": "SIDEWAYS-UP",
-      "confidence": 30.9,
-      "rationale": "Blended weekly bias +0.27 (today +0.27). Institutions typically defend the highest-OI put/call walls; the week trades between them unless a wall is decisively broken.",
+      "direction": "UP",
+      "confidence": 50.7,
+      "rationale": "Positional bias +0.60 (UP), FII-led (Pro must be supportive).  Big positional moves come only 2-3x a year; otherwise the week trades between the put wall (support) and call wall (resistance) unless a wall breaks decisively. Retail must unwind longs before a sustained up-leg.",
       "scenarios": [
         {
-          "trigger": "Price rises to resistance 24850 (put_oi_change)",
-          "then": "Watch the reaction. Rejection here => reversal DOWN toward support. A 15-min close ABOVE with follow-through => resistance breaks, continuation UP (short-covering)."
+          "trigger": "FII longs keep building + Pro supportive",
+          "then": "Positional UP-leg; buy dips into support."
         },
         {
-          "trigger": "Price falls to support 24850 (put_oi_change)",
-          "then": "Watch the reaction. A hold/bounce => reversal UP toward resistance. A 15-min close BELOW with follow-through => support breaks, continuation DOWN (long unwinding)."
+          "trigger": "FII shorts keep building",
+          "then": "Positional DOWN pressure; sell rises into resistance."
+        },
+        {
+          "trigger": "Retail bullish positions start unwinding",
+          "then": "Removes the cap on upside \u2192 reversal-up trigger."
         }
       ],
       "key_levels": {
@@ -247,7 +308,25 @@
           }
         ],
         "max_pain": 24850.0,
-        "pcr": 1.027
+        "pcr": 1.027,
+        "immediate_support": {
+          "strike": 24600.0,
+          "kind": "support",
+          "basis": "put_oi_change",
+          "oi": 143253.0,
+          "oi_change": 13047.0,
+          "distance_pct": -1.01,
+          "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+        },
+        "immediate_resistance": {
+          "strike": 25150.0,
+          "kind": "resistance",
+          "basis": "call_oi",
+          "oi": 197680.0,
+          "oi_change": 12944.0,
+          "distance_pct": 1.21,
+          "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
+        }
       }
     }
   },
@@ -258,22 +337,22 @@
     "pcr": 1.027,
     "pcr_signal": "Neutral PCR: range-bound; trade the support/resistance band.",
     "immediate_support": {
-      "strike": 24850.0,
+      "strike": 24600.0,
       "kind": "support",
       "basis": "put_oi_change",
-      "oi": 37674.0,
-      "oi_change": 11927.0,
-      "distance_pct": 0.0,
+      "oi": 143253.0,
+      "oi_change": 13047.0,
+      "distance_pct": -1.01,
       "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
     },
     "immediate_resistance": {
-      "strike": 24850.0,
-      "kind": "support",
-      "basis": "put_oi_change",
-      "oi": 37674.0,
-      "oi_change": 11927.0,
-      "distance_pct": 0.0,
-      "reaction": "Expect buying support. If price dips into it and holds -> bounce/reversal up. Fresh put writing today => buyers active; a decisive break+close below flips it to resistance (long unwinding)."
+      "strike": 25150.0,
+      "kind": "resistance",
+      "basis": "call_oi",
+      "oi": 197680.0,
+      "oi_change": 12944.0,
+      "distance_pct": 1.21,
+      "reaction": "Expect selling pressure. If price approaches and rejects -> reversal down. A sustained break above => resistance becomes support."
     },
     "levels": [
       {

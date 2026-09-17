@@ -1,34 +1,39 @@
-"""The decode engine.
+"""The decode engine — Amit Dhamija's Participant-OI methodology.
 
-Turns raw participant-wise OI + cash + option-chain data into a directional
-read, the way a "FII/DII/Pro/Client decode" YouTube channel does it.
+See docs/methodology.md for the full line-by-line reconstruction. Summary of the
+rules implemented here:
 
-============================================================================
-METHODOLOGY (default; refined by the channel transcript in docs/methodology.md)
-============================================================================
-Participant-wise OI gives, for each group (FII, DII, Pro, Client), their
-LONG and SHORT open interest in:
-    Future Index, Future Stock, Option Index Call Long/Short,
-    Option Index Put Long/Short (and stock equivalents).
+CORE THESIS
+  Zero-sum market; ~90% of Retail (Client) loses; that money goes to Smart Money
+  (FII + Pro). So: FADE Retail, FOLLOW Smart Money.
 
-Core derived reads:
-  1. Index-future net long  = FutureIndexLong - FutureIndexShort  (per group)
-     -> The cleanest directional footprint. FII net long rising = bullish.
-  2. Long/Short RATIO for FII index futures: how many longs per short.
-       ratio > 1  => net long bias; the higher, the more bullish
-       ratio < 1  => net short bias; the lower, the more bearish
-  3. Option index positioning:
-       - Call SHORT (writing) by Pro/FII at highs = bearish/defensive.
-       - Put  SHORT (writing) by Pro/FII        = bullish (support building).
-       - Call LONG / Put LONG spikes by Client   = often the "wrong-way" crowd.
-  4. Client vs Institution divergence:
-       Client is usually the contra indicator. When Client is heavily long and
-       FII/Pro heavily short (or vice-versa), lean with the institutions.
-  5. Cash-market FII/DII net flow confirms or contradicts the F&O footprint.
+PARTICIPANTS
+  Client = Retail (contra indicator).  DII = mostly arb (ignored for F&O direction).
+  FII = short-to-medium term  -> drives POSITIONAL / weekly view.
+  Pro = ultra-short term (1-2 days) -> drives NEXT-DAY view.
+  Smart Money = FII + Pro.
 
-Each signal is scored (-1 bearish .. +1 bullish), weighted, and combined into a
-composite bias with a confidence figure. The weights live in DEFAULT_WEIGHTS so
-the transcript's emphasis can be dialed in without touching logic.
+INSTRUMENT IMPORTANCE (rank): Index Options > Stock Options > Index Fut > Stock Fut.
+  Options carry the most money / leverage, especially option buying.
+
+BIAS PER ACTION
+  Smart Money:  Call BUY = bullish;  Call WRITE(short) = bearish;
+                Put WRITE(short/sell) = bullish (support);  Put BUY(long) = bearish.
+  Retail:       same actions read INVERTED (contra).
+
+QUALITY OF MOVE
+  Fresh Long buildup = real strength.  Short covering = weak (gap-up-and-die).
+
+HORIZON
+  Next-day view  -> weight Pro more.
+  Positional view-> weight FII more (Pro must be supportive).
+
+CONFLICT
+  FII vs Pro opposite => expect one-sided move then reversal (flagged).
+
+Each signal scores in [-1,+1]; weighted & normalised into TWO composites:
+  * intraday_composite (Pro-led)  -> next-day
+  * positional_composite (FII-led)-> next-week
 """
 from __future__ import annotations
 
@@ -38,15 +43,20 @@ from typing import Optional
 import pandas as pd
 
 
-# Tunable weights (sum need not be 1; normalised internally). Refined per PDF.
-DEFAULT_WEIGHTS = {
-    "fii_index_fut_net": 0.35,
-    "fii_index_fut_ratio": 0.15,
-    "pro_index_fut_net": 0.15,
-    "option_writing_bias": 0.15,
-    "client_contra": 0.10,
-    "cash_flow": 0.10,
+# Instrument-importance multipliers (options first, index over stock).
+INSTRUMENT_WEIGHT = {
+    "index_call": 1.00,
+    "index_put": 1.00,
+    "stock_call": 0.55,
+    "stock_put": 0.55,
+    "index_fut": 0.80,
+    "stock_fut": 0.40,
 }
+
+# How much each participant's read feeds the NEXT-DAY (Pro-led) composite ...
+INTRADAY_PARTICIPANT_WEIGHT = {"Pro": 0.50, "FII": 0.30, "Client": 0.20, "DII": 0.0}
+# ... and the POSITIONAL (FII-led) composite.
+POSITIONAL_PARTICIPANT_WEIGHT = {"FII": 0.50, "Pro": 0.30, "Client": 0.20, "DII": 0.0}
 
 
 @dataclass
@@ -63,10 +73,21 @@ class Signal:
 @dataclass
 class DecodeResult:
     date: str
-    bias: str                       # STRONG BULLISH / BULLISH / NEUTRAL / BEARISH / STRONG BEARISH
-    composite: float                # -1 .. +1
-    confidence: float               # 0 .. 100
+    # Next-day (Pro-led)
+    bias: str
+    composite: float
+    confidence: float
+    # Positional (FII-led)
+    positional_bias: str
+    positional_composite: float
+    positional_confidence: float
+    # Diagnostics
+    smart_money_conflict: bool = False
+    conflict_note: str = ""
+    retail_note: str = ""
+    move_quality: str = ""          # "fresh longs" / "short covering" / etc.
     signals: list = field(default_factory=list)
+    participant_reads: dict = field(default_factory=dict)
     metrics: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
@@ -77,7 +98,6 @@ class DecodeResult:
 
 # --------------------------------------------------------------------------- #
 def _col(df: pd.DataFrame, *candidates: str) -> Optional[str]:
-    """Find the first column whose normalised name matches a candidate."""
     norm = {c.lower().replace(" ", "").replace("_", ""): c for c in df.columns}
     for cand in candidates:
         key = cand.lower().replace(" ", "").replace("_", "")
@@ -86,25 +106,120 @@ def _col(df: pd.DataFrame, *candidates: str) -> Optional[str]:
     return None
 
 
-def _row(df: pd.DataFrame, participant: str) -> Optional[pd.Series]:
-    if "ClientType" not in df.columns:
+def _row(df: Optional[pd.DataFrame], participant: str) -> Optional[pd.Series]:
+    if df is None or "ClientType" not in df.columns:
         return None
     m = df[df["ClientType"].str.upper() == participant.upper()]
     return m.iloc[0] if len(m) else None
 
 
-def _net(row: pd.Series, long_col: str, short_col: str) -> float:
-    return float(row.get(long_col, 0) or 0) - float(row.get(short_col, 0) or 0)
-
-
-def _ratio(row: pd.Series, long_col: str, short_col: str) -> float:
-    s = float(row.get(short_col, 0) or 0)
-    l = float(row.get(long_col, 0) or 0)
-    return l / s if s else (l if l else 1.0)
+def _num(row: pd.Series, col: Optional[str]) -> float:
+    if row is None or col is None:
+        return 0.0
+    v = row.get(col, 0)
+    try:
+        return float(v) if pd.notna(v) else 0.0
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def _clip(x: float, lo: float = -1.0, hi: float = 1.0) -> float:
     return max(lo, min(hi, x))
+
+
+def _sig(x: float, scale: float) -> float:
+    """Smooth-ish squashing to [-1,1] using a linear/clip on x/scale."""
+    return _clip(x / scale) if scale else 0.0
+
+
+# --------------------------------------------------------------------------- #
+# Column resolution once (shared across participants).
+def _resolve_cols(df: pd.DataFrame) -> dict:
+    return {
+        "fut_idx_l": _col(df, "Future Index Long"),
+        "fut_idx_s": _col(df, "Future Index Short"),
+        "fut_stk_l": _col(df, "Future Stock Long"),
+        "fut_stk_s": _col(df, "Future Stock Short"),
+        "opt_idx_cl": _col(df, "Option Index Call Long"),
+        "opt_idx_cs": _col(df, "Option Index Call Short"),
+        "opt_idx_pl": _col(df, "Option Index Put Long"),
+        "opt_idx_ps": _col(df, "Option Index Put Short"),
+        "opt_stk_cl": _col(df, "Option Stock Call Long"),
+        "opt_stk_cs": _col(df, "Option Stock Call Short"),
+        "opt_stk_pl": _col(df, "Option Stock Put Long"),
+        "opt_stk_ps": _col(df, "Option Stock Put Short"),
+    }
+
+
+def _instrument_biases(row_today: pd.Series, row_prev: Optional[pd.Series],
+                       C: dict, contra: bool) -> dict:
+    """Return per-instrument bullish/bearish scores in [-1,1] for one participant.
+
+    Uses TODAY'S CHANGE (fresh action) primarily; falls back to the carry level.
+    `contra=True` inverts everything (for Retail/Client).
+    Sign convention (before contra):
+      Futures long-net > 0 => bullish.
+      Calls: long-net > 0 => bullish (buying calls); short-net (writing) => bearish.
+      Puts:  short-net > 0 (writing/selling puts) => bullish; long-net => bearish.
+    """
+    def net(lc, sc):  # long - short (carry)
+        return _num(row_today, C[lc]) - _num(row_today, C[sc])
+
+    def net_change(lc, sc):
+        if row_prev is None:
+            return None
+        prev = _num(row_prev, C[lc]) - _num(row_prev, C[sc])
+        return net(lc, sc) - prev
+
+    def score_dir(lc, sc, bullish_when_long: bool, scale: float):
+        """Score based on change (fresh) else carry; bullish_when_long flips for puts."""
+        ch = net_change(lc, sc)
+        raw = ch if ch is not None else net(lc, sc)
+        s = _sig(raw, scale)
+        if not bullish_when_long:
+            s = -s
+        return s
+
+    # Scales tuned to typical index/stock OI magnitudes (contracts).
+    reads = {
+        "index_fut": score_dir("fut_idx_l", "fut_idx_s", True, 30000),
+        "stock_fut": score_dir("fut_stk_l", "fut_stk_s", True, 300000),
+        # Calls: long => bullish.
+        "index_call": score_dir("opt_idx_cl", "opt_idx_cs", True, 120000),
+        "stock_call": score_dir("opt_stk_cl", "opt_stk_cs", True, 80000),
+        # Puts: LONG => bearish, so bullish_when_long=False.
+        "index_put": score_dir("opt_idx_pl", "opt_idx_ps", False, 120000),
+        "stock_put": score_dir("opt_stk_pl", "opt_stk_ps", False, 80000),
+    }
+    if contra:
+        reads = {k: -v for k, v in reads.items()}
+    return reads
+
+
+def _participant_composite(reads: dict) -> float:
+    tw = sum(INSTRUMENT_WEIGHT[k] for k in reads)
+    return _clip(sum(reads[k] * INSTRUMENT_WEIGHT[k] for k in reads) / tw) if tw else 0.0
+
+
+def _move_quality(fii_t, fii_p, pro_t, pro_p, C) -> str:
+    """Fresh longs vs short covering on index futures for Smart Money."""
+    if fii_p is None and pro_p is None:
+        return "unknown (no previous day)"
+    notes = []
+    for name, t, p in (("FII", fii_t, fii_p), ("Pro", pro_t, pro_p)):
+        if t is None or p is None:
+            continue
+        dl = _num(t, C["fut_idx_l"]) - _num(p, C["fut_idx_l"])
+        ds = _num(t, C["fut_idx_s"]) - _num(p, C["fut_idx_s"])
+        if dl > 0 and abs(dl) >= abs(ds):
+            notes.append(f"{name}: fresh longs added (real strength)")
+        elif ds < 0 and abs(ds) > abs(dl):
+            notes.append(f"{name}: short covering (weaker, gap-up risk)")
+        elif ds > 0 and abs(ds) >= abs(dl):
+            notes.append(f"{name}: fresh shorts added (real weakness)")
+        elif dl < 0:
+            notes.append(f"{name}: long unwinding")
+    return "; ".join(notes) if notes else "flat positioning"
 
 
 # --------------------------------------------------------------------------- #
@@ -113,160 +228,148 @@ def decode(
     oi_prev: Optional[pd.DataFrame] = None,
     cash: Optional[dict] = None,
     option_levels: Optional[dict] = None,
-    weights: Optional[dict] = None,
     date_str: str = "",
 ) -> DecodeResult:
-    """Decode one day's participant OI (+ optional prev day, cash, option levels)."""
-    W = {**DEFAULT_WEIGHTS, **(weights or {})}
+    C = _resolve_cols(oi_today)
     signals: list[Signal] = []
     metrics: dict = {}
+    participant_reads: dict = {}
 
-    fil = _col(oi_today, "Future Index Long", "FutureIndexLong")
-    fis = _col(oi_today, "Future Index Short", "FutureIndexShort")
-    ocl = _col(oi_today, "Option Index Call Long", "OptionIndexCallLong")
-    ocs = _col(oi_today, "Option Index Call Short", "OptionIndexCallShort")
-    opl = _col(oi_today, "Option Index Put Long", "OptionIndexPutLong")
-    ops = _col(oi_today, "Option Index Put Short", "OptionIndexPutShort")
+    rows_t = {p: _row(oi_today, p) for p in ("FII", "Pro", "Client", "DII")}
+    rows_p = {p: _row(oi_prev, p) for p in ("FII", "Pro", "Client", "DII")}
 
-    fii = _row(oi_today, "FII")
-    pro = _row(oi_today, "Pro")
-    client = _row(oi_today, "Client")
-    dii = _row(oi_today, "DII")
+    # Per-participant instrument reads + composite (Client is contra).
+    comp = {}
+    for p in ("FII", "Pro", "Client", "DII"):
+        if rows_t[p] is None:
+            continue
+        contra = (p == "Client")
+        reads = _instrument_biases(rows_t[p], rows_p[p], C, contra=contra)
+        participant_reads[p] = {k: round(v, 3) for k, v in reads.items()}
+        comp[p] = _participant_composite(reads)
 
-    fii_prev = _row(oi_prev, "FII") if oi_prev is not None else None
-    pro_prev = _row(oi_prev, "Pro") if oi_prev is not None else None
+    # --- Build NEXT-DAY (Pro-led) and POSITIONAL (FII-led) composites -------- #
+    def blended(weight_map):
+        tw = sum(weight_map[p] for p in comp if weight_map.get(p, 0))
+        if not tw:
+            return 0.0
+        return _clip(sum(comp[p] * weight_map[p] for p in comp
+                         if weight_map.get(p, 0)) / tw)
 
-    # --- 1. FII index-future net long (level + day-change) ------------------ #
-    if fii is not None and fil and fis:
-        net = _net(fii, fil, fis)
-        metrics["fii_index_fut_net"] = net
-        chg = None
-        if fii_prev is not None:
-            chg = net - _net(fii_prev, fil, fis)
-            metrics["fii_index_fut_net_change"] = chg
-        # Score primarily on the day-over-day change (fresh positioning),
-        # falling back to the sign of the absolute net.
-        if chg is not None:
-            denom = max(abs(_net(fii, fil, fis)), 20000, abs(chg))
-            score = _clip(chg / denom * 3)
-            note = (f"FII index-fut net {net:,.0f} "
-                    f"({'+' if chg>=0 else ''}{chg:,.0f} vs prev): "
-                    f"{'fresh longs' if chg>0 else 'fresh shorts/unwind'}.")
-        else:
-            score = _clip(net / max(abs(net), 50000))
-            note = f"FII index-fut net {net:,.0f} (no prev day to compare)."
-        signals.append(Signal("fii_index_fut_net", score, W["fii_index_fut_net"], note))
+    intraday = blended(INTRADAY_PARTICIPANT_WEIGHT)
+    positional = blended(POSITIONAL_PARTICIPANT_WEIGHT)
 
-        # --- 2. FII long/short ratio ---------------------------------------- #
-        r = _ratio(fii, fil, fis)
-        metrics["fii_index_fut_ls_ratio"] = round(r, 3)
-        # ratio 1.0 neutral; scale so 2.0 -> ~+1, 0.5 -> ~-1
-        rscore = _clip((r - 1.0)) if r >= 1 else _clip((r - 1.0) * 2)
-        signals.append(Signal(
-            "fii_index_fut_ratio", rscore, W["fii_index_fut_ratio"],
-            f"FII index-fut long/short ratio {r:.2f} "
-            f"({'bullish' if r>1.05 else 'bearish' if r<0.95 else 'balanced'})."))
+    # Signals list (transparent breakdown) — one per participant + cash.
+    for p in ("Pro", "FII", "Client", "DII"):
+        if p not in comp:
+            continue
+        w = INTRADAY_PARTICIPANT_WEIGHT[p]
+        label = {"Pro": "Pro (ultra-short, next-day driver)",
+                 "FII": "FII (short-medium, positional driver)",
+                 "Client": "Client/Retail (CONTRA — faded)",
+                 "DII": "DII (arb — ignored for direction)"}[p]
+        top = sorted(participant_reads[p].items(), key=lambda kv: -abs(kv[1]))[:3]
+        top_txt = ", ".join(f"{k} {v:+.2f}" for k, v in top)
+        signals.append(Signal(f"{p}_composite", round(comp[p], 3), w,
+                              f"{label}: net {comp[p]:+.2f} [{top_txt}]."))
 
-    # --- 3. Pro index-future net -------------------------------------------- #
-    if pro is not None and fil and fis:
-        net = _net(pro, fil, fis)
-        metrics["pro_index_fut_net"] = net
-        chg = (net - _net(pro_prev, fil, fis)) if pro_prev is not None else None
-        if chg is not None:
-            metrics["pro_index_fut_net_change"] = chg
-            denom = max(abs(net), 20000, abs(chg))
-            score = _clip(chg / denom * 3)
-            note = f"Pro index-fut net {net:,.0f} ({'+' if chg>=0 else ''}{chg:,.0f} vs prev)."
-        else:
-            score = _clip(net / max(abs(net), 50000))
-            note = f"Pro index-fut net {net:,.0f}."
-        signals.append(Signal("pro_index_fut_net", score, W["pro_index_fut_net"], note))
-
-    # --- 4. Option writing bias (Pro+FII) ----------------------------------- #
-    if all([ocl, ocs, opl, ops]) and (fii is not None or pro is not None):
-        call_short = put_short = 0.0
-        for grp in (fii, pro):
-            if grp is not None:
-                call_short += float(grp.get(ocs, 0) or 0)
-                put_short += float(grp.get(ops, 0) or 0)
-        total = call_short + put_short
-        if total:
-            # More put writing than call writing => bullish (support building).
-            ow = (put_short - call_short) / total
-            metrics["inst_put_call_write_ratio"] = round(put_short / call_short, 3) if call_short else None
-            signals.append(Signal(
-                "option_writing_bias", _clip(ow), W["option_writing_bias"],
-                f"Institutional option writing: put-writing {put_short:,.0f} vs "
-                f"call-writing {call_short:,.0f} => "
-                f"{'support building (bullish)' if ow>0 else 'resistance building (bearish)'}."))
-
-    # --- 5. Client contra ---------------------------------------------------- #
-    if client is not None and fil and fis:
-        cnet = _net(client, fil, fis)
-        metrics["client_index_fut_net"] = cnet
-        # Client is the crowd; fade extreme client positioning.
-        cscore = _clip(-cnet / max(abs(cnet), 80000))
-        signals.append(Signal(
-            "client_contra", cscore, W["client_contra"],
-            f"Client index-fut net {cnet:,.0f}; "
-            f"contrarian lean = {'bullish' if cscore>0 else 'bearish'} "
-            f"(fade the crowd)."))
-
-    # --- 6. Cash flow -------------------------------------------------------- #
+    # --- Cash flow ---------------------------------------------------------- #
+    cash_score = None
     if cash:
         fii_net = _extract_cash_net(cash, "FII")
         dii_net = _extract_cash_net(cash, "DII")
         if fii_net is not None:
             metrics["fii_cash_net"] = fii_net
             metrics["dii_cash_net"] = dii_net
-            combined = fii_net + (dii_net or 0) * 0.5  # DII flows weighted lower
-            score = _clip(combined / 3000.0)  # ~3000 Cr => strong day
-            signals.append(Signal(
-                "cash_flow", score, W["cash_flow"],
-                f"Cash: FII net {fii_net:,.0f} Cr, DII net {dii_net or 0:,.0f} Cr."))
+            combined = fii_net + (dii_net or 0) * 0.6
+            cash_score = _sig(combined, 3000.0)
+            signals.append(Signal("cash_flow", round(cash_score, 3), 0.15,
+                                  f"Cash: FII net {fii_net:,.0f} Cr, "
+                                  f"DII net {dii_net or 0:,.0f} Cr."))
+            # Nudge both composites slightly with cash confirmation.
+            intraday = _clip(intraday * 0.9 + cash_score * 0.1)
+            positional = _clip(positional * 0.85 + cash_score * 0.15)
 
-    # --- Composite ----------------------------------------------------------- #
-    total_w = sum(s.weight for s in signals) or 1.0
-    composite = sum(s.contribution() for s in signals) / total_w
-    composite = _clip(composite)
+    # --- Smart-money conflict (FII vs Pro opposite) ------------------------- #
+    conflict = False
+    conflict_note = ""
+    if "FII" in comp and "Pro" in comp:
+        if comp["FII"] * comp["Pro"] < 0 and min(abs(comp["FII"]), abs(comp["Pro"])) > 0.12:
+            conflict = True
+            fii_dir = "bullish" if comp["FII"] > 0 else "bearish"
+            pro_dir = "bullish" if comp["Pro"] > 0 else "bearish"
+            conflict_note = (
+                f"Smart-money SPLIT: FII {fii_dir} ({comp['FII']:+.2f}) vs "
+                f"Pro {pro_dir} ({comp['Pro']:+.2f}). Expect a one-sided move first "
+                f"(driven by 9 AM news) THEN a reversal — the classic dip-then-recover "
+                f"(or pop-then-fade) setup. Watch institutional levels for the turn.")
 
-    bias = _bias_label(composite)
-    # Confidence: magnitude of composite + agreement among signals.
-    if signals:
-        agree = sum(1 for s in signals if (s.score > 0) == (composite > 0) and s.score != 0)
-        agreement = agree / len(signals)
-    else:
-        agreement = 0.0
-    confidence = round(min(100, (abs(composite) * 60 + agreement * 40)), 1)
+    # --- Retail note -------------------------------------------------------- #
+    retail_note = ""
+    if "Client" in comp:
+        rc = comp["Client"]  # already contra-adjusted (bullish-for-market sign)
+        # Reconstruct raw retail lean for wording.
+        raw_bullish = rc < 0  # contra-adjusted negative => retail itself bullish
+        if raw_bullish:
+            retail_note = ("Retail is net BULLISH → upside likely CAPPED / "
+                           "'sell on rise' until retail unwinds. Reversal-up trigger = "
+                           "retail starts unwinding longs / builds puts.")
+        else:
+            retail_note = ("Retail is net BEARISH → contrarian POSITIVE for market "
+                           "(retail exiting longs is the fuel for a rally).")
 
+    # --- Move quality ------------------------------------------------------- #
+    quality = _move_quality(rows_t["FII"], rows_p["FII"], rows_t["Pro"], rows_p["Pro"], C)
+
+    # --- Carry / key metrics ------------------------------------------------ #
+    for p in ("FII", "Pro", "Client"):
+        r = rows_t[p]
+        if r is not None:
+            metrics[f"{p.lower()}_index_fut_net"] = (
+                _num(r, C["fut_idx_l"]) - _num(r, C["fut_idx_s"]))
     if option_levels:
-        metrics["max_pain"] = option_levels.get("max_pain")
-        metrics["pcr"] = option_levels.get("pcr")
-        metrics["spot"] = option_levels.get("spot")
+        metrics.update({k: option_levels.get(k) for k in ("max_pain", "pcr", "spot")})
+
+    # --- Confidence --------------------------------------------------------- #
+    def confidence(composite, driver):
+        base = abs(composite) * 60
+        # Agreement between the driver group and the composite direction.
+        agree = 40 if (driver in comp and (comp[driver] > 0) == (composite > 0)
+                       and comp[driver] != 0) else 0
+        conf = base + agree * 0.6
+        if conflict:
+            conf *= 0.75  # split smart money => lower confidence
+        return round(min(100, conf), 1)
 
     return DecodeResult(
-        date=date_str, bias=bias, composite=round(composite, 3),
-        confidence=confidence, signals=signals, metrics=metrics)
+        date=date_str,
+        bias=_bias_label(intraday), composite=round(intraday, 3),
+        confidence=confidence(intraday, "Pro"),
+        positional_bias=_bias_label(positional), positional_composite=round(positional, 3),
+        positional_confidence=confidence(positional, "FII"),
+        smart_money_conflict=conflict, conflict_note=conflict_note,
+        retail_note=retail_note, move_quality=quality,
+        signals=signals, participant_reads=participant_reads, metrics=metrics,
+    )
 
 
 def _bias_label(x: float) -> str:
-    if x >= 0.5:
+    if x >= 0.45:
         return "STRONG BULLISH"
-    if x >= 0.15:
+    if x >= 0.12:
         return "BULLISH"
-    if x <= -0.5:
+    if x <= -0.45:
         return "STRONG BEARISH"
-    if x <= -0.15:
+    if x <= -0.12:
         return "BEARISH"
     return "NEUTRAL"
 
 
 def _extract_cash_net(cash, group: str) -> Optional[float]:
-    """cash may be a list of dicts from NSE fiidiiTradeReact."""
     if isinstance(cash, list):
         for row in cash:
-            cat = str(row.get("category", "")).upper()
-            if group.upper() in cat.replace(" ", "").replace("*", ""):
+            cat = str(row.get("category", "")).upper().replace(" ", "").replace("*", "")
+            if group.upper() in cat:
                 for k in ("netValue", "netvalue", "net"):
                     if k in row:
                         try:

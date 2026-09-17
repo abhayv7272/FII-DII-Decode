@@ -10,16 +10,26 @@ where a reaction is expected, and exactly **what happens at each level**
 
 ---
 
-## ⏳ Status / what's pending from you
+## ✅ Methodology: decoded from your PDFs
 
-The engine is fully built and tested end-to-end on sample data. Two things are
-needed to finish:
+The decode engine now implements **Amit Dhamija's participant-OI methodology**,
+reconstructed line-by-line from the two source PDFs (`full_transcript.pdf` and
+`Market_Analysis_03_August_2026_Decoded-combined.pdf`). The full breakdown is in
+**[`docs/methodology.md`](docs/methodology.md)**. Highlights:
 
-1. **The channel transcript PDF.** It was not attached / not in the workspace.
-   Drop it into the repo (or paste the text) and the decode rules in
-   `docs/methodology.md` + `src/fiidii/decode.py` will be tuned to match that
-   channel's exact method. Until then, a well-grounded standard methodology is used.
-2. **GitHub secrets for email** (see below) so the 9 PM job can actually send mail.
+- **Retail (Client) = contra indicator** — fade it. Smart Money = **FII + Pro**.
+- **Options ranked first** (Index Options > Stock Options > Index Fut > Stock Fut).
+- Reads **today's fresh action** vs **carry**, and **fresh longs vs short-covering**.
+- **Pro drives the next-day view; FII drives the positional/weekly view** (Pro must
+  be supportive). Detects **FII-vs-Pro conflict** → "one-sided move then reversal".
+- **Institutional levels** from option-chain OI + ΔOI, with support→resistance flips
+  and the **liquidity-sweep-then-reverse** confluence.
+- Next-day prediction as **Gap Up / Flat / Gap Down** scenarios with expected
+  reaction at each level.
+
+### Still needed from you
+
+1. **GitHub secrets for email** (see below) so the 9 PM job can actually send mail.
 
 ---
 

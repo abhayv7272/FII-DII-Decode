@@ -49,8 +49,8 @@ def _load_demo():
     from .fetch import _parse_participant_csv
     today = _parse_participant_csv((FIXTURES / "fao_participant_oi_sample.csv").read_text())
     prev = _parse_participant_csv((FIXTURES / "fao_participant_oi_prev.csv").read_text())
-    cash = [{"category": "DII **", "netValue": "1250.50"},
-            {"category": "FII/FPI *", "netValue": "-2100.75"}]
+    cash = [{"category": "DII **", "netValue": "1350.50"},
+            {"category": "FII/FPI *", "netValue": "1150.25"}]
     oc = json.loads((FIXTURES / "option_chain_nifty.json").read_text())
     return today, prev, cash, oc
 
@@ -88,20 +88,32 @@ def run(args) -> int:
         if oc:
             store.save_option_chain(oc, symbol, d_today)
 
-    # --- Decode ---
-    result = decode(oi_today, oi_prev, cash=cash, date_str=report_date)
+    # --- Levels first (feed into decode metrics) ---
+    levels = derive_levels(oc) if oc else {"levels": [], "max_pain": None,
+                                           "pcr": None, "pcr_signal": ""}
 
-    # --- Levels ---
-    levels = derive_levels(oc) if oc else {"levels": [], "max_pain": None, "pcr": None}
+    # --- Decode ---
+    result = decode(oi_today, oi_prev, cash=cash, option_levels=levels,
+                    date_str=report_date)
     result.metrics.update({k: levels.get(k) for k in ("max_pain", "pcr", "spot")})
 
     # --- History + predictions ---
     hist = store.load_df("decoded")
     predictions = build_predictions(result, levels, hist)
 
-    # --- Persist decoded signal history ---
-    row = pd.DataFrame([{"date": report_date, "bias": result.bias,
-                         "composite": result.composite, "confidence": result.confidence}])
+    # --- Persist decoded signal history (for positional momentum & carry trend) ---
+    row = pd.DataFrame([{
+        "date": report_date,
+        "bias": result.bias, "composite": result.composite,
+        "confidence": result.confidence,
+        "positional_bias": result.positional_bias,
+        "positional_composite": result.positional_composite,
+        "positional_confidence": result.positional_confidence,
+        "fii_index_fut_net": result.metrics.get("fii_index_fut_net"),
+        "pro_index_fut_net": result.metrics.get("pro_index_fut_net"),
+        "client_index_fut_net": result.metrics.get("client_index_fut_net"),
+        "smart_money_conflict": result.smart_money_conflict,
+    }])
     store.append_df(row, "decoded", dedup_on=["date"])
 
     # --- Render ---
@@ -117,15 +129,19 @@ def run(args) -> int:
                      {k: v for k, v in levels.items() if k != "strike_frame"}},
                     f"decoded_full_{report_date}")
 
-    print(f"Report generated for {report_date}: {result.bias} "
-          f"(composite {result.composite:+.2f}, conf {result.confidence:.0f}%)")
+    print(f"Report generated for {report_date}: next-day {result.bias} "
+          f"(composite {result.composite:+.2f}, conf {result.confidence:.0f}%) | "
+          f"positional {result.positional_bias} "
+          f"({result.positional_composite:+.2f})")
     print(f"  Next-day: {predictions['next_day']['direction']} | "
-          f"Next-week: {predictions['next_week']['direction']}")
+          f"Next-week: {predictions['next_week']['direction']}"
+          + ("  [SMART-MONEY CONFLICT]" if result.smart_money_conflict else ""))
 
     # --- Email ---
     if not args.no_email:
         subject = (f"📊 FII/DII Decode {report_date} — {result.bias} | "
-                   f"Next-day {predictions['next_day']['direction']}")
+                   f"Next-day {predictions['next_day']['direction']} | "
+                   f"Week {predictions['next_week']['direction']}")
         send_report(subject, html,
                     attachments=[(f"report_{report_date}.md", md.encode("utf-8"))],
                     text_body=md)

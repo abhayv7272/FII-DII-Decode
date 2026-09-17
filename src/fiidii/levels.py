@@ -125,9 +125,16 @@ def derive_levels(raw: dict, spot: Optional[float] = None,
     mp = max_pain(df)
     p = pcr(df)
 
-    # Immediate actionable band = nearest strong support below & resistance above.
-    supports = sorted([l for l in levels if l.strike <= spot], key=lambda l: -l.strike)
-    resistances = sorted([l for l in levels if l.strike >= spot], key=lambda l: l.strike)
+    # Immediate actionable band = nearest strong SUPPORT below & RESISTANCE above.
+    supports = sorted([l for l in levels if l.kind == "support" and l.strike < spot],
+                      key=lambda l: -l.strike)
+    resistances = sorted([l for l in levels if l.kind == "resistance" and l.strike > spot],
+                         key=lambda l: l.strike)
+    # Fallbacks if nothing strictly on the right side.
+    if not supports:
+        supports = sorted([l for l in levels if l.strike < spot], key=lambda l: -l.strike)
+    if not resistances:
+        resistances = sorted([l for l in levels if l.strike > spot], key=lambda l: l.strike)
 
     return {
         "spot": float(spot),

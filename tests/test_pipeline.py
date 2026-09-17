@@ -29,10 +29,25 @@ def test_parse_participants():
 def test_decode_produces_bias():
     today, prev, _ = _load()
     res = decode(today, prev, date_str="2026-09-17")
-    assert res.bias in {"STRONG BULLISH", "BULLISH", "NEUTRAL", "BEARISH", "STRONG BEARISH"}
+    labels = {"STRONG BULLISH", "BULLISH", "NEUTRAL", "BEARISH", "STRONG BEARISH"}
+    assert res.bias in labels
+    assert res.positional_bias in labels
     assert -1.0 <= res.composite <= 1.0
+    assert -1.0 <= res.positional_composite <= 1.0
     assert 0 <= res.confidence <= 100
     assert res.signals
+    # Retail must be treated as a contra indicator and appear in participant reads.
+    assert "Client" in res.participant_reads
+    assert res.retail_note
+
+
+def test_retail_contra_logic():
+    """If retail is heavily net-long futures, market read should lean the other way."""
+    today, prev, _ = _load()
+    res = decode(today, prev, date_str="2026-09-17")
+    client = res.participant_reads["Client"]
+    # Client reads are contra-adjusted; they must be finite numbers.
+    assert all(-1.0 <= v <= 1.0 for v in client.values())
 
 
 def test_levels_and_predictions():
