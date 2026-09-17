@@ -41,6 +41,11 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 8 — user requested backup + continue)
+- User asked: **"Chat backup karo to github then dekho session close to nhi hoa ager nhi hoa then continue karo task"**.
+- Status check before continuing: branch is `arena/01a0b16b-fii-dii-decode`, working tree clean after commit `6368986`, and the session/branch is still active. No PR merge/close or branch switch performed.
+- Next in this session: continue the accuracy hunt from v4, with more aggressive but leak-safe rule-combo / intraday-confirmation research, and keep backing up changes to GitHub.
+
 ### 2026-09-18 (session 7 — full-freedom v4 accuracy hunt + GitHub backup)
 - User set the stretch goal: push daily accuracy toward **70-85%+** using every
   available idea — OI levels, institutional/psychological levels,
@@ -213,6 +218,11 @@
   exits 0 when credentials are absent/blank — email can no longer fail a run.
 
 ## Log (newest first)
+
+### 2026-09-18 (session 8 — user requested backup + continue)
+- User asked: **"Chat backup karo to github then dekho session close to nhi hoa ager nhi hoa then continue karo task"**.
+- Status check before continuing: branch is `arena/01a0b16b-fii-dii-decode`, working tree clean after commit `6368986`, and the session/branch is still active. No PR merge/close or branch switch performed.
+- Next in this session: continue the accuracy hunt from v4, with more aggressive but leak-safe rule-combo / intraday-confirmation research, and keep backing up changes to GitHub.
 
 ### 2026-09-18 (session 4 — Arena agent, branch `arena/01a0b0db-fii-dii-decode`)
 - Network was available again in this sandbox (previous session was cut off),
