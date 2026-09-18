@@ -1,0 +1,71 @@
+{
+  "overall": "DEGRADED_FALLBACK_SOURCE",
+  "run_date": "2026-09-19",
+  "report_date": "2026-09-18",
+  "direction_inputs_ready": true,
+  "level_inputs_ready": true,
+  "fallback_inputs": [
+    "option_chain"
+  ],
+  "unavailable_inputs": [],
+  "inputs": {
+    "participant_oi_current": {
+      "status": "available",
+      "source": "NSE archive",
+      "url": "https://nsearchives.nseindia.com/content/nsccl/fao_participant_oi_18092026.csv",
+      "as_of": "2026-09-18",
+      "fallback": false,
+      "fetched_at_utc": "2026-09-18T18:36:32.264586+00:00"
+    },
+    "cash": {
+      "status": "available",
+      "source": "NSE FII/DII API",
+      "url": "https://www.nseindia.com/api/fiidiiTradeReact",
+      "as_of": "2026-09-18",
+      "fallback": false,
+      "fetched_at_utc": "2026-09-18T18:36:34.844125+00:00"
+    },
+    "option_chain": {
+      "status": "available",
+      "source": "MarketNetra EOD option chain",
+      "url": "https://marketnetra.in/indices/nifty/option-chain",
+      "as_of": "2026-09-18",
+      "fallback": true,
+      "fetched_at_utc": "2026-09-18T18:36:36.288559+00:00",
+      "warning": "Third-party rendering of NSE EOD chain; payload passed date, spot, expiry and strike/OI validation."
+    },
+    "index_quote": {
+      "status": "available",
+      "source": "NSE all-indices API",
+      "url": "https://www.nseindia.com/api/allIndices",
+      "as_of": "2026-09-18",
+      "fallback": false,
+      "fetched_at_utc": "2026-09-18T18:36:36.319155+00:00"
+    },
+    "participant_volume": {
+      "status": "available",
+      "source": "NSE archive",
+      "url": "https://nsearchives.nseindia.com/content/nsccl/fao_participant_vol_18092026.csv",
+      "as_of": "2026-09-18",
+      "fallback": false,
+      "fetched_at_utc": "2026-09-18T18:36:36.895974+00:00"
+    },
+    "participant_oi_previous": {
+      "status": "available",
+      "source": "NSE archive",
+      "url": "https://nsearchives.nseindia.com/content/nsccl/fao_participant_oi_17092026.csv",
+      "as_of": "2026-09-17",
+      "fallback": false,
+      "fetched_at_utc": "2026-09-18T18:36:37.534929+00:00"
+    },
+    "institutional_references": {
+      "status": "not_provided",
+      "source": null,
+      "url": null,
+      "as_of": null,
+      "fallback": false,
+      "warning": "Optional exact references were not supplied; automatic levels remain option-chain proxies."
+    }
+  },
+  "policy": "A next-day OI lean requires complete current and previous participant OI. Actionable level branches additionally require a same-date option chain. Cash can alter setup strength but not the locked OI class; OHLC is an audit input."
+}

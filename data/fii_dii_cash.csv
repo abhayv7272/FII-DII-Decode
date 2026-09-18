@@ -1,3 +1,5 @@
 date,category,buy_value,sell_value,net_value,source
 2026-09-17,FII/FPI *,8761.71,11970.47,-3208.76,MrChartist GitHub NSE cash snapshot
 2026-09-17,DII **,14105.01,10487.26,3617.75,MrChartist GitHub NSE cash snapshot
+2026-09-18,DII,17310.04,16290.35,1019.69,NSE FII/DII API
+2026-09-18,FII/FPI,38461.63,37862.09,599.54,NSE FII/DII API
