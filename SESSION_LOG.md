@@ -50,6 +50,12 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 13 — chat/work backup checkpoint)
+- User asked: "backup chat to github".
+- Confirmed branch remains `arena/01a0b16b-fii-dii-decode`; no merge/close/branch switch performed.
+- Latest work already pushed before this checkpoint: V10 high-accuracy tiny-gap previous-close touch edge, product/report/CLI surfacing, and V11 execution audit showing 0 robust production trade conversions.
+- This entry is an explicit chat/work checkpoint so the continuation context is recoverable from GitHub.
+
 ### 2026-09-18 (session 12 — V9 OI + intraday confirmation)
 - Continued immediately after V8 because the user asked to keep going toward real 70%+.
 - Added `research/v9_oi_intraday_confirmation.py`: combines prior-day v3 FII/DII/Pro/Client OI lean (`reports/backtest_v3_candidate_2023-08_to_2026-09/v3_predictions.csv`) with next-session first 10/15/30/60-minute confirmation, entering only after the confirmation candle closes and using symmetric target/stop execution.
