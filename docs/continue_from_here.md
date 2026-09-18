@@ -95,10 +95,10 @@ PYTHONPATH=src python -m fiidii.cli sniper \
 
 ## Latest test status
 
-Latest full suite after report expansion:
+Latest full suite after report expansion and India VIX audit:
 
 ```text
-55 passed
+61 passed
 ```
 
 ## Best next step
@@ -112,7 +112,7 @@ If continuing the project, do not claim the full predictor is solved. The best h
    - tick/broker option-premium execution data,
    - GIFT/pre-open/global cues,
    - heavyweight stock/sector intraday leadership,
-   - India VIX/straddle/expiry/event context,
+   - live India VIX plus straddle/expiry/event context (the committed EOD VIX range audit has no promoted rule),
    - exact timestamped institutional levels.
 4. Backtest any new claim with train/validation/confirmation split and no leakage.
 

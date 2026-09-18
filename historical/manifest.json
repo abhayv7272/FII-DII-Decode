@@ -42,6 +42,10 @@
     "nifty_10m.csv.manifest.json": {
       "bytes": 4215,
       "sha256": "a0c58c46f8925fba76ac168fed18145b25db99ee503ebc5828514710402aa178"
+    },
+    "india_vix_ohlc.csv": {
+      "bytes": 29142,
+      "sha256": "0a2c3d4079e5dc78927a7fa4f740077cafc1ecee03ef69f6b6c9888b87e8ea77"
     }
   },
   "additional_sources": {

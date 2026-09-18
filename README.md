@@ -92,6 +92,23 @@ point-in-time inputs, rebuilds the V10 event test from 15-minute candles, and
 links the dedicated level/execution audits. Current concise result:
 [`reports/prediction_maker_backtest/report.md`](reports/prediction_maker_backtest/report.md).
 
+### 📉 India VIX range-context audit: no rule promoted
+
+The compact point-in-time history now includes EOD India VIX. A locked
+train/2025-validation/2026-confirmation audit tests only next-session
+**absolute-move/range context**, never an UP/DOWN override or trade signal:
+
+```bash
+PYTHONPATH=src:research python research/india_vix_regime_audit.py
+```
+
+Neither pre-specified VIX regime claim passed every gate. ELEVATED VIX had
++8.82 and +12.93 percentage-point lift for above-typical moves in validation
+and confirmation, but only +2.87 points in development (required: +5 in every
+partition); the QUIET claim also failed development and validation. Therefore
+no report wording or locked v2 logic changes. Full evidence:
+[`reports/india_vix_regime_audit/report.md`](reports/india_vix_regime_audit/report.md).
+
 ### 🧪 V4 psychology/manipulation search: no honest 75-85% edge yet
 
 At the user's request, a much more aggressive v4 research pass now tests

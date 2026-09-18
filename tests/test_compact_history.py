@@ -35,6 +35,14 @@ def _write_index_close(path: Path, date_text: str, close: float) -> None:
             "Low Index Value": 53900,
             "Closing Index Value": 54050,
         },
+        {
+            "Index Name": "India VIX",
+            "Index Date": date_text,
+            "Open Index Value": 12.0,
+            "High Index Value": 12.5,
+            "Low Index Value": 11.8,
+            "Closing Index Value": 12.2,
+        },
     ]).to_csv(path, index=False)
 
 
@@ -58,19 +66,23 @@ def test_compact_builder_outputs_replayable_oi_ohlc_and_volume(tmp_path):
 
     paths = build(root, tmp_path / "historical")
     assert set(paths) == {
-        "participant_oi.csv", "nifty_ohlc.csv", "participant_vol.csv", "README.md"
+        "participant_oi.csv", "nifty_ohlc.csv", "india_vix_ohlc.csv",
+        "participant_vol.csv", "README.md"
     }
     assert all(path.exists() for path in paths.values())
 
     oi = load_participant_oi(paths["participant_oi.csv"])
     ohlc = load_ohlc(paths["nifty_ohlc.csv"], "NIFTY")
+    vix = load_ohlc(paths["india_vix_ohlc.csv"], "India VIX")
     # Regression: v3 research accepts the compact volume CSV, not only raw files.
     volume = load_named_participant_csvs(str(paths["participant_vol.csv"]), "vol")
     assert len(oi) == 10  # two dates x Client/DII/FII/Pro/TOTAL
     assert len(ohlc) == 2
+    assert len(vix) == 2
     assert len(volume) == 10
     assert oi["date"].min().isoformat() == "2026-01-01"
     assert ohlc["close"].tolist() == [24750, 24900]
+    assert vix["close"].tolist() == [12.2, 12.2]
     assert volume["date"].max().isoformat() == "2026-01-02"
     readme = paths["README.md"].read_text()
     assert PINNED_SOURCE_COMMIT in readme

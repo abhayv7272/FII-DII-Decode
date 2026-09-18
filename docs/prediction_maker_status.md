@@ -32,6 +32,10 @@ Key evidence:
 - V3 candidate: 45.05% exact, better than V2/baseline in untouched splits, but not tradable because most gain comes from overnight gap channel and open-to-close remains near chance.
 - V4-V9 aggressive psychology/OI/intraday searches: **0** robust 70-85% directional/trade rules after holdout, sample, leakage, and post-entry guards.
 - V11 execution audit: **0** simple target/stop conversions for V10 passed robust 70% + positive-P&L gates.
+- India VIX EOD range-context audit: **0 promoted rules**. The fixed ELEVATED
+  range claim passed 2025 (+8.82 percentage points) and 2026 (+12.93) lift but
+  failed its development +5-point gate (+2.87); QUIET failed development and
+  validation. It creates no v2 direction override or report claim.
 
 Therefore the honest deployment status for the full original aim is:
 
@@ -96,6 +100,6 @@ To make the full original prediction maker stronger, the missing data is:
 - Tick or broker option-premium execution data for actual entries/exits/slippage.
 - GIFT Nifty / pre-open / global-market inputs available before Indian open.
 - Intraday heavyweight stock/sector leadership (Reliance, HDFC Bank, ICICI Bank, Infosys, TCS, etc.).
-- India VIX, straddle premium, expiry/event calendar, and exact timestamped institutional levels.
+- Intraday/live India VIX alongside straddle premium, expiry/event calendar, and exact timestamped institutional levels. The committed EOD VIX history has now been audited, but did not validate a report-context rule.
 
 Without these, the current public EOD/OI/intraday-index data has not proven a full 75-85% next-day/weekly directional predictor.

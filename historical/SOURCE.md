@@ -18,6 +18,10 @@ Files:
 - `nifty_ohlc.csv` — canonical NIFTY 50 OHLC consolidated from NSE
   `ind_close_all_YYYYMMDD.csv` files in the pinned mirror; this is the target
   source used by the published OI backtests.
+- `india_vix_ohlc.csv` — canonical India VIX daily OHLC consolidated from the
+  same-date NSE `ind_close_all_YYYYMMDD.csv` rows in the pinned mirror. It is
+  used only for EOD next-session range/risk-context research; it is not a
+  directional or trading-rule input.
 - `nifty_ohlc_long.csv` — long OpenChart/Groww NIFTY 50 daily OHLC history
   through 2026-09-04 for price-regime research only (not the canonical target
   source for published OI backtests).

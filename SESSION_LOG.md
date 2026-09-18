@@ -37,13 +37,22 @@
   level-touch alert, not a standalone options trade. **V11**
   (`reports/v11_gap_sniper_execution/`) tested 64,776 raw-1m execution candidates
   and found 0 robust 70% + positive-P&L target/stop trade conversions. The full original every-day next-day/weekly prediction maker remains unvalidated at the requested accuracy.
+- **India VIX audit:** point-in-time EOD daily VIX is now committed as
+  `historical/india_vix_ohlc.csv` (pinned Groww/NSE mirror; 2023-08-07 to
+  2026-09-04). The fixed development/2025-validation/2026-confirmation
+  next-session absolute-move test in `reports/india_vix_regime_audit/` has
+  **0 promoted rules**: ELEVATED VIX failed development (+2.87pp lift, despite
+  +8.82pp validation and +12.93pp 2026); QUIET also failed development and
+  validation. It adds no direction override or report wording. The unified
+  `reports/prediction_maker_backtest/` card now lists this component.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
   in `reports/v3_forward_validation/gate_report.md` — state
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
   (MrChartist 2026 history, exploratory): no standalone next-day content;
   mild v3-agreement premium; production's confirmation-only policy kept.
   Gate is end-to-end smoke-tested on a synthetic forward window
-  (`tests/test_research_gates.py`, latest suite 55 passed).
+  (`tests/test_research_gates.py`; latest suite 61 passed, including the
+  India VIX audit tests).
 - **Automation:** unchanged (v2 default), cron `30 15 * * 1-5`.
 - **Sandbox caveat:** only files *inside the repo* persist across Arena turns —
   `/home/user/historical`, `/home/user/features`, and venvs are wiped between
@@ -55,6 +64,32 @@
   or 10-/15-minute intraday candles from scratch.
 
 ## Log (newest first)
+
+### 2026-09-18 (session 23 — India VIX evidence audit; no rule promoted)
+- Added compact, reproducible EOD India VIX OHLC history from the already pinned
+  Groww/NSE archive (`historical/india_vix_ohlc.csv`, 759 rows, 2023-08-07 to
+  2026-09-04), its SHA-256 manifest entry, builder support, provenance notes,
+  and fixture coverage. The compact-builder replay reproduces the pre-existing
+  canonical NIFTY hash unchanged.
+- Built `research/india_vix_regime_audit.py` and published
+  `reports/india_vix_regime_audit/`. Its two pre-specified non-directional
+  claims use only EOD signal-date VIX for the *next* session's absolute
+  close-to-close move. Thresholds (QUIET ≤12.1425, ELEVATED ≥14.6800, typical
+  move 0.4204%) fit through 2024; gates require adequate calls and ≥5pp lift in
+  development, 2025 validation, and 2026 confirmation. The prior global VIX
+  descriptive lookup is transparently recorded, so neither evaluation split is
+  described as a newly pristine blind window.
+- Result: **NO_VIX_RULE_PROMOTED**. ELEVATED had 52.87% / 58.82% / 71.01% hit
+  rate and +2.87 / +8.82 / +12.93pp lift respectively, failing the development
+  lift gate. QUIET failed development (-2.33pp) and 2025 (+2.94pp), despite a
+  2026 +15.23pp lift. VIX versus next absolute return is Spearman 0.194 pooled
+  but only 0.060 versus signed return; no VIX UP/DOWN filter, range statement,
+  or v2 override is deployed.
+- Extended `research/prediction_maker_report_card.py` so its component scorecard
+  recomputes and reports the VIX non-promotion alongside direction, weekly,
+  levels, and V10. Updated README/status/continuation documentation. Validation:
+  **61 passed**, `py_compile`, `git diff --check`, and VIX manifest-integrity
+  check all passed.
 
 ### 2026-09-18 (session 22 — report-component backtest rerun and published)
 - User asked how accurate the prediction-maker report actually is. Built and ran

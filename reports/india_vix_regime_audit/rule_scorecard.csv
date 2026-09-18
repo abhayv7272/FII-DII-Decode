@@ -1,0 +1,7 @@
+rule,claim,expected_regime,period,period_rows,calls,hits,hit_rate_pct,wilson_95_lower_pct,unconditional_target_rate_pct,lift_pct_points,mean_abs_return_pct_when_called,mean_abs_return_pct_all
+ELEVATED_RANGE,ELEVATED VIX → above-typical next-session absolute move,ELEVATED,development,342,87,46,52.87,42.49,50.0,2.87,0.72,0.57
+ELEVATED_RANGE,ELEVATED VIX → above-typical next-session absolute move,ELEVATED,validation_2025,248,68,40,58.82,46.96,50.0,8.82,0.67,0.55
+ELEVATED_RANGE,ELEVATED VIX → above-typical next-session absolute move,ELEVATED,confirmation_2026,167,69,49,71.01,59.43,58.08,12.93,0.95,0.7
+QUIET_RANGE,QUIET VIX → below-typical next-session absolute move,QUIET,development,342,86,41,47.67,37.45,50.0,-2.33,0.49,0.57
+QUIET_RANGE,QUIET VIX → below-typical next-session absolute move,QUIET,validation_2025,248,102,54,52.94,43.32,50.0,2.94,0.42,0.55
+QUIET_RANGE,QUIET VIX → below-typical next-session absolute move,QUIET,confirmation_2026,167,42,24,57.14,42.21,41.92,15.23,0.47,0.7

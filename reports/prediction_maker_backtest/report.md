@@ -42,7 +42,18 @@ produced a robust 70%+ production rule across train, validation, and 2026
 confirmation. Therefore level rows in the email remain conditional plans, not
 promised trades.
 
-## 4. V10 at-open tiny-gap alert
+## 4. India VIX EOD range context
+
+| Fixed range claim | Development lift | 2025 validation lift | 2026 confirmation lift | Result |
+|---|---:|---:|---:|---|
+| ELEVATED VIX → above-typical absolute move | 2.87% | 8.82% | 12.93% | NOT_PROMOTED |
+| QUIET VIX → below-typical absolute move | -2.33% | 2.94% | 15.23% | NOT_PROMOTED |
+
+Both pre-specified range-context rules failed at least one locked partition
+gate, so the report does **not** add VIX-based range wording or a direction
+override. This is not an UP/DOWN test; it does not alter locked v2.
+
+## 5. V10 at-open tiny-gap alert
 
 | Event prediction | Calls | Overall | Train 2017–23 | Validation 2024–25 | Confirmation 2026 |
 |---|---:|---:|---:|---:|---:|
@@ -61,13 +72,14 @@ target/stop conversions, so V10 is an alert/context module, not a trade bot.
 - **Do not claim yet:** reliable every-day next-day direction, weekly direction,
   generic sweep/break trade, or automated target/stop profitability.
 - **Next validation:** continue untouched live forward tracking and collect
-  timestamped option-chain, option-premium/spread, GIFT/pre-open, VIX, sector
+  timestamped option-chain, option-premium/spread, GIFT/pre-open, live VIX, sector
   leadership, and exact institutional-level data before changing any rule.
 
 ## Method and audit sources
 
 - v2/v3 and weekly rows are recalculated by this run from committed point-in-time
   participant-OI and NIFTY OHLC history.
+- India VIX audit: `recomputed from historical/india_vix_ohlc.csv via research/india_vix_regime_audit.py`.
 - Level proxy: `reports/backtest_v2_levels_2023-08_to_2026-09/metrics.json`.
 - V10: `recomputed from historical/nifty_15m.csv`.
 - V7 intraday level confirmation: `reports/v7_intraday_institutional_levels/summary.json` → NO_VALIDATED_EDGE.

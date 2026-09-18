@@ -16,14 +16,14 @@ claim.
 
 | Inputs | Purpose |
 |---|---|
-| `participant_oi.csv`, `participant_vol.csv`, `nifty_ohlc.csv` | Canonical OI-direction replay and V3 forward-validation base history. |
+| `participant_oi.csv`, `participant_vol.csv`, `nifty_ohlc.csv`, `india_vix_ohlc.csv` | Canonical OI-direction replay and V3 forward-validation base history; the VIX file is EOD range/risk-context research only. |
 | `nifty_ohlc_long.csv`, `chain_features.csv` | Price-regime and EOD option-chain feature research. |
 | `nifty_10m.csv`, `nifty_15m.csv` | Intraday level, confirmation, sweep, and execution studies. |
 | `institutional_levels_pdf_2026.csv` | Manually audited, dated PDF-level research inputs. |
 
 ## Rebuild helpers
 
-`research/build_compact_history.py` can rebuild the first three compact CSVs
+`research/build_compact_history.py` can rebuild the first four compact CSVs
 from a checkout of the pinned Groww source. It is a source-audit/rebuild helper;
 run it into a temporary directory first, compare output hashes and schemas with
 `manifest.json`, then deliberately replace canonical files only when refreshing

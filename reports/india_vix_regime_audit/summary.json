@@ -1,0 +1,107 @@
+{
+  "overall_state": "NO_VIX_RULE_PROMOTED",
+  "scope": "EOD India VIX \u2192 next-session NIFTY range/risk context; no direction override tested or promoted",
+  "sources": {
+    "participant_oi": "historical/participant_oi.csv",
+    "nifty_ohlc": "historical/nifty_ohlc.csv",
+    "india_vix_ohlc": "historical/india_vix_ohlc.csv"
+  },
+  "date_coverage": {
+    "vix": {
+      "rows": 759,
+      "start": "2023-08-07",
+      "end": "2026-09-04"
+    },
+    "matched_prediction_observations": 757,
+    "first_signal_date": "2023-08-08",
+    "last_target_date": "2026-09-04"
+  },
+  "locked_protocol": {
+    "development_target_through": "2024-12-31",
+    "validation_target_dates": "2025-01-01 to 2025-12-31",
+    "confirmation_target_dates": "2026-01-01 onward in the pinned archive",
+    "threshold_source": "development only",
+    "claims": [
+      "ELEVATED VIX \u2192 above-typical next-session absolute move",
+      "QUIET VIX \u2192 below-typical next-session absolute move"
+    ],
+    "promotion_gate": {
+      "development_min_calls": 50,
+      "validation_min_calls": 25,
+      "confirmation_min_calls": 15,
+      "minimum_lift_vs_period_unconditional_target_pct_points": 5.0,
+      "requires_development_validation_and_confirmation": true
+    },
+    "evaluation_caveat": "A prior global descriptive VIX correlation was inspected. Neither 2025 nor 2026 entered threshold fitting, but neither is represented as a newly pristine blind sample."
+  },
+  "fitted_policy": {
+    "quiet_vix_close_lte": 12.1425,
+    "elevated_vix_close_gte": 14.68,
+    "typical_abs_return_pct": 0.4204,
+    "train_rows": 342,
+    "train_start": "2023-08-09",
+    "train_end": "2024-12-31"
+  },
+  "rule_gates": [
+    {
+      "rule": "ELEVATED_RANGE",
+      "development_min_calls": 50,
+      "validation_min_calls": 25,
+      "confirmation_min_calls": 15,
+      "min_lift_pct_points": 5.0,
+      "development_sample_ok": true,
+      "validation_sample_ok": true,
+      "confirmation_sample_ok": true,
+      "development_lift_ok": false,
+      "validation_lift_ok": true,
+      "confirmation_lift_ok": true,
+      "state": "NOT_PROMOTED"
+    },
+    {
+      "rule": "QUIET_RANGE",
+      "development_min_calls": 50,
+      "validation_min_calls": 25,
+      "confirmation_min_calls": 15,
+      "min_lift_pct_points": 5.0,
+      "development_sample_ok": true,
+      "validation_sample_ok": true,
+      "confirmation_sample_ok": true,
+      "development_lift_ok": false,
+      "validation_lift_ok": false,
+      "confirmation_lift_ok": true,
+      "state": "NOT_PROMOTED"
+    }
+  ],
+  "correlations": [
+    {
+      "period": "development",
+      "observations": 342,
+      "vix_vs_next_abs_return_spearman": 0.099,
+      "vix_vs_next_signed_return_spearman": 0.041
+    },
+    {
+      "period": "validation_2025",
+      "observations": 248,
+      "vix_vs_next_abs_return_spearman": 0.169,
+      "vix_vs_next_signed_return_spearman": 0.032
+    },
+    {
+      "period": "confirmation_2026",
+      "observations": 167,
+      "vix_vs_next_abs_return_spearman": 0.39,
+      "vix_vs_next_signed_return_spearman": 0.139
+    },
+    {
+      "period": "all",
+      "observations": 757,
+      "vix_vs_next_abs_return_spearman": 0.194,
+      "vix_vs_next_signed_return_spearman": 0.06
+    }
+  ],
+  "direction_segmentation_status": "DESCRIPTIVE_ONLY__NO_VIX_DERIVED_DIRECTION_FILTER_OR_OVERRIDE",
+  "non_claims": [
+    "No standalone next-day UP/DOWN prediction.",
+    "No weekly prediction, level, sweep, entry, stop, options-premium, or profitability claim.",
+    "No claim that a VIX regime changes the locked v2 default decoder."
+  ]
+}

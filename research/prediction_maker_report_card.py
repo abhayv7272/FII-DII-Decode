@@ -11,6 +11,7 @@ claim the user sees:
 * the rejected weekly candidate (the production weekly section intentionally
   emits NO-VALIDATED-EDGE, so it has no directional accuracy to claim);
 * option-chain level hold proxy;
+* India VIX EOD next-session range-context audit;
 * V7–V9 intraday confirmation/execution searches;
 * V10 at-open tiny-gap previous-close touch alert; and
 * the V11 V10 trade-execution audit.
@@ -42,6 +43,7 @@ for path in (SRC, RESEARCH):
 
 from fiidii.backtest import BacktestConfig, load_ohlc, load_participant_oi, run_backtest  # noqa: E402
 from compare_v1_v2 import weekly_comparison  # noqa: E402
+from india_vix_regime_audit import build_audit as build_vix_audit  # noqa: E402
 from v10_structural_gap_pivot_sniper import (  # noqa: E402
     add_structural_features,
     build_structural_rule_table,
@@ -181,6 +183,44 @@ def _v10_component(intraday_path: Path) -> tuple[dict[str, Any], pd.DataFrame]:
     return component, yearly
 
 
+def _vix_component(oi_path: Path, ohlc_path: Path, vix_path: Path) -> dict[str, Any]:
+    """Recompute the frozen VIX range-context audit for this unified card."""
+    summary, _, scorecard, _ = build_vix_audit(oi_path, ohlc_path, vix_path)
+    gate_by_rule = {item["rule"]: item for item in summary["rule_gates"]}
+
+    def lifts(rule: str) -> dict[str, Any]:
+        rows = scorecard[scorecard["rule"] == rule].set_index("period")
+        return {
+            "development_lift_pct_points": float(rows.loc["development", "lift_pct_points"]),
+            "validation_lift_pct_points": float(rows.loc["validation_2025", "lift_pct_points"]),
+            "confirmation_lift_pct_points": float(rows.loc["confirmation_2026", "lift_pct_points"]),
+            "state": gate_by_rule[rule]["state"],
+        }
+
+    elevated = lifts("ELEVATED_RANGE")
+    quiet = lifts("QUIET_RANGE")
+    return {
+        "component": "India VIX EOD range context",
+        "status": "NO_VALIDATED_EDGE" if summary["overall_state"] == "NO_VIX_RULE_PROMOTED"
+        else "CONTEXT_RULE_CANDIDATE_REQUIRES_LIVE_MONITORING",
+        "target": "next-session NIFTY absolute close-to-close move, not UP/DOWN direction",
+        "samples": summary["date_coverage"]["matched_prediction_observations"],
+        "elevated_development_lift_pct_points": elevated["development_lift_pct_points"],
+        "elevated_validation_lift_pct_points": elevated["validation_lift_pct_points"],
+        "elevated_confirmation_lift_pct_points": elevated["confirmation_lift_pct_points"],
+        "elevated_state": elevated["state"],
+        "quiet_development_lift_pct_points": quiet["development_lift_pct_points"],
+        "quiet_validation_lift_pct_points": quiet["validation_lift_pct_points"],
+        "quiet_confirmation_lift_pct_points": quiet["confirmation_lift_pct_points"],
+        "quiet_state": quiet["state"],
+        "evidence": (
+            "Two thresholds were fitted only through 2024 then gated in development, "
+            "2025 validation, and 2026 confirmation. No VIX direction override was searched or adopted."
+        ),
+        "source": f"recomputed from {vix_path} via research/india_vix_regime_audit.py",
+    }
+
+
 def _saved_execution_components() -> list[dict[str, Any]]:
     files = {
         "V7 intraday level confirmation": ROOT / "reports/v7_intraday_institutional_levels/summary.json",
@@ -210,8 +250,9 @@ def _saved_execution_components() -> list[dict[str, Any]]:
     return out
 
 
-def build_report_card(oi_path: Path, ohlc_path: Path, intraday_path: Path) -> tuple[dict, pd.DataFrame, pd.DataFrame]:
-    """Recalculate direction/weekly/V10 claims and load bounded execution audits."""
+def build_report_card(oi_path: Path, ohlc_path: Path, intraday_path: Path,
+                      vix_path: Path) -> tuple[dict, pd.DataFrame, pd.DataFrame]:
+    """Recalculate direction, VIX and V10 claims; load bounded execution audits."""
     oi = load_participant_oi(oi_path)
     ohlc = load_ohlc(ohlc_path, symbol="NIFTY")
     runs = {
@@ -219,12 +260,14 @@ def build_report_card(oi_path: Path, ohlc_path: Path, intraday_path: Path) -> tu
         for version in ("v2", "v3")
     }
     weekly, _, _ = weekly_comparison(oi, ohlc)
+    vix = _vix_component(oi_path, ohlc_path, vix_path)
     v10, yearly = _v10_component(intraday_path)
     components = [
         _daily_component(runs["v2"], "v2"),
         _daily_component(runs["v3"], "v3"),
         _weekly_component(weekly),
         _level_component(ROOT / "reports/backtest_v2_levels_2023-08_to_2026-09/metrics.json"),
+        vix,
         v10,
         *_saved_execution_components(),
     ]
@@ -240,12 +283,14 @@ def build_report_card(oi_path: Path, ohlc_path: Path, intraday_path: Path) -> tu
         "daily_v3_research": components[1],
         "weekly": components[2],
         "levels": components[3],
-        "v10": components[4],
-        "execution_audits": components[5:],
+        "vix": components[4],
+        "v10": components[5],
+        "execution_audits": components[6:],
         "deployment_policy": {
             "next_day_default": "v2 remains educational conditional context only",
             "weekly": "NO-VALIDATED-EDGE; show a playbook, not a direction forecast",
             "levels": "conditional confirmation only; no validated generic sweep/break trade",
+            "vix": "NO_VALIDATED_EDGE; do not add VIX-based range or direction wording",
             "v10": "allow as an at-open previous-close-touch alert only, never as a standalone trade",
         },
     }
@@ -253,7 +298,9 @@ def build_report_card(oi_path: Path, ohlc_path: Path, intraday_path: Path) -> tu
 
 
 def _markdown(card: dict) -> str:
-    d, v3, w, levels, v10 = (card[key] for key in ("daily_default", "daily_v3_research", "weekly", "levels", "v10"))
+    d, v3, w, levels, vix, v10 = (
+        card[key] for key in ("daily_default", "daily_v3_research", "weekly", "levels", "vix", "v10")
+    )
     lines = [
         "# Prediction-Maker Backtest Report Card",
         "",
@@ -315,7 +362,30 @@ def _markdown(card: dict) -> str:
         "confirmation. Therefore level rows in the email remain conditional plans, not",
         "promised trades.",
         "",
-        "## 4. V10 at-open tiny-gap alert",
+        "## 4. India VIX EOD range context",
+        "",
+        "| Fixed range claim | Development lift | 2025 validation lift | 2026 confirmation lift | Result |",
+        "|---|---:|---:|---:|---|",
+        (
+            f"| ELEVATED VIX → above-typical absolute move | "
+            f"{_pct(vix['elevated_development_lift_pct_points'])} | "
+            f"{_pct(vix['elevated_validation_lift_pct_points'])} | "
+            f"{_pct(vix['elevated_confirmation_lift_pct_points'])} | "
+            f"{vix['elevated_state']} |"
+        ),
+        (
+            f"| QUIET VIX → below-typical absolute move | "
+            f"{_pct(vix['quiet_development_lift_pct_points'])} | "
+            f"{_pct(vix['quiet_validation_lift_pct_points'])} | "
+            f"{_pct(vix['quiet_confirmation_lift_pct_points'])} | "
+            f"{vix['quiet_state']} |"
+        ),
+        "",
+        "Both pre-specified range-context rules failed at least one locked partition",
+        "gate, so the report does **not** add VIX-based range wording or a direction",
+        "override. This is not an UP/DOWN test; it does not alter locked v2.",
+        "",
+        "## 5. V10 at-open tiny-gap alert",
         "",
         "| Event prediction | Calls | Overall | Train 2017–23 | Validation 2024–25 | Confirmation 2026 |",
         "|---|---:|---:|---:|---:|---:|",
@@ -338,13 +408,14 @@ def _markdown(card: dict) -> str:
         "- **Do not claim yet:** reliable every-day next-day direction, weekly direction,",
         "  generic sweep/break trade, or automated target/stop profitability.",
         "- **Next validation:** continue untouched live forward tracking and collect",
-        "  timestamped option-chain, option-premium/spread, GIFT/pre-open, VIX, sector",
+        "  timestamped option-chain, option-premium/spread, GIFT/pre-open, live VIX, sector",
         "  leadership, and exact institutional-level data before changing any rule.",
         "",
         "## Method and audit sources",
         "",
         "- v2/v3 and weekly rows are recalculated by this run from committed point-in-time",
         "  participant-OI and NIFTY OHLC history.",
+        f"- India VIX audit: `{vix['source']}`.",
         f"- Level proxy: `{levels['source']}`.",
         f"- V10: `{v10['source']}`.",
     ]
@@ -358,12 +429,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--participant-oi", default="historical/participant_oi.csv")
     parser.add_argument("--ohlc", default="historical/nifty_ohlc.csv")
+    parser.add_argument("--india-vix-ohlc", default="historical/india_vix_ohlc.csv")
     parser.add_argument("--intraday", default="historical/nifty_15m.csv")
     parser.add_argument("--out", default="reports/prediction_maker_backtest")
     args = parser.parse_args()
 
     card, components, yearly = build_report_card(
-        Path(args.participant_oi), Path(args.ohlc), Path(args.intraday)
+        Path(args.participant_oi), Path(args.ohlc), Path(args.intraday),
+        Path(args.india_vix_ohlc)
     )
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)

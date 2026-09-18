@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-18T01:47:36.392249+00:00",
+  "generated_at_utc": "2026-09-18T01:58:56.793851+00:00",
   "scope": "component-level backtest of the daily market possibility report",
   "overall_verdict": "NOT_READY_AS_A_STANDALONE_TRADING_PREDICTOR",
   "why_no_single_accuracy": "The email has conditional branches. A range/break/reclaim scenario is not one unconditional UP/DOWN prediction, so each claim is scored separately.",
@@ -54,6 +54,22 @@
     "evidence": "Daily-bar proxy only; it cannot establish candle order, sweep/reclaim, entry, stop, or slippage.",
     "source": "reports/backtest_v2_levels_2023-08_to_2026-09/metrics.json"
   },
+  "vix": {
+    "component": "India VIX EOD range context",
+    "status": "NO_VALIDATED_EDGE",
+    "target": "next-session NIFTY absolute close-to-close move, not UP/DOWN direction",
+    "samples": 757,
+    "elevated_development_lift_pct_points": 2.87,
+    "elevated_validation_lift_pct_points": 8.82,
+    "elevated_confirmation_lift_pct_points": 12.93,
+    "elevated_state": "NOT_PROMOTED",
+    "quiet_development_lift_pct_points": -2.33,
+    "quiet_validation_lift_pct_points": 2.94,
+    "quiet_confirmation_lift_pct_points": 15.23,
+    "quiet_state": "NOT_PROMOTED",
+    "evidence": "Two thresholds were fitted only through 2024 then gated in development, 2025 validation, and 2026 confirmation. No VIX direction override was searched or adopted.",
+    "source": "recomputed from historical/india_vix_ohlc.csv via research/india_vix_regime_audit.py"
+  },
   "v10": {
     "component": "V10 tiny-gap previous-close touch",
     "status": "VALIDATED_LEVEL_TOUCH_ALERT__NOT_STANDALONE_TRADE",
@@ -106,6 +122,7 @@
     "next_day_default": "v2 remains educational conditional context only",
     "weekly": "NO-VALIDATED-EDGE; show a playbook, not a direction forecast",
     "levels": "conditional confirmation only; no validated generic sweep/break trade",
+    "vix": "NO_VALIDATED_EDGE; do not add VIX-based range or direction wording",
     "v10": "allow as an at-open previous-close-touch alert only, never as a standalone trade"
   }
 }

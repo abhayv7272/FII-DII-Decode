@@ -7,12 +7,13 @@ backtests after an Arena sandbox reset. Raw mirror directories contain roughly
 consolidates only the point-in-time fields the model uses:
 
 * participant OI (all participant rows, one row per date/participant),
-* NIFTY 50 daily OHLC, and
+* NIFTY 50 daily OHLC,
+* India VIX daily OHLC, and
 * participant volumes (research-only; not a production-score input).
 
 It does not mutate ``data/`` live stores. Use a pinned source directory such
 as ``sahilempire/groww-market-data`` at the source commit recorded in the
-output README. The three CSV outputs are deterministic for a given source
+output README. The four CSV outputs are deterministic for a given source
 revision; the README additionally records its build time.
 
 Example:
@@ -118,19 +119,24 @@ def build(source_root: Path, output_dir: Path) -> dict[str, Path]:
         raise FileNotFoundError("source archive is missing: " + ", ".join(missing))
 
     oi = _iso_date_column(load_participant_oi(oi_source))
+    # Keep the established compact daily-OHLC schema (date/open/high/low/close)
+    # for both indices.  ``load_ohlc`` accepts this canonical no-symbol form.
     ohlc = load_ohlc(ohlc_source, symbol="NIFTY").copy()
     ohlc["date"] = pd.to_datetime(ohlc["date"], errors="raise").dt.strftime("%Y-%m-%d")
-    ohlc.insert(1, "symbol", "NIFTY")
+    vix = load_ohlc(ohlc_source, symbol="India VIX").copy()
+    vix["date"] = pd.to_datetime(vix["date"], errors="raise").dt.strftime("%Y-%m-%d")
     volume = _iso_date_column(load_participant_volume(volume_source))
 
     output_dir.mkdir(parents=True, exist_ok=True)
     paths = {
         "participant_oi.csv": output_dir / "participant_oi.csv",
         "nifty_ohlc.csv": output_dir / "nifty_ohlc.csv",
+        "india_vix_ohlc.csv": output_dir / "india_vix_ohlc.csv",
         "participant_vol.csv": output_dir / "participant_vol.csv",
     }
     _write_csv(oi, paths["participant_oi.csv"])
     _write_csv(ohlc, paths["nifty_ohlc.csv"])
+    _write_csv(vix, paths["india_vix_ohlc.csv"])
     _write_csv(volume, paths["participant_vol.csv"])
 
     source_file_counts = {
@@ -158,6 +164,7 @@ def build(source_root: Path, output_dir: Path) -> dict[str, Path]:
         "|---|---:|---|---|",
         _summary_line("participant_oi.csv", oi, paths["participant_oi.csv"]),
         _summary_line("nifty_ohlc.csv", ohlc, paths["nifty_ohlc.csv"]),
+        _summary_line("india_vix_ohlc.csv", vix, paths["india_vix_ohlc.csv"]),
         _summary_line("participant_vol.csv", volume, paths["participant_vol.csv"]),
         "",
         "## Intended use",
