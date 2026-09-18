@@ -474,3 +474,34 @@ conservative: entry at open, target previous close, stop at 1x/2x/3x target
 distance, and same-minute target+stop counted as a loss.  The high level-touch
 hit-rate does **not** by itself validate a production options trade because the
 average target is only ~13 NIFTY points and execution/slippage dominate.
+
+## V11 Gap-sniper execution audit
+
+V11 asks whether the V10 tiny-gap level-touch edge can be converted into a simple
+production trade.  It uses raw 1-minute candles, enters at the open or after
+1/2/3/5/10/15 minutes if the previous-close target has not already touched, and
+tests stops from 0.75x to 5x of the remaining target distance.  If a one-minute
+candle touches both target and stop, it is counted as a loss.
+
+Run:
+
+```bash
+PYTHONPATH=research .venv/bin/python research/v11_gap_sniper_execution.py \
+  --out reports/v11_gap_sniper_execution
+```
+
+Published V11 result:
+
+| Check | Result |
+|---|---:|
+| Raw 1m rows | 877,729 |
+| Date range | 2017-04-03 to 2026-09-17 |
+| Trade candidates generated | 64,776 |
+| Execution rule summaries | 768 |
+| Robust 70% + positive-P&L trade rules | **0** |
+
+The highest win-rate pockets use very wide stops (4x-5x the tiny target).  They
+can show 77-83% win-rate, but lose average points in one or more splits.  Example:
+0.03%-0.12% gap, entry at open, 5x stop had 82.70% overall win-rate but negative
+average points in train and 2026 confirmation.  Therefore V10 remains a
+high-probability **level-touch alert**, not a standalone options trade.

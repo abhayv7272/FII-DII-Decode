@@ -161,9 +161,12 @@ PYTHONPATH=src python -m fiidii.cli sniper \
 
 Important: the mean target distance is only ~13 NIFTY points, so V10 also
 includes raw 1-minute execution diagnostics showing that naive tight-stop trades
-are not yet a validated production strategy. Treat this as a high-probability
-sniper context until tick/broker execution, spreads, option premium behavior, and
-stop logic are validated.
+are not yet a validated production strategy. A follow-up V11 execution audit
+([`reports/v11_gap_sniper_execution/report.md`](reports/v11_gap_sniper_execution/report.md))
+confirmed **0** simple target/stop conversions passed a strict 70% + positive-P&L
+train/validation/2026 gate. Treat this as a high-probability sniper context until
+tick/broker execution, spreads, option premium behavior, and stop logic are
+validated.
 
 To keep future sessions reproducible after Arena wipes external directories, a
 compact historical bundle is committed under [`historical/`](historical/) with

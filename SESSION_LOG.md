@@ -294,6 +294,12 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 12 — V11 execution audit for tiny-gap sniper)
+- Tested whether the V10 high-accuracy previous-close touch edge can be converted into a simple production trade using raw 1-minute NIFTY candles.
+- Added `research/v11_gap_sniper_execution.py` and `reports/v11_gap_sniper_execution/`: 64,776 candidate trades and 768 execution rule summaries across gap bands, entry delays, filters, and 0.75x-5x stops.
+- Result: **0** robust 70% + positive-P&L target/stop trade rules across train 2017-23, validation 2024-25, and 2026 confirmation. Wide stops create high win-rate pockets but lose points in one or more splits.
+- Conclusion unchanged: V10 is a high-probability level-touch sniper alert; standalone options trade still needs broker/tick option-premium data, slippage, spread, and stop-model validation.
+
 ### 2026-09-18 (session 11 — V10 sniper wired into product surface)
 - Continued without closing/merging. Branch remains `arena/01a0b16b-fii-dii-decode`.
 - Added a V10 opening-sniper playbook/status into `build_predictions()` and the HTML/Markdown report. If a live quote exposes open and previous close, the report computes the active/inactive tiny-gap signal and whether the target is already observed in the fetched high/low range; otherwise it shows the conditional at-open playbook.
