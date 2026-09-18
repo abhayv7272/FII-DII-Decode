@@ -36,6 +36,23 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 7 — continuation restored; persistent handoff protocol)
+- User resumed work and explicitly asked that the session **not be closed**. This
+  repository file remains the durable handoff: append a newest-first entry after
+  every agent turn; do not delete prior entries.
+- Verified the fresh Arena checkout is clean at main merge `7eeb105` / PR #6.
+  Recreated the ephemeral local virtual environment with the documented research
+  dependencies (`scipy`, `scikit-learn`) and ran the full suite: **49 passed**.
+- Current gate status is unchanged and correctly remains `COLLECTING_DATA`: the
+  committed store has participant OI through **2026-09-17**, but no committed
+  index-OHLC store; the pinned historical mirror is outside the repo and absent
+  in this new sandbox. Therefore there are still zero evaluable untouched
+  forward sessions. The `2026-09-18` decoded/fetch artifacts are explicitly
+  synthetic **DEMO_FIXTURE** outputs, not live data, and were not used.
+- The prior unresolved decision remains intentionally unassumed: whether to add
+  the compact (~1.5 MB) consolidated historical CSVs to the repository for
+  sandbox-proof research, or keep re-downloading them per session.
+
 ### 2026-09-18 (session 6 — chat backup requested + gate smoke test)
 - User asked: **"Backup chat to github"** → this entry is the backup; all
   work is committed to `arena/01a0b102-fii-dii-decode` (PR #6).
