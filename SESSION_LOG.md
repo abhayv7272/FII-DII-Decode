@@ -29,26 +29,37 @@
   (`reports/v7_intraday_institutional_levels/`), and v8 10/15-minute symmetric
   target/stop trade-level simulation (`reports/v8_intraday_trade_sim/`), and v9
   OI+intraday confirmation research (`reports/v9_oi_intraday_confirmation/`). No
-  honest 70-85% production-ready rule survived the
-  holdout/sample/leakage/post-entry/trade-execution guards.
+  honest 70-85% production-ready directional/trade rule survived the
+  holdout/sample/leakage/post-entry/trade-execution guards. **V10 found the first
+  honest 75-85%+ selective accuracy pocket**: at-open tiny-gap previous-close
+  touch (`reports/v10_structural_gap_pivot_sniper/`) with best robust rule
+  `abs_gap_0.03_0.12_both_fill_prev_close` = 90.33% overall, 89.11% train
+  2017-23, 94.23% validation 2024-25, 87.50% confirmation 2026. It is a
+  level-touch alert, not a standalone options trade. **V11**
+  (`reports/v11_gap_sniper_execution/`) tested 64,776 raw-1m execution candidates
+  and found 0 robust 70% + positive-P&L target/stop trade conversions.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
   in `reports/v3_forward_validation/gate_report.md` — state
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
   (MrChartist 2026 history, exploratory): no standalone next-day content;
   mild v3-agreement premium; production's confirmation-only policy kept.
   Gate is end-to-end smoke-tested on a synthetic forward window
-  (`tests/test_research_gates.py`, suite 49 passed).
+  (`tests/test_research_gates.py`, latest suite 55 passed).
 - **Automation:** unchanged (v2 default), cron `30 15 * * 1-5`.
 - **Sandbox caveat:** only files *inside the repo* persist across Arena turns —
   `/home/user/historical`, `/home/user/features`, and venvs are wiped between
   turns. Re-create venv with
   `pip install -r requirements.txt scipy scikit-learn`. The compact historical
-  bundle needed for v3-v9 feature/research rebuilds is now committed under
+  bundle needed for v3-v11 feature/research rebuilds is now committed under
   `historical/`; bulky raw bhavcopy ZIPs and raw 1-minute intraday files still
   stay outside git and must be re-downloaded only when rebuilding chain snapshots
   or 10-/15-minute intraday candles from scratch.
 
 ## Log (newest first)
+
+### 2026-09-18 (session 14 — completed backup state refresh)
+- Updated the in-repo current-state backup to explicitly include V10/V11: V10 achieved the requested 75-85%+ band for a selective at-open previous-close level-touch prediction; V11 failed to convert it into a robust standalone target/stop trade.
+- This was done only as a GitHub backup/checkpoint. No code/research branch was closed, merged, renamed, or switched.
 
 ### 2026-09-18 (session 13 — chat/work backup checkpoint)
 - User asked: "backup chat to github".
