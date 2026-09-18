@@ -27,6 +27,30 @@ A next-day OI lean requires complete current and previous participant OI. Action
 - **Retail:** Retail fresh index positioning is bearish (contra-positive), which supports a market bounce only after price confirmation.
 - **Move quality:** FII: fresh index-future longs (full-strength bullish), 17,150 contracts; Pro: fresh index-future longs (full-strength bullish), 18,500 contracts
 
+## Full Market Possibility Map
+
+This section is a scenario map for what can happen, not a fake sure-shot call. The validated policy is: context first, entry only after level/price confirmation.
+
+| Market possibility | Trigger to watch | What can happen | Invalidation / wait |
+|---|---|---|---|
+| Base OI context | Current decoder lean: UP / STRONG BULLISH; actionability CONDITIONAL_BULLISH_SETUP. | Treat this as bias/context only. A real entry needs price confirmation at support/resistance; the all-day UP/DOWN/CONSOLIDATION model is not validated at 75-85%+. | If data health is degraded, or FII/Pro conflict appears, downgrade to WAIT / context only. |
+| Consolidation / range day | Price stays between 24,600.00 (support · option_chain_proxy HIGH_RELATIVE_CONCENTRATION) and 25,150.00 (resistance · option_chain_proxy HIGH_RELATIVE_CONCENTRATION); no clean 10-15m close/retest outside the band. | Expect chop/mean reversion around option walls and max-pain 24850.0; avoid chasing mid-range candles. | A sustained break and retest beyond the band cancels range-first thinking. |
+| Bullish expansion path | Support 24,600.00 (support · option_chain_proxy HIGH_RELATIVE_CONCENTRATION) holds/reclaims after a sweep, or resistance 25,150.00 (resistance · option_chain_proxy HIGH_RELATIVE_CONCENTRATION) breaks with a 10-15m close + retest. | Upside route opens toward 25150 (option chain proxy); Pro/FII alignment and put writers holding improve quality. | Failed retest, bearish engulfing back below the wall, or retail crowding against smart money = no fresh long. |
+| Bearish rejection / breakdown path | Resistance 25,150.00 (resistance · option_chain_proxy HIGH_RELATIVE_CONCENTRATION) rejects after a sweep, or support 24,600.00 (support · option_chain_proxy HIGH_RELATIVE_CONCENTRATION) breaks with failed reclaim. | Downside route opens toward 24450 (option chain proxy); call writers defending resistance improve quality. | Fast reclaim above broken support/resistance means breakdown/rejection failed; do not average shorts. |
+| Liquidity sweep / trap watch | Quick wick beyond support/resistance/round number, then close back inside the prior range. | Possible stop-hunt/manipulation day: first move can be false; trade only the reclaim/rejection candle break. | If price accepts outside the swept level for 10-15 minutes, treat it as breakout/role-flip, not reversal. |
+| V10 tiny-gap sniper | At cash open, abs(gap) must be 0.03% to <0.12%; current status QUOTE_UNAVAILABLE_PREPARE_PLAYBOOK. | If active, expect previous-close touch intraday. Direction now: DEPENDS_ON_OPEN_GAP; target previous_close. Observed: not checked. | If open gap is outside the band, ignore this module; do not force a trade from it. |
+| No-trade / protect-capital conditions | No same-date levels, no confirming candle, conflicting smart money, wide gap already beyond levels, or violent news candle. | Stand aside until the next clean level interaction. Missing a trade is better than forcing a low-quality prediction. | Conflict note: No explicit FII/Pro conflict flag. |
+
+### Mon–Fri Weekly Playbook
+
+| Week part | Focus | Plan |
+|---|---|---|
+| Monday | Opening balance / weekly range seed | Mark first reaction around 24,600.00 (support · option_chain_proxy HIGH_RELATIVE_CONCENTRATION) / 25,150.00 (resistance · option_chain_proxy HIGH_RELATIVE_CONCENTRATION). Do not assume trend until one side accepts beyond the range. |
+| Tuesday-Wednesday | Expansion attempt | If the same side keeps defending levels and Pro/FII context supports it, allow continuation; otherwise expect rotation. |
+| Thursday / expiry context | Premium decay, wall defence, false breaks | Expect sweeps around option walls/max pain; require stricter candle confirmation and avoid late chasing. |
+| Friday | Follow-through vs mean reversion | Carry only if the week closes beyond a broken/retested level; otherwise expect mean reversion back into the range. |
+| Weekly validation guard | NO-VALIDATED-EDGE | CONTEXT_ONLY_WAIT_FOR_MULTI_SESSION_CONFIRMATION: weekly direction remains context unless multi-session price + participant confirmation appears. |
+
 ## Next-Day Conditional Plan (Gap Up / Flat / Gap Down)
 - Forced research class: **UP** (setup strength 100/100)
 - Actionability: **CONDITIONAL_BULLISH_SETUP**
@@ -35,6 +59,15 @@ A next-day OI lean requires complete current and previous participant OI. Action
   - **GAP DOWN:** Evaluate support 24600; do not buy merely because price reached it. A liquidity sweep followed by a confirmed reclaim activates the bounce branch. Independently supplied institutional/psychological confluence strengthens the setup. A sustained bearish break BELOW 24600 flips it to resistance and activates the next lower level.
   - **FLAT:** Treat 24600 to 25150 as the decision band. A confirmed support reclaim activates the bounce branch; confirmed resistance rejection activates the fade branch. Without either candle, wait. Direction changes only when a wall breaks and sustains.
   - **GAP UP:** Evaluate resistance 25150. Confirmed rejection activates a move toward 24600; a decisive 15-minute close and retest ABOVE 25150 means the call-side concentration gave way and activates the next upper level.
+
+## V10 Opening Sniper — Previous-Close Touch
+
+- **Status:** WAIT FOR OPEN
+- **Rule:** abs(open gap) 0.03% to <0.12% → target previous close intraday.
+- **Current signal:** DEPENDS_ON_OPEN_GAP toward previous_close; gap —
+- **Validation:** overall 90.33% · train 89.11% · val 94.23% · 2026 confirm 87.50%
+- **Observed status:** not checked
+- **Warning:** This is a level-touch probability, not an unconditional close-direction call or standalone options trade. Execution needs live spread/slippage/stop checks.
 
 ## Next-Week / Positional Context (Mon–Fri)
 - Forecast status: **NO-VALIDATED-EDGE**

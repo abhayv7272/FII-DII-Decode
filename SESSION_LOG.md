@@ -56,6 +56,22 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 21 — production report regenerated against clarified product aim)
+- User again confirmed the core task: the product is a daily email prediction
+  maker for next-session and Mon–Fri UP/DOWN/CONSOLIDATION possibilities,
+  support/resistance and sweep/break/reclaim branches, and evidence-backed
+  actionability; backtesting decides what may be deployed. V10 is only one
+  supporting component, not the product definition.
+- Regenerated the committed demo report with the merged PR #7 renderer and
+  verified the actual email/Markdown payload now contains: **Full Market
+  Possibility Map**, **Mon–Fri Weekly Playbook**, next-day gap scenarios, V10
+  opening-sniper status, next-week context, and level-by-level conditional
+  hold/reject/break/role-flip plans. The regenerated `2026-09-18` output is
+  explicitly marked `DEMO_FIXTURE`, never a live forecast.
+- The report intentionally keeps weekly direction at `NO-VALIDATED-EDGE` and
+  levels conditional until their forward/execution evidence exists, rather than
+  pretending that a scenario map is a certain forecast.
+
 ### 2026-09-18 (session 20 — PR #7 synchronized and validated on active branch)
 - Merged GitHub main commit `82303f0` (merged PR #7) into the fixed active
   Arena branch `arena/01a0b20d-fii-dii-decode` without switching branches.

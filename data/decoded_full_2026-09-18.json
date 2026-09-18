@@ -17,7 +17,7 @@
         "url": null,
         "as_of": "2026-09-18",
         "fallback": false,
-        "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
+        "fetched_at_utc": "2026-09-18T01:42:07.735407+00:00",
         "warning": "Synthetic/approximate values; not live market data."
       },
       "participant_oi_previous": {
@@ -26,7 +26,7 @@
         "url": null,
         "as_of": "2026-09-18",
         "fallback": false,
-        "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
+        "fetched_at_utc": "2026-09-18T01:42:07.735407+00:00",
         "warning": "Synthetic/approximate values; not live market data."
       },
       "cash": {
@@ -35,7 +35,7 @@
         "url": null,
         "as_of": "2026-09-18",
         "fallback": false,
-        "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
+        "fetched_at_utc": "2026-09-18T01:42:07.735407+00:00",
         "warning": "Synthetic/approximate values; not live market data."
       },
       "option_chain": {
@@ -44,7 +44,7 @@
         "url": null,
         "as_of": "2026-09-18",
         "fallback": false,
-        "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
+        "fetched_at_utc": "2026-09-18T01:42:07.735407+00:00",
         "warning": "Synthetic/approximate values; not live market data."
       },
       "index_quote": {
@@ -53,7 +53,7 @@
         "url": null,
         "as_of": null,
         "fallback": false,
-        "fetched_at_utc": "2026-09-17T20:03:54.003026+00:00",
+        "fetched_at_utc": "2026-09-18T01:42:07.735433+00:00",
         "warning": "Demo fixture has option-chain spot but no independent index OHLC fetch."
       },
       "participant_volume": {
@@ -222,7 +222,7 @@
           "url": null,
           "as_of": "2026-09-18",
           "fallback": false,
-          "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
+          "fetched_at_utc": "2026-09-18T01:42:07.735407+00:00",
           "warning": "Synthetic/approximate values; not live market data."
         },
         "participant_oi_previous": {
@@ -231,7 +231,7 @@
           "url": null,
           "as_of": "2026-09-18",
           "fallback": false,
-          "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
+          "fetched_at_utc": "2026-09-18T01:42:07.735407+00:00",
           "warning": "Synthetic/approximate values; not live market data."
         },
         "cash": {
@@ -240,7 +240,7 @@
           "url": null,
           "as_of": "2026-09-18",
           "fallback": false,
-          "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
+          "fetched_at_utc": "2026-09-18T01:42:07.735407+00:00",
           "warning": "Synthetic/approximate values; not live market data."
         },
         "option_chain": {
@@ -249,7 +249,7 @@
           "url": null,
           "as_of": "2026-09-18",
           "fallback": false,
-          "fetched_at_utc": "2026-09-17T20:03:54.003017+00:00",
+          "fetched_at_utc": "2026-09-18T01:42:07.735407+00:00",
           "warning": "Synthetic/approximate values; not live market data."
         },
         "index_quote": {
@@ -258,7 +258,7 @@
           "url": null,
           "as_of": null,
           "fallback": false,
-          "fetched_at_utc": "2026-09-17T20:03:54.003026+00:00",
+          "fetched_at_utc": "2026-09-18T01:42:07.735433+00:00",
           "warning": "Demo fixture has option-chain spot but no independent index OHLC fetch."
         },
         "participant_volume": {
@@ -761,6 +761,30 @@
       "actionability": "CONTEXT_ONLY_WAIT_FOR_MULTI_SESSION_CONFIRMATION",
       "research_lean": "SIDEWAYS-UP",
       "level_predictions": []
+    },
+    "opening_sniper": {
+      "active": null,
+      "status": "QUOTE_UNAVAILABLE_PREPARE_PLAYBOOK",
+      "signal_type": "TINY_GAP_FILL_PREVIOUS_CLOSE_TOUCH",
+      "band_min_abs_gap_pct": 0.03,
+      "band_max_abs_gap_pct": 0.12,
+      "direction_to_target": "DEPENDS_ON_OPEN_GAP",
+      "target": "previous_close",
+      "actionability": "PREPARE_CONDITIONAL_AT_OPEN_ONLY",
+      "thesis": "At the next cash-market open, if abs(gap) is between 0.03% and 0.12%, expect a same-session touch of the previous close. Gap up -> fade down; gap down -> fade up.",
+      "validation": {
+        "rule": "abs_gap_0.03_0.12_both_fill_prev_close",
+        "overall_calls": 393,
+        "overall_hit_rate": 90.33078880407125,
+        "train_2017_2023_calls": 257,
+        "train_2017_2023_hit_rate": 89.10505836575877,
+        "val_2024_2025_calls": 104,
+        "val_2024_2025_hit_rate": 94.23076923076923,
+        "confirm_2026_calls": 32,
+        "confirm_2026_hit_rate": 87.5,
+        "mean_target_distance_pts": 12.992941014630949
+      },
+      "warning": "This is a level-touch probability, not an unconditional close-direction call or standalone options trade. Execution needs live spread/slippage/stop checks."
     }
   },
   "levels": {
