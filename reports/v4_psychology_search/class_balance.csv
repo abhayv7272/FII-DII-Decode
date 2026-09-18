@@ -1,0 +1,4 @@
+period,n,majority_baseline_pct,UP,DOWN,FLAT/WAIT
+dev2023_24,343,45.48,156,109,78
+val2025,248,39.52,98,98,52
+confirm2026,166,42.77,65,71,30

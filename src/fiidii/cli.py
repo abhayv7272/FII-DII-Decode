@@ -31,6 +31,7 @@ import pandas as pd
 from . import fetch, store
 from .decode import decode
 from .email_send import send_report
+from .gap_sniper import tiny_gap_fill_playbook, tiny_gap_fill_signal
 from .levels import derive_levels
 from .nse import NseClient
 from .predict import build_predictions
@@ -85,6 +86,43 @@ def _quote_number(quote: dict, *keys: str):
         except (TypeError, ValueError):
             continue
     return None
+
+
+def _build_opening_sniper_signal(quote: dict | None) -> dict:
+    """Build the V10 at-open sniper signal from an NSE quote if possible.
+
+    The report can be run before, during, or after the session.  If quote high/low
+    are available we only say whether the target has been observed in the fetched
+    range so far; this should not be interpreted as a completed trade unless the
+    quote is known to be final EOD data.
+    """
+    if not quote:
+        out = tiny_gap_fill_playbook()
+        out["status"] = "QUOTE_UNAVAILABLE_PREPARE_PLAYBOOK"
+        return out
+    open_price = _quote_number(quote, "open")
+    previous_close = _quote_number(quote, "previousClose", "previous_close")
+    if open_price is None or previous_close is None:
+        out = tiny_gap_fill_playbook()
+        out["status"] = "QUOTE_MISSING_OPEN_OR_PREVIOUS_CLOSE"
+        out["quote_keys"] = sorted(str(k) for k in quote.keys())[:30]
+        return out
+    out = tiny_gap_fill_signal(open_price=open_price, previous_close=previous_close)
+    high = _quote_number(quote, "high")
+    low = _quote_number(quote, "low")
+    out["quote_high"] = high
+    out["quote_low"] = low
+    out["target_observed_in_quote_range"] = None
+    if out["active"] and high is not None and low is not None:
+        target = float(out["target"])
+        if out["direction_to_target"] == "DOWN":
+            observed = low <= target
+        elif out["direction_to_target"] == "UP":
+            observed = high >= target
+        else:
+            observed = False
+        out["target_observed_in_quote_range"] = bool(observed)
+    return out
 
 
 def _persist_index_ohlc(quote: dict, symbol: str, report_date: str) -> bool:
@@ -586,6 +624,7 @@ def run(args) -> int:
         store.load_df("decoded"), result.method_version, report_date
     )
     predictions = build_predictions(result, levels, hist)
+    predictions["opening_sniper"] = _build_opening_sniper_signal(quote)
 
     # --- Persist decoded signal history (for positional momentum & carry trend) ---
     row = pd.DataFrame(
@@ -665,6 +704,53 @@ def run(args) -> int:
     return 0
 
 
+def run_sniper_command(args) -> int:
+    """Evaluate the V10 tiny-gap previous-close-touch rule from manual prices."""
+    signal = tiny_gap_fill_signal(
+        open_price=args.open_price,
+        previous_close=args.previous_close,
+        min_abs_gap_pct=args.min_abs_gap_pct,
+        max_abs_gap_pct=args.max_abs_gap_pct,
+    )
+    if signal["active"] and args.high is not None and args.low is not None:
+        target = float(signal["target"])
+        if signal["direction_to_target"] == "DOWN":
+            observed = args.low <= target
+        elif signal["direction_to_target"] == "UP":
+            observed = args.high >= target
+        else:
+            observed = False
+        signal["target_observed_in_supplied_range"] = bool(observed)
+        signal["supplied_high"] = float(args.high)
+        signal["supplied_low"] = float(args.low)
+    if args.json:
+        print(json.dumps(signal, indent=2))
+    else:
+        print("V10 tiny-gap previous-close-touch sniper")
+        print(f"  status: {signal['status']}")
+        print(f"  open: {signal['open']:.2f} | previous close: {signal['previous_close']:.2f}")
+        print(
+            f"  gap: {signal['gap_pct']:+.4f}% | band: "
+            f"{signal['band_min_abs_gap_pct']:.2f}% to <{signal['band_max_abs_gap_pct']:.2f}%"
+        )
+        if signal["active"]:
+            print(
+                f"  prediction: {signal['direction_to_target']} to touch "
+                f"{float(signal['target']):.2f} intraday"
+            )
+            print(
+                "  validation: "
+                f"overall {signal['validation']['overall_hit_rate']:.2f}% | "
+                f"2026 confirm {signal['validation']['confirm_2026_hit_rate']:.2f}%"
+            )
+            if "target_observed_in_supplied_range" in signal:
+                print(f"  observed in supplied high/low: {signal['target_observed_in_supplied_range']}")
+        else:
+            print("  prediction: no V10 tiny-gap sniper signal")
+        print(f"  warning: {signal['warning']}")
+    return 0
+
+
 def run_backtest_command(args) -> int:
     """Load historical inputs, run a point-in-time replay, and write artifacts."""
     from .backtest import (
@@ -738,6 +824,19 @@ def main(argv=None) -> int:
         ),
     )
     r.set_defaults(func=run)
+
+    s = sub.add_parser(
+        "sniper",
+        help="evaluate the V10 tiny-gap previous-close-touch signal from open/prev close",
+    )
+    s.add_argument("--open", dest="open_price", type=float, required=True, help="current NIFTY open")
+    s.add_argument("--previous-close", type=float, required=True, help="previous NIFTY close")
+    s.add_argument("--high", type=float, help="optional current/session high to check observed touch")
+    s.add_argument("--low", type=float, help="optional current/session low to check observed touch")
+    s.add_argument("--min-abs-gap-pct", type=float, default=0.03, help="inclusive lower gap band (default: 0.03)")
+    s.add_argument("--max-abs-gap-pct", type=float, default=0.12, help="exclusive upper gap band (default: 0.12)")
+    s.add_argument("--json", action="store_true", help="print JSON instead of text")
+    s.set_defaults(func=run_sniper_command)
 
     b = sub.add_parser(
         "backtest", help="replay historical OI and score next-session predictions"

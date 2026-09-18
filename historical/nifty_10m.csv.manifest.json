@@ -1,0 +1,94 @@
+{
+  "source_repo": "technovusin/nifty50-historical-data",
+  "source_url": "https://github.com/technovusin/nifty50-historical-data",
+  "source_branch": "main",
+  "source_license": "MIT License per upstream repository metadata/README",
+  "raw_files_kept_outside_git": true,
+  "raw_root_used": "/home/user/historical/technovusin-nifty50-historical-data/1min",
+  "interval_minutes": 10,
+  "output": "historical/nifty_10m.csv",
+  "output_rows": 88871,
+  "output_sha256": "9d2d094cda2dd1161c9541af66e70cd6e67162b1e2c3ab038e624e14ac990b01",
+  "raw_files": [
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2017/NIFTY50_1min_2017.csv",
+      "bytes": 4448496,
+      "sha256": "9d8b79bdeea987c862a7aaac645cec0acd0bb979173e88069a8a72a717166164"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2018/NIFTY50_1min_2018.csv",
+      "bytes": 6244431,
+      "sha256": "8565536347e4043f9adf9fa738c8d5d742cb237578e0757d0ad13149c874ca24"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2019/NIFTY50_1min_2019.csv",
+      "bytes": 6221045,
+      "sha256": "5bac0f0cdeadf7af44bf5d189b47a3a1890852183244a67701cc7c26028dfcb2"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2020/NIFTY50_1min_2020.csv",
+      "bytes": 6258787,
+      "sha256": "1909d407888d820455f1c30d1ef9bf91a18adf9e8c7a90f742cc207069e184d1"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2021/NIFTY50_1min_2021.csv",
+      "bytes": 6547799,
+      "sha256": "d4e404ccf13b887c68e9abb097f98e9318fa8b06c6ea6e22a2b7ac112e2b7c64"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2022/NIFTY50_1min_2022.csv",
+      "bytes": 6936186,
+      "sha256": "a3e3b6b7e4cfd5c11b4d4ced1d5624857dde310dcc4a84df7eb86a8211c0eccc"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2023/NIFTY50_1min_2023.csv",
+      "bytes": 6343523,
+      "sha256": "6caf5bc19d848d6842ecdb22554d70fe4b4fc3820d69e938a3e8001654dd9f86"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2024/NIFTY50_1min_2024.csv",
+      "bytes": 6101722,
+      "sha256": "d50d40866e3be92ee1c72739299e530b2cd044a6eefc2a26f187928e29254154"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2025/NIFTY50_1min_2025.csv",
+      "bytes": 6046496,
+      "sha256": "98793dd66c8638d165904390f1e755bd83b723110624918254ac1a10949dcb7f"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2026/NIFTY50_1min_20260101_to_20260908.csv",
+      "bytes": 4654994,
+      "sha256": "8578d7e4d4a5d13acc5183601a298b3b778a4289e7fb70691364907303eb51ff"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2026/NIFTY50_1min_20260909.csv",
+      "bytes": 27367,
+      "sha256": "764ae631f9d5d947e76a93e7ba73a16db35a7b18e752e534fb692992cccd64a0"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2026/NIFTY50_1min_20260910.csv",
+      "bytes": 27325,
+      "sha256": "5cbebc97475ad00be7810b9ab1435280b07682f36316c706e52b201b451e602e"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2026/NIFTY50_1min_20260911.csv",
+      "bytes": 27357,
+      "sha256": "98a584324984ad7c2d4552eeecd62b829d44fb3e4e058190950b4cfeff79f253"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2026/NIFTY50_1min_20260915.csv",
+      "bytes": 28105,
+      "sha256": "bd5de51ed1d8f4fd42ba30380a1bddd9e8ebbd8babd3b992f7258e5374df4b2d"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2026/NIFTY50_1min_20260916.csv",
+      "bytes": 27395,
+      "sha256": "e2bf3c05f4ad90f8131ef640ee164723f358307d292ffdc631f7bc9769e9fa2c"
+    },
+    {
+      "path": "/home/user/historical/technovusin-nifty50-historical-data/1min/2026/NIFTY50_1min_20260917.csv",
+      "bytes": 27332,
+      "sha256": "5ed5b082703b8858db701042ce5b79db07d483e4f6f16c5089f9170d66e1f357"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "source_intraday": "historical/nifty_15m.csv",
+  "source_levels": "historical/institutional_levels_pdf_2026.csv",
+  "bars_loaded": 58397,
+  "usable_sessions": 2336,
+  "date_min": "2017-04-03",
+  "date_max": "2026-09-17",
+  "sessions_by_bar_count": {
+    "22": 1,
+    "25": 2335
+  },
+  "level_rows": 140,
+  "level_signal_days": 28
+}

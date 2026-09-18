@@ -1,0 +1,22 @@
+{
+  "path_10m": "historical/nifty_10m.csv",
+  "path_15m": "historical/nifty_15m.csv",
+  "levels_path": "historical/institutional_levels_pdf_2026.csv",
+  "bars_10m": 88764,
+  "bars_15m": 58397,
+  "sessions_10m": 2336,
+  "sessions_15m": 2336,
+  "date_min_10m": "2017-04-03",
+  "date_max_10m": "2026-09-17",
+  "date_min_15m": "2017-04-03",
+  "date_max_15m": "2026-09-17",
+  "level_rows": 140,
+  "target_stop_pct_grid": [
+    0.08,
+    0.1,
+    0.15,
+    0.2,
+    0.3
+  ],
+  "ambiguous_bars_policy": "counted_as_stop_loss"
+}
