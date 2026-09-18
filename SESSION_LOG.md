@@ -36,6 +36,29 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 8 — product objective clarified by user)
+- User clarified the actual product aim: build an evidence-backed **prediction
+  maker**, not a standalone decoder study. Each evening it should email a clear
+  next-session and next Monday-to-Friday outlook: UP / DOWN / CONSOLIDATION,
+  key support/resistance zones, and conditional gap, break/retest, and
+  liquidity-sweep/reclaim scenarios. Backtesting is the decision process for
+  whether any individual claim is safe to deploy.
+- Therefore all continuation work must be judged against that deliverable:
+  point-in-time historical inputs; separate, honest backtests for next-day
+  direction, weekly direction, and level reaction/sweep branches; an untouched
+  forward window; then calibrated e-mail wording that distinguishes a validated
+  edge from research/no-trade context.
+- Current honest evidence: the daily v3 candidate is promising but not yet
+  promoted (45.05% exact versus 42.14% full-sample majority baseline; forward
+  gate pending); the weekly directional model has **NO-VALIDATED-EDGE**; and
+  option-OI proxy level holds are 49.20%, near chance. The daily email pipeline
+  exists, but it must keep these caveats rather than represent unvalidated
+  levels or weekly calls as reliable predictions.
+- Immediate implementation sequence: make compact dated history durable in-repo
+  (or otherwise reproducibly available), extend/re-run the relevant backtests,
+  obtain dated 10-15 minute NIFTY bars for executable level/sweep validation,
+  and only promote components that pass their locked forward evidence gate.
+
 ### 2026-09-18 (session 7 — continuation restored; persistent handoff protocol)
 - User resumed work and explicitly asked that the session **not be closed**. This
   repository file remains the durable handoff: append a newest-first entry after
