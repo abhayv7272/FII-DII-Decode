@@ -30,14 +30,13 @@
   target/stop trade-level simulation (`reports/v8_intraday_trade_sim/`), and v9
   OI+intraday confirmation research (`reports/v9_oi_intraday_confirmation/`). No
   honest 70-85% production-ready directional/trade rule survived the
-  holdout/sample/leakage/post-entry/trade-execution guards. **V10 found the first
-  honest 75-85%+ selective accuracy pocket**: at-open tiny-gap previous-close
+  holdout/sample/leakage/post-entry/trade-execution guards. **V10 found a supporting selective level-touch pocket, not the full original predictor**: at-open tiny-gap previous-close
   touch (`reports/v10_structural_gap_pivot_sniper/`) with best robust rule
   `abs_gap_0.03_0.12_both_fill_prev_close` = 90.33% overall, 89.11% train
   2017-23, 94.23% validation 2024-25, 87.50% confirmation 2026. It is a
   level-touch alert, not a standalone options trade. **V11**
   (`reports/v11_gap_sniper_execution/`) tested 64,776 raw-1m execution candidates
-  and found 0 robust 70% + positive-P&L target/stop trade conversions.
+  and found 0 robust 70% + positive-P&L target/stop trade conversions. The full original every-day next-day/weekly prediction maker remains unvalidated at the requested accuracy.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
   in `reports/v3_forward_validation/gate_report.md` — state
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
@@ -57,8 +56,13 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 15 — clarified original prediction-maker goal)
+- User clarified the original aim: build an emailed prediction maker for next-day and Mon-Fri direction/consolidation plus levels/sweeps, and backtest to decide whether it can be deployed.
+- Corrected wording: V10's 90.33% is only a selective at-open previous-close level-touch edge, not every-day next-day UP/DOWN/CONSOLIDATION accuracy and not weekly accuracy.
+- Added `docs/prediction_maker_status.md` to separate the full product goal, current built pipeline, validation status, what V10 means, and missing data needed for the full aim.
+
 ### 2026-09-18 (session 14 — completed backup state refresh)
-- Updated the in-repo current-state backup to explicitly include V10/V11: V10 achieved the requested 75-85%+ band for a selective at-open previous-close level-touch prediction; V11 failed to convert it into a robust standalone target/stop trade.
+- Updated the in-repo current-state backup to explicitly include V10/V11: V10 achieved 75-85%+ only for a selective at-open previous-close level-touch sub-signal, not for the full original every-day next-day/weekly predictor; V11 failed to convert it into a robust standalone target/stop trade.
 - This was done only as a GitHub backup/checkpoint. No code/research branch was closed, merged, renamed, or switched.
 
 ### 2026-09-18 (session 13 — chat/work backup checkpoint)

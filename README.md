@@ -132,10 +132,9 @@ confirmation and symmetric target/stop execution:
 It checked **29,568** OI+intraday rule summaries; **0** cleared the strict 70%
 train(2023-24)/validation(2025)/confirmation(2026) gate.
 
-### ✅ V10 sniper result: high-accuracy tiny-gap level-touch edge found
+### V10 sniper result: supporting tiny-gap level-touch edge found
 
-The first honest 75-85%+ pocket is **not** an unconditional next-day UP/DOWN
-close forecast. It is a selective **at-open level-touch prediction**:
+Important clarification: this is a **supporting sniper module**, not the full original next-day/weekly prediction maker. The full predictor is still not validated at 75-85%+ every-day directional accuracy. V10 found a selective **at-open level-touch prediction**:
 when NIFTY opens only a tiny distance from the previous close, fade the gap and
 predict that the **previous close will be touched intraday**. This uses only
 values known at the open and 2017-2026 intraday highs/lows for the label.
@@ -166,7 +165,7 @@ are not yet a validated production strategy. A follow-up V11 execution audit
 confirmed **0** simple target/stop conversions passed a strict 70% + positive-P&L
 train/validation/2026 gate. Treat this as a high-probability sniper context until
 tick/broker execution, spreads, option premium behavior, and stop logic are
-validated.
+validated. See the full goal/status clarification in [`docs/prediction_maker_status.md`](docs/prediction_maker_status.md).
 
 To keep future sessions reproducible after Arena wipes external directories, a
 compact historical bundle is committed under [`historical/`](historical/) with
