@@ -15,6 +15,8 @@ from typing import Optional
 
 import pandas as pd
 
+from .gap_sniper import tiny_gap_fill_playbook
+
 
 @dataclass
 class Prediction:
@@ -418,4 +420,8 @@ def build_predictions(decode_result, levels: Optional[dict],
         research_lean=research_lean,
     )
 
-    return {"next_day": nd.to_dict(), "next_week": nw.to_dict()}
+    return {
+        "next_day": nd.to_dict(),
+        "next_week": nw.to_dict(),
+        "opening_sniper": tiny_gap_fill_playbook(),
+    }

@@ -459,10 +459,18 @@ open, not for an every-day next-close UP/DOWN forecast.  The rule says:
 - otherwise no V10 tiny-gap sniper signal.
 
 `src/fiidii/gap_sniper.py` exposes this as
-`tiny_gap_fill_signal(open_price, previous_close)`.  V10 also writes optional
-raw-1m execution diagnostics when the raw Technovusin archive is available
-outside Git.  Those diagnostics are deliberately conservative: entry at open,
-target previous close, stop at 1x/2x/3x target distance, and same-minute
-target+stop counted as a loss.  The high level-touch hit-rate does **not** by
-itself validate a production options trade because the average target is only
-~13 NIFTY points and execution/slippage dominate.
+`tiny_gap_fill_signal(open_price, previous_close)`.  The normal report now carries
+a V10 opening-sniper playbook/status block, and the manual CLI can evaluate a
+live open directly:
+
+```bash
+PYTHONPATH=src python -m fiidii.cli sniper \
+  --open 23020 --previous-close 23000 --high 23025 --low 22998
+```
+
+V10 also writes optional raw-1m execution diagnostics when the raw Technovusin
+archive is available outside Git.  Those diagnostics are deliberately
+conservative: entry at open, target previous close, stop at 1x/2x/3x target
+distance, and same-minute target+stop counted as a loss.  The high level-touch
+hit-rate does **not** by itself validate a production options trade because the
+average target is only ~13 NIFTY points and execution/slippage dominate.

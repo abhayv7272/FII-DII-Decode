@@ -294,6 +294,12 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 11 — V10 sniper wired into product surface)
+- Continued without closing/merging. Branch remains `arena/01a0b16b-fii-dii-decode`.
+- Added a V10 opening-sniper playbook/status into `build_predictions()` and the HTML/Markdown report. If a live quote exposes open and previous close, the report computes the active/inactive tiny-gap signal and whether the target is already observed in the fetched high/low range; otherwise it shows the conditional at-open playbook.
+- Added manual CLI: `PYTHONPATH=src python -m fiidii.cli sniper --open <open> --previous-close <prev_close> [--high H --low L] [--json]`.
+- Tests updated for playbook/report/CLI; full suite passed: 55 tests.
+
 ### 2026-09-18 (session 10 — V10 structural sniper accuracy pocket)
 - Rebuilt `/home/user/features/v3_matrix.csv` after the local virtualenv was recreated; branch restored and active on `arena/01a0b16b-fii-dii-decode`.
 - Ran leak-safe structural level-touch research on committed 15m NIFTY intraday data (2017-04-03 to 2026-09-17) plus optional raw 1m diagnostics outside Git.

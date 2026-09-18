@@ -150,12 +150,20 @@ Best robust rule:
 | `abs_gap_0.05_0.15_both_fill_prev_close` | 428 | **87.15%** | **85.28%** | **93.44%** | **80.49%** |
 
 The default helper `fiidii.gap_sniper.tiny_gap_fill_signal()` implements the
-strongest 0.03%-0.12% band for live use as a **level-touch alert**. Important:
-the mean target distance is only ~13 NIFTY points, so V10 also includes raw
-1-minute execution diagnostics showing that naive tight-stop trades are not yet
-a validated production strategy. Treat this as a high-probability sniper context
-until tick/broker execution, spreads, option premium behavior, and stop logic are
-validated.
+strongest 0.03%-0.12% band for live use as a **level-touch alert**, and the daily
+report now includes a V10 opening-sniper block/playbook. You can also evaluate it
+manually after the open:
+
+```bash
+PYTHONPATH=src python -m fiidii.cli sniper \
+  --open 23020 --previous-close 23000 --high 23025 --low 22998
+```
+
+Important: the mean target distance is only ~13 NIFTY points, so V10 also
+includes raw 1-minute execution diagnostics showing that naive tight-stop trades
+are not yet a validated production strategy. Treat this as a high-probability
+sniper context until tick/broker execution, spreads, option premium behavior, and
+stop logic are validated.
 
 To keep future sessions reproducible after Arena wipes external directories, a
 compact historical bundle is committed under [`historical/`](historical/) with

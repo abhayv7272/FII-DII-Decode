@@ -203,6 +203,8 @@ def test_levels_and_predictions():
     assert preds["next_week"]["confidence"] == 0.0
     assert "CONTEXT_ONLY" in preds["next_week"]["actionability"]
     assert "scenarios" in preds["next_day"]
+    assert preds["opening_sniper"]["status"] == "WAITING_FOR_OPEN"
+    assert preds["opening_sniper"]["validation"]["confirm_2026_hit_rate"] >= 85
     level_plans = preds["next_day"]["level_predictions"]
     assert len(level_plans) == len(levels["levels"])
     assert any(plan["priority"] == "IMMEDIATE" for plan in level_plans)
@@ -214,6 +216,7 @@ def test_levels_and_predictions():
     )
     assert "DEMO FIXTURE" in demo_report
     assert "Level-by-Level Conditional Prediction" in demo_report
+    assert "V10 Opening Sniper" in demo_report
     assert "option-chain support/resistance proxies" in demo_report
     assert "WAIT / NO TRADE AT THIS LEVEL" in demo_report
 

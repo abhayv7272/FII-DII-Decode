@@ -54,6 +54,34 @@ DEFAULT_VALIDATION = TinyGapFillValidation(
 )
 
 
+def tiny_gap_fill_playbook(
+    *,
+    min_abs_gap_pct: float = DEFAULT_BAND[0],
+    max_abs_gap_pct: float = DEFAULT_BAND[1],
+) -> dict:
+    """Return the conditional V10 rule when the next open is not known yet."""
+    return {
+        "active": None,
+        "status": "WAITING_FOR_OPEN",
+        "signal_type": "TINY_GAP_FILL_PREVIOUS_CLOSE_TOUCH",
+        "band_min_abs_gap_pct": float(min_abs_gap_pct),
+        "band_max_abs_gap_pct": float(max_abs_gap_pct),
+        "direction_to_target": "DEPENDS_ON_OPEN_GAP",
+        "target": "previous_close",
+        "actionability": "PREPARE_CONDITIONAL_AT_OPEN_ONLY",
+        "thesis": (
+            f"At the next cash-market open, if abs(gap) is between "
+            f"{min_abs_gap_pct:.2f}% and {max_abs_gap_pct:.2f}%, expect a same-session "
+            "touch of the previous close. Gap up -> fade down; gap down -> fade up."
+        ),
+        "validation": asdict(DEFAULT_VALIDATION),
+        "warning": (
+            "This is a level-touch probability, not an unconditional close-direction call "
+            "or standalone options trade. Execution needs live spread/slippage/stop checks."
+        ),
+    }
+
+
 def tiny_gap_fill_signal(
     open_price: float,
     previous_close: float,
@@ -101,6 +129,7 @@ def tiny_gap_fill_signal(
     target_distance_pts = abs(open_price - previous_close)
     return {
         "active": bool(active),
+        "status": "ACTIVE" if active else "INACTIVE_OUTSIDE_BAND",
         "signal_type": "TINY_GAP_FILL_PREVIOUS_CLOSE_TOUCH",
         "open": float(open_price),
         "previous_close": float(previous_close),

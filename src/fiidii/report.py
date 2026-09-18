@@ -132,6 +132,97 @@ def _participant_reads_html(reads: dict) -> str:
             f"<tr style='background:#f2f2f2'><th>Group</th>{head}</tr>{''.join(rows)}</table>")
 
 
+def _fmt_price(value) -> str:
+    if value is None:
+        return "—"
+    try:
+        return f"{float(value):,.2f}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def _opening_sniper_html(sniper: dict) -> str:
+    if not sniper:
+        return "<p>No V10 opening sniper status was recorded.</p>"
+    active = sniper.get("active")
+    if active is True:
+        color = "#0f8a3c"
+        status = "ACTIVE"
+    elif active is False:
+        color = "#7a7a7a"
+        status = "NO SIGNAL"
+    else:
+        color = "#f9a825"
+        status = "WAIT FOR OPEN"
+    validation = sniper.get("validation", {})
+    gap = sniper.get("gap_pct")
+    if isinstance(gap, (int, float)):
+        gap_text = f"{gap:+.4f}%"
+    elif gap is not None:
+        gap_text = str(gap)
+    else:
+        gap_text = "—"
+    observed = sniper.get("target_observed_in_quote_range")
+    observed_text = "not checked"
+    if observed is True:
+        observed_text = "target already observed in fetched quote range"
+    elif observed is False:
+        observed_text = "target not observed in fetched quote range yet"
+    return (
+        f"<div style='margin:10px 0;padding:12px 14px;border-radius:8px;"
+        f"background:{color}12;border-left:6px solid {color};font-size:13px'>"
+        f"<div style='font-size:12px;color:#666'>V10 OPENING SNIPER — previous-close touch</div>"
+        f"<div style='font-size:18px;font-weight:700;color:{color}'>{status}</div>"
+        f"<div><b>Rule:</b> abs(open gap) "
+        f"{sniper.get('band_min_abs_gap_pct', 0):.2f}% to &lt;"
+        f"{sniper.get('band_max_abs_gap_pct', 0):.2f}% → target previous close intraday.</div>"
+        f"<div><b>Current signal:</b> {sniper.get('direction_to_target','—')} "
+        f"toward {_fmt_price(sniper.get('target'))}; gap {gap_text}</div>"
+        f"<div><b>Validation:</b> overall {validation.get('overall_hit_rate', 0):.2f}% · "
+        f"train {validation.get('train_2017_2023_hit_rate', 0):.2f}% · "
+        f"val {validation.get('val_2024_2025_hit_rate', 0):.2f}% · "
+        f"2026 confirm {validation.get('confirm_2026_hit_rate', 0):.2f}%.</div>"
+        f"<div><b>Observed status:</b> {observed_text}</div>"
+        f"<div style='font-size:12px;color:#666;margin-top:4px'>{sniper.get('warning','')}</div>"
+        f"</div>"
+    )
+
+
+def _opening_sniper_markdown(sniper: dict) -> list[str]:
+    if not sniper:
+        return ["## V10 Opening Sniper", "", "No V10 opening sniper status was recorded.", ""]
+    validation = sniper.get("validation", {})
+    active = sniper.get("active")
+    status = "ACTIVE" if active is True else "NO SIGNAL" if active is False else "WAIT FOR OPEN"
+    observed = sniper.get("target_observed_in_quote_range")
+    observed_text = "not checked"
+    if observed is True:
+        observed_text = "target already observed in fetched quote range"
+    elif observed is False:
+        observed_text = "target not observed in fetched quote range yet"
+    gap = sniper.get("gap_pct")
+    gap_text = f"{gap:+.4f}%" if isinstance(gap, (int, float)) else "—"
+    return [
+        "## V10 Opening Sniper — Previous-Close Touch",
+        "",
+        f"- **Status:** {status}",
+        (
+            f"- **Rule:** abs(open gap) {sniper.get('band_min_abs_gap_pct', 0):.2f}% "
+            f"to <{sniper.get('band_max_abs_gap_pct', 0):.2f}% → target previous close intraday."
+        ),
+        f"- **Current signal:** {sniper.get('direction_to_target','—')} toward {_fmt_price(sniper.get('target'))}; gap {gap_text}",
+        (
+            f"- **Validation:** overall {validation.get('overall_hit_rate', 0):.2f}% · "
+            f"train {validation.get('train_2017_2023_hit_rate', 0):.2f}% · "
+            f"val {validation.get('val_2024_2025_hit_rate', 0):.2f}% · "
+            f"2026 confirm {validation.get('confirm_2026_hit_rate', 0):.2f}%"
+        ),
+        f"- **Observed status:** {observed_text}",
+        f"- **Warning:** {sniper.get('warning','')}",
+        "",
+    ]
+
+
 def render_html(dr: dict, predictions: dict, levels: dict,
                 report_date: str, symbol: str = "NIFTY",
                 demo: bool = False) -> str:
@@ -230,6 +321,7 @@ v2 next-day NIFTY score; carry is positional context, not the next-day trigger.<
 <p><b>Actionability:</b> {nd.get('actionability','')}</p>
 <p style="color:#444">{nd['rationale']}</p>
 <ul>{_gap_html(nd['scenarios'])}</ul>
+{_opening_sniper_html(predictions.get('opening_sniper', {}))}
 
 <h2>🗓️ Next-Week / Positional Context (Mon–Fri)</h2>
 <div style="font-size:18px">{_DIR_EMOJI.get(nw['direction'],'')} <b>{nw['direction']}</b></div>
@@ -344,7 +436,9 @@ def render_markdown(dr: dict, predictions: dict, levels: dict,
     for s in nd["scenarios"]:
         L.append(f"  - **{s.get('open', s.get('trigger',''))}:** "
                  f"{s.get('plan', s.get('then',''))}")
-    L += ["", "## Next-Week / Positional Context (Mon–Fri)",
+    L += [""]
+    L += _opening_sniper_markdown(predictions.get("opening_sniper", {}))
+    L += ["## Next-Week / Positional Context (Mon–Fri)",
           f"- Forecast status: **{nw['direction']}**",
           f"- Unvalidated research lean: **{nw.get('research_lean','')}**",
           f"- Actionability: **{nw.get('actionability','')}**",
