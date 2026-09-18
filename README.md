@@ -132,6 +132,31 @@ confirmation and symmetric target/stop execution:
 It checked **29,568** OI+intraday rule summaries; **0** cleared the strict 70%
 train(2023-24)/validation(2025)/confirmation(2026) gate.
 
+### ✅ V10 sniper result: high-accuracy tiny-gap level-touch edge found
+
+The first honest 75-85%+ pocket is **not** an unconditional next-day UP/DOWN
+close forecast. It is a selective **at-open level-touch prediction**:
+when NIFTY opens only a tiny distance from the previous close, fade the gap and
+predict that the **previous close will be touched intraday**. This uses only
+values known at the open and 2017-2026 intraday highs/lows for the label.
+
+Best robust rule:
+[`reports/v10_structural_gap_pivot_sniper/report.md`](reports/v10_structural_gap_pivot_sniper/report.md)
+
+| V10 rule | Calls | Overall | Train 2017-23 | Val 2024-25 | Confirm 2026 |
+|---|---:|---:|---:|---:|---:|
+| `abs_gap_0.03_0.12_both_fill_prev_close` | 393 | **90.33%** | **89.11%** | **94.23%** | **87.50%** |
+| `abs_gap_0.02_0.10_both_fill_prev_close` | 351 | **91.17%** | **91.34%** | **92.47%** | **85.19%** |
+| `abs_gap_0.05_0.15_both_fill_prev_close` | 428 | **87.15%** | **85.28%** | **93.44%** | **80.49%** |
+
+The default helper `fiidii.gap_sniper.tiny_gap_fill_signal()` implements the
+strongest 0.03%-0.12% band for live use as a **level-touch alert**. Important:
+the mean target distance is only ~13 NIFTY points, so V10 also includes raw
+1-minute execution diagnostics showing that naive tight-stop trades are not yet
+a validated production strategy. Treat this as a high-probability sniper context
+until tick/broker execution, spreads, option premium behavior, and stop logic are
+validated.
+
 To keep future sessions reproducible after Arena wipes external directories, a
 compact historical bundle is committed under [`historical/`](historical/) with
 participant OI, participant volume, canonical NIFTY OHLC, long price-regime OHLC,

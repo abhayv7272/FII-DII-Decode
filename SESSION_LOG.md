@@ -294,6 +294,13 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 10 — V10 structural sniper accuracy pocket)
+- Rebuilt `/home/user/features/v3_matrix.csv` after the local virtualenv was recreated; branch restored and active on `arena/01a0b16b-fii-dii-decode`.
+- Ran leak-safe structural level-touch research on committed 15m NIFTY intraday data (2017-04-03 to 2026-09-17) plus optional raw 1m diagnostics outside Git.
+- Found the first honest 75-85%+ accuracy pocket, but it is selective and at-open: `abs_gap_0.03_0.12_both_fill_prev_close` predicts previous-close touch intraday with 393 calls, 90.33% overall, 89.11% train 2017-23, 94.23% validation 2024-25, and 87.50% confirmation 2026.
+- Added `research/v10_structural_gap_pivot_sniper.py`, `reports/v10_structural_gap_pivot_sniper/`, and `src/fiidii/gap_sniper.py` with tests. This is a level-touch alert / sniper context, not a standalone options trade; raw 1m stop diagnostics show naive tight-stop execution is not production-validated.
+- Production default OI decoder remains unchanged. Next: if user wants actual trade deployment, validate tick/broker execution, option premium behavior, slippage, and stop model for this tiny-gap pocket.
+
 ### 2026-09-18 (session 9 — user requested backup + continue toward real-world next-day use)
 - User asked to backup chat to GitHub, verify session is not closed, and continue the 75-85% accuracy hunt for real-world present next-day prediction.
 - Status before continuing: branch `arena/01a0b16b-fii-dii-decode`; session still active; no PR merge/close/branch switch.

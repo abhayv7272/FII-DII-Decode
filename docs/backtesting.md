@@ -420,3 +420,49 @@ The best 2026-only OI+intraday pockets were tiny (often 4-8 confirmation calls)
 and failed the older train/validation windows. Therefore first-candle
 confirmation does not currently convert the OI lean into a robust executable
 70%+ edge.
+
+## V10 Structural gap/pivot sniper
+
+V10 switches from unconditional daily direction to a narrower, trader-style
+level-touch question: after the NIFTY cash open is known, will a nearby structural
+level be touched intraday?  The high-accuracy pocket is the ultra-small-gap fill:
+if the open is only a tiny distance from the previous close, predict that the
+previous close will be touched in the same session.
+
+Run:
+
+```bash
+PYTHONPATH=research .venv/bin/python research/v10_structural_gap_pivot_sniper.py \
+  --out reports/v10_structural_gap_pivot_sniper
+```
+
+Published V10 result:
+
+| Check | Result |
+|---|---:|
+| Daily intraday sessions | 2,346 |
+| Date range | 2017-04-03 to 2026-09-17 |
+| Structural rules tested | 31 |
+| Rules clearing 70% train/validation/confirmation gate | 5 |
+| Best rule | `abs_gap_0.03_0.12_both_fill_prev_close` |
+| Best rule calls / overall hit-rate | 393 / **90.33%** |
+| Train 2017-2023 | 257 calls / **89.11%** |
+| Validation 2024-2025 | 104 calls / **94.23%** |
+| Confirmation 2026 | 32 calls / **87.50%** |
+
+Interpretation: this finally reaches the requested 75-85%+ accuracy range, but
+only for a selective **previous-close level-touch** prediction available after the
+open, not for an every-day next-close UP/DOWN forecast.  The rule says:
+
+- if the gap is up by 0.03%-0.12%, target a touch of previous close downward;
+- if the gap is down by 0.03%-0.12%, target a touch of previous close upward;
+- otherwise no V10 tiny-gap sniper signal.
+
+`src/fiidii/gap_sniper.py` exposes this as
+`tiny_gap_fill_signal(open_price, previous_close)`.  V10 also writes optional
+raw-1m execution diagnostics when the raw Technovusin archive is available
+outside Git.  Those diagnostics are deliberately conservative: entry at open,
+target previous close, stop at 1x/2x/3x target distance, and same-minute
+target+stop counted as a loss.  The high level-touch hit-rate does **not** by
+itself validate a production options trade because the average target is only
+~13 NIFTY points and execution/slippage dominate.
