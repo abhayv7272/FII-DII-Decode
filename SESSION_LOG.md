@@ -56,6 +56,11 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 17 — explicit next-chat handoff saved)
+- User asked to save the chat/work to GitHub so a new message/session can continue from the same point.
+- Added `docs/continue_from_here.md` as the direct handoff file: original objective, current validation status, V10/V11 meaning, implemented report sections, important files, test status, and next steps.
+- Before saving, local checkout briefly appeared reset to `main`/`7eeb105`; fetched and hard-reset back to `origin/arena/01a0b16b-fii-dii-decode` (`2becdfa`) before writing this handoff. No branch switch/merge/close was done.
+
 ### 2026-09-18 (session 16 — full market possibility report expansion)
 - User asked that the email/report should keep the existing pieces and also include a fuller view of what can happen in the market, plus anything technically useful.
 - Added a full market possibility map to the HTML/Markdown report: base OI context, consolidation/range path, bullish expansion path, bearish rejection/breakdown path, liquidity sweep/trap watch, V10 tiny-gap sniper, and no-trade/protect-capital conditions.
