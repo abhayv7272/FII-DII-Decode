@@ -56,6 +56,25 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 22 — report-component backtest rerun and published)
+- User asked how accurate the prediction-maker report actually is. Built and ran
+  `research/prediction_maker_report_card.py` so the answer is one auditable
+  component scorecard, not a misleading single percentage for conditional
+  scenario branches. Outputs: `reports/prediction_maker_backtest/`.
+- Recomputed from committed point-in-time data: default v2 next-day exact
+  UP/FLAT/DOWN **37.91%** over 757 sessions versus **42.14%** majority baseline;
+  executable next-open-to-close non-FLAT sign **49.41%** (n=425). Research v3:
+  45.05% exact versus 42.14% baseline, but 51.30% executable sign (n=579).
+- Recomputed the weekly candidate: **32.14%** exact over 753 versus 43.96%
+  baseline; 2026 confirmation 29.34% versus 49.70%, so live weekly remains
+  `NO-VALIDATED-EDGE`. The option-chain daily level proxy is 49.20% across 685
+  tests; V7–V9 intraday studies have zero robust production rules.
+- Rebuilt V10 from committed 15-minute candles: its *narrow at-open previous
+  close touch* alert is 90.33% (393 calls; train 89.11%, validation 94.23%,
+  2026 confirmation 87.50%). It remains an alert only: V11 has zero robust
+  positive-P&L target/stop conversions. Overall verdict is therefore
+  `NOT_READY_AS_A_STANDALONE_TRADING_PREDICTOR`. Suite: **58 passed**.
+
 ### 2026-09-18 (session 21 — production report regenerated against clarified product aim)
 - User again confirmed the core task: the product is a daily email prediction
   maker for next-session and Mon–Fri UP/DOWN/CONSOLIDATION possibilities,

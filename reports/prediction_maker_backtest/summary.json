@@ -1,0 +1,111 @@
+{
+  "generated_at_utc": "2026-09-18T01:47:36.392249+00:00",
+  "scope": "component-level backtest of the daily market possibility report",
+  "overall_verdict": "NOT_READY_AS_A_STANDALONE_TRADING_PREDICTOR",
+  "why_no_single_accuracy": "The email has conditional branches. A range/break/reclaim scenario is not one unconditional UP/DOWN prediction, so each claim is scored separately.",
+  "daily_default": {
+    "component": "v2 next-session direction",
+    "status": "PRODUCTION_DEFAULT",
+    "target": "next trading-session close-to-close UP / FLAT / DOWN",
+    "samples": 757,
+    "full_accuracy_pct": 37.91,
+    "baseline_pct": 42.14,
+    "executable_metric": "next-open-to-close non-FLAT sign",
+    "executable_accuracy_pct": 49.41,
+    "executable_samples": 425,
+    "evidence": "v2 is the currently emailed decoder; v3 is not the default because its close-to-close uplift is mostly overnight-gap behaviour.",
+    "source": "recomputed from historical/participant_oi.csv + historical/nifty_ohlc.csv"
+  },
+  "daily_v3_research": {
+    "component": "v3 next-session direction",
+    "status": "RESEARCH_CANDIDATE_NOT_PROMOTED",
+    "target": "next trading-session close-to-close UP / FLAT / DOWN",
+    "samples": 757,
+    "full_accuracy_pct": 45.05,
+    "baseline_pct": 42.14,
+    "executable_metric": "next-open-to-close non-FLAT sign",
+    "executable_accuracy_pct": 51.3,
+    "executable_samples": 579,
+    "evidence": "v2 is the currently emailed decoder; v3 is not the default because its close-to-close uplift is mostly overnight-gap behaviour.",
+    "source": "recomputed from historical/participant_oi.csv + historical/nifty_ohlc.csv"
+  },
+  "weekly": {
+    "component": "Mon\u2013Fri weekly direction",
+    "status": "NO_VALIDATED_EDGE__PRODUCTION_ABSTAINS",
+    "target": "five-session close-to-close UP / FLAT / DOWN",
+    "samples": 753,
+    "full_accuracy_pct": 32.14,
+    "baseline_pct": 43.96,
+    "confirmation_accuracy_pct": 29.34,
+    "confirmation_baseline_pct": 49.7,
+    "nonflat_sign_accuracy_pct": 56.2,
+    "confirmation_nonflat_sign_accuracy_pct": 47.83,
+    "evidence": "This was the old v2 weekly candidate and failed its 2026 confirmation; the live report therefore displays weekly context/playbook, not a directional call.",
+    "source": "recomputed with research/compare_v1_v2.py weekly candidate"
+  },
+  "levels": {
+    "component": "Option-chain support/resistance hold",
+    "status": "NO_VALIDATED_EDGE",
+    "target": "next-session range touches level then support holds / resistance rejects",
+    "samples": 685,
+    "full_accuracy_pct": 49.2,
+    "support_accuracy_pct": 46.82,
+    "resistance_accuracy_pct": 51.62,
+    "evidence": "Daily-bar proxy only; it cannot establish candle order, sweep/reclaim, entry, stop, or slippage.",
+    "source": "reports/backtest_v2_levels_2023-08_to_2026-09/metrics.json"
+  },
+  "v10": {
+    "component": "V10 tiny-gap previous-close touch",
+    "status": "VALIDATED_LEVEL_TOUCH_ALERT__NOT_STANDALONE_TRADE",
+    "target": "at open, abs gap 0.03% to <0.12% \u2192 previous close touched intraday",
+    "samples": 393,
+    "full_accuracy_pct": 90.33078880407125,
+    "train_accuracy_pct": 89.10505836575877,
+    "validation_accuracy_pct": 94.23076923076923,
+    "confirmation_accuracy_pct": 87.5,
+    "mean_target_distance_pts": 12.992941014630949,
+    "robust_rules_in_family": 5,
+    "evidence": "This is known only after the cash-market open and predicts a level touch, not all-day close direction or a profitable options trade.",
+    "source": "recomputed from historical/nifty_15m.csv"
+  },
+  "execution_audits": [
+    {
+      "component": "V7 intraday level confirmation",
+      "status": "NO_VALIDATED_EDGE",
+      "target": "intraday confirmation / executable trade conversion",
+      "robust_rules": 0,
+      "evidence": "No production rule is promoted from this research stage.",
+      "source": "reports/v7_intraday_institutional_levels/summary.json"
+    },
+    {
+      "component": "V8 intraday target/stop simulation",
+      "status": "NO_VALIDATED_EDGE",
+      "target": "intraday confirmation / executable trade conversion",
+      "robust_rules": 0,
+      "evidence": "No production rule is promoted from this research stage.",
+      "source": "reports/v8_intraday_trade_sim/summary.json"
+    },
+    {
+      "component": "V9 OI + intraday confirmation",
+      "status": "NO_VALIDATED_EDGE",
+      "target": "intraday confirmation / executable trade conversion",
+      "robust_rules": 0,
+      "evidence": "No production rule is promoted from this research stage.",
+      "source": "reports/v9_oi_intraday_confirmation/summary.json"
+    },
+    {
+      "component": "V11 V10 execution audit",
+      "status": "NO_VALIDATED_EDGE",
+      "target": "intraday confirmation / executable trade conversion",
+      "robust_rules": 0,
+      "evidence": "No production rule is promoted from this research stage.",
+      "source": "reports/v11_gap_sniper_execution/summary.json"
+    }
+  ],
+  "deployment_policy": {
+    "next_day_default": "v2 remains educational conditional context only",
+    "weekly": "NO-VALIDATED-EDGE; show a playbook, not a direction forecast",
+    "levels": "conditional confirmation only; no validated generic sweep/break trade",
+    "v10": "allow as an at-open previous-close-touch alert only, never as a standalone trade"
+  }
+}

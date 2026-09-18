@@ -37,6 +37,22 @@ Therefore the honest deployment status for the full original aim is:
 
 > **Prediction maker can generate an educational conditional report, but it is not yet proven reliable enough to be used as a standalone trading system.**
 
+### One report-level backtest answer
+
+Use the reproducible component scorecard when the question is “how accurate is
+the report?” A conditional possibility map cannot honestly receive one single
+accuracy figure: each direction, weekly, level, and at-open event claim has a
+different target and evidence base.
+
+```bash
+PYTHONPATH=src:research python research/prediction_maker_report_card.py
+```
+
+The generated [`report.md`](../reports/prediction_maker_backtest/report.md)
+recalculates v2/v3 next-day and weekly results from the committed point-in-time
+history and rebuilds the V10 event test. It links the dedicated level and
+execution audits for inputs whose raw archives are intentionally not committed.
+
 ## What V10 actually means
 
 V10 is a **supporting sniper module**, not the full predictor.

@@ -78,6 +78,20 @@ v2, non-FLAT sign ≥ 52% with Wilson lower bound > 50%). Current state:
 **`COLLECTING_DATA`** (gate report:
 [`reports/v3_forward_validation/gate_report.md`](reports/v3_forward_validation/gate_report.md)).
 
+### 📋 How accurate is the complete prediction-maker report?
+
+Run the component-level backtest scorecard instead of treating every conditional
+scenario in an email as one artificial accuracy number:
+
+```bash
+PYTHONPATH=src:research python research/prediction_maker_report_card.py
+```
+
+It recalculates the v2/v3 next-day and weekly figures from the committed
+point-in-time inputs, rebuilds the V10 event test from 15-minute candles, and
+links the dedicated level/execution audits. Current concise result:
+[`reports/prediction_maker_backtest/report.md`](reports/prediction_maker_backtest/report.md).
+
 ### 🧪 V4 psychology/manipulation search: no honest 75-85% edge yet
 
 At the user's request, a much more aggressive v4 research pass now tests

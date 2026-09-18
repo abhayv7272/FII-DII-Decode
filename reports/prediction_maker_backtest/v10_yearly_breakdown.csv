@@ -1,0 +1,11 @@
+rule,family,year,calls,hit_rate
+abs_gap_0.03_0.12_both_fill_prev_close,gap_fill,2017,28,92.85714285714286
+abs_gap_0.03_0.12_both_fill_prev_close,gap_fill,2018,49,89.79591836734694
+abs_gap_0.03_0.12_both_fill_prev_close,gap_fill,2019,47,87.2340425531915
+abs_gap_0.03_0.12_both_fill_prev_close,gap_fill,2020,25,88.0
+abs_gap_0.03_0.12_both_fill_prev_close,gap_fill,2021,37,94.5945945945946
+abs_gap_0.03_0.12_both_fill_prev_close,gap_fill,2022,28,78.57142857142857
+abs_gap_0.03_0.12_both_fill_prev_close,gap_fill,2023,43,90.69767441860465
+abs_gap_0.03_0.12_both_fill_prev_close,gap_fill,2024,46,93.47826086956522
+abs_gap_0.03_0.12_both_fill_prev_close,gap_fill,2025,58,94.82758620689656
+abs_gap_0.03_0.12_both_fill_prev_close,gap_fill,2026,32,87.5
