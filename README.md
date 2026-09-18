@@ -67,14 +67,25 @@ decoder requires an untouched forward window. Evidence package:
 **[`reports/backtest_v3_candidate_2023-08_to_2026-09/report.md`](reports/backtest_v3_candidate_2023-08_to_2026-09/report.md)**;
 opt in with `--decoder-version v3`.
 
-**Forward-validation gate:** the daily workflow already accumulates
-`data/participant_oi.csv` / `data/index_ohlc.csv` / `data/fii_dii_cash.csv`.
-`python research/v3_forward_validation.py` replays v1/v2/v3 on signal dates
-strictly after the fitted archive end (2026-09-04) and applies locked
-promotion criteria (≥60 evaluable sessions, exact ≥ majority baseline and ≥
-v2, non-FLAT sign ≥ 52% with Wilson lower bound > 50%). Current state:
-**`COLLECTING_DATA`** (gate report:
+**Forward-validation gate:** the daily workflow accumulates
+`data/participant_oi.csv` / `data/index_ohlc.csv` / `data/fii_dii_cash.csv` and
+now reruns `research/v3_forward_validation.py` after every job. The gate
+replays v1/v2/v3 on signal dates strictly after the fitted archive end
+(2026-09-04) and applies locked promotion criteria (≥60 evaluable sessions,
+exact ≥ majority baseline and ≥ v2, non-FLAT sign ≥ 52% with Wilson lower bound
+> 50%). Current state: **`COLLECTING_DATA`** (gate report:
 [`reports/v3_forward_validation/gate_report.md`](reports/v3_forward_validation/gate_report.md)).
+
+### Durable historical inputs
+
+The compact point-in-time OI, NIFTY OHLC, and participant-volume history needed
+for repeatable research now lives in [`historical/`](historical/), rather than
+only in an ephemeral sandbox directory. It is derived from the pinned public
+mirror revision recorded in [`historical/README.md`](historical/README.md), and
+its compact-data replay reproduces the published 757 predictions for v1, v2,
+and v3 byte-for-byte. Raw F&O bhavcopies and reconstructed chain snapshots are
+not committed because they are much larger; they are only needed for the
+already-disclosed daily-bar level proxy.
 
 ### Level reactions now measured — and they show no edge either
 

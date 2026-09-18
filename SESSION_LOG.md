@@ -36,6 +36,29 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 9 — durable backtest foundation restarted from GitHub backup)
+- User asked the agent to read the GitHub chat backup and restart the actual
+  prediction-maker work. The remote continuation branch was verified at
+  `1fdb66c`; the product objective in session 8 is the governing scope.
+- **Durable history added:** rebuilt from the pinned
+  `sahilempire/groww-market-data` commit `7d481cf1...` and committed as compact
+  point-in-time CSVs under `historical/`: participant OI (3,800 rows), NIFTY
+  OHLC (759 rows), and participant volume (3,795 rows), plus hashes/source
+  documentation. This removes the Arena-reset blocker without committing the
+  ~757 MB raw bhavcopy archive.
+- Added reproducible builder `research/build_compact_history.py`; compact
+  history replays all **757** published v1/v2/v3 daily predictions and the
+  `daily_comparison.csv` byte-for-byte. `v3_features.py` now also accepts the
+  compact dated participant-volume CSV (757×373 point-in-time matrix builds).
+- The v3 forward gate now defaults to durable `historical/` files and the daily
+  GitHub workflow reruns it after each decode. It still correctly reports
+  `COLLECTING_DATA`: live OI ends 2026-09-17 but currently available NIFTY bars
+  end 2026-09-04, so there are zero real forward evaluations.
+- Added compact-history regression coverage; full suite: **50 passed**. Next
+  product blocker remains a dated 10–15 minute NIFTY candle source for real
+  support/resistance, break/retest, and sweep validation; weekly output remains
+  `NO-VALIDATED-EDGE` until a candidate survives that evidence process.
+
 ### 2026-09-18 (session 8 — product objective clarified by user)
 - User clarified the actual product aim: build an evidence-backed **prediction
   maker**, not a standalone decoder study. Each evening it should email a clear

@@ -52,10 +52,18 @@ def load_named_participant_csvs(path: str, name_token: str) -> pd.DataFrame:
         frame = _parse_participant_csv(text)
         if "ClientType" not in frame or frame.empty:
             continue
-        file_date = _date_from_name(name)
-        if file_date is None:
-            continue
-        frame["date"] = file_date
+        # Compact historical CSVs already carry one point-in-time date per row;
+        # raw NSE archive reports obtain their date from the filename instead.
+        if "date" in frame.columns:
+            parsed = frame["date"].map(_parse_date)
+            if parsed.isna().any():
+                continue
+            frame["date"] = parsed
+        else:
+            file_date = _date_from_name(name)
+            if file_date is None:
+                continue
+            frame["date"] = file_date
         frames.append(frame)
     if not frames:
         raise ValueError(f"no usable participant {name_token} data under {path}")

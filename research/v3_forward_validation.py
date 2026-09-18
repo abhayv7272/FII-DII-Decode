@@ -135,8 +135,10 @@ def _window_stats(pred: pd.DataFrame) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--base-participant-oi", default="/home/user/historical/participant_oi")
-    parser.add_argument("--base-ohlc", default="/home/user/historical/index_close")
+    # Durable compact history is committed with this repository. It replaces the
+    # former Arena-local mirror defaults, which disappeared between sessions.
+    parser.add_argument("--base-participant-oi", default="historical/participant_oi.csv")
+    parser.add_argument("--base-ohlc", default="historical/nifty_ohlc.csv")
     parser.add_argument("--extra-participant-oi", action="append", default=[])
     parser.add_argument("--extra-ohlc", action="append", default=[])
     parser.add_argument("--repo-participant-store", default="data/participant_oi.csv")

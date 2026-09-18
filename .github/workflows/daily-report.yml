@@ -58,6 +58,14 @@ jobs:
           if [ "${{ github.event.inputs.no_email }}" = "true" ]; then EMAIL_FLAG="--no-email"; fi
           python -m fiidii.cli run --symbol NIFTY $DEMO_FLAG $EMAIL_FLAG
 
+      - name: Update v3 forward-validation gate
+        # This never promotes v3 by itself. It records the locked evidence gate
+        # from the committed compact history plus the accumulating live stores.
+        if: always()
+        env:
+          PYTHONPATH: src
+        run: python research/v3_forward_validation.py
+
       - name: Commit data + reports
         if: always()
         run: |

@@ -1,6 +1,6 @@
 # Historical backtesting
 
-The repository includes a point-in-time replay harness for the decoder's **next-session** OI class. Frozen v1 and transcript-grounded v2 are compared on 757 real sessions in [`reports/backtest_v2_2023-08_to_2026-09/report.md`](../reports/backtest_v2_2023-08_to_2026-09/report.md). V2 improves some historical diagnostics but remains below the majority-class baseline and approximately chance on the executable next-open-to-close basis, so it remains experimental. The external raw archive is not vendored; the pinned source revision and hashes are retained with the reports.
+The repository includes a point-in-time replay harness for the decoder's **next-session** OI class. Frozen v1 and transcript-grounded v2 are compared on 757 real sessions in [`reports/backtest_v2_2023-08_to_2026-09/report.md`](../reports/backtest_v2_2023-08_to_2026-09/report.md). V2 improves some historical diagnostics but remains below the majority-class baseline and approximately chance on the executable next-open-to-close basis, so it remains experimental. The raw public archive is not vendored, but its compact point-in-time OI, NIFTY OHLC, and participant-volume derivatives are committed under [`historical/`](../historical/); source revision and output hashes are in [`historical/README.md`](../historical/README.md).
 
 ## What is scored
 
@@ -60,22 +60,22 @@ A timestamp inside `records.timestamp` is also accepted when the filename has no
 From a virtual environment with the requirements installed:
 
 ```bash
+# The compact committed inputs reproduce the published direction replay.
 python backtest.py \
-  --participant-oi historical/participant_oi/ \
+  --participant-oi historical/participant_oi.csv \
   --ohlc historical/nifty_ohlc.csv \
-  --option-chains historical/option_chain/ \
   --symbol NIFTY \
   --decoder-version v2 \
   --output-dir reports/backtest
 ```
 
-Equivalent package command:
+Raw archive directories/ZIPs and date-matched option-chain JSONs remain accepted
+when a separate level-proxy study is required. Equivalent package command:
 
 ```bash
 PYTHONPATH=src python -m fiidii.cli backtest \
-  --participant-oi historical/participant_oi.zip \
+  --participant-oi historical/participant_oi.csv \
   --ohlc historical/nifty_ohlc.csv \
-  --option-chains historical/option_chains.zip \
   --decoder-version v2
 ```
 
@@ -162,7 +162,24 @@ Do not draw conclusions from a handful of observations. Report the sample size, 
 
 ## Reproduce the published 757-session run
 
-The published audit used a third-party GitHub mirror of raw NSE archive-shaped reports, pinned to commit `7d481cf1fcffe44be68852892028195c4f12dddd`. The raw files are intentionally not vendored here. Fetch only the two required directories:
+The quickest reproducible direction replay uses the committed compact inputs:
+
+```bash
+PYTHONPATH=src python research/run_v3_comparison.py \
+  --participant-oi historical/participant_oi.csv \
+  --ohlc historical/nifty_ohlc.csv \
+  --output-dir /tmp/reproduced-v3
+```
+
+It produces the same 757 per-date v1/v2/v3 predictions and daily comparison
+metrics as the published candidate evidence package. `historical/README.md`
+contains compact-file SHA-256 hashes and its pinned-source reference.
+
+The published audit originally used a third-party GitHub mirror of raw
+NSE archive-shaped reports, pinned to commit
+`7d481cf1fcffe44be68852892028195c4f12dddd`. The raw files are intentionally
+not vendored here. Fetch only the two required directories to independently
+rebuild the compact inputs or to audit raw source reports:
 
 ```bash
 git clone --filter=blob:none --no-checkout --depth=1 \
