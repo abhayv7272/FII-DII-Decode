@@ -41,8 +41,12 @@ from fiidii.fetch import _parse_participant_csv  # noqa: E402
 
 
 def load_named_participant_csvs(path: str, name_token: str) -> pd.DataFrame:
-    """load_participant_oi variant that selects filenames by an arbitrary token
-    (the production loader hard-requires 'oi', which excludes participant_vol)."""
+    """Load participant CSVs selected by token, or one consolidated CSV.
+
+    This mirrors ``load_participant_oi`` but works for participant-volume files;
+    a consolidated CSV must contain a ``date`` column, while raw NSE files get
+    their date from the filename.
+    """
     texts = _file_texts(Path(path), ".csv")
     texts = [t for t in texts if "participant" in t[0].lower() and name_token in t[0].lower()]
     if not texts:
@@ -52,8 +56,6 @@ def load_named_participant_csvs(path: str, name_token: str) -> pd.DataFrame:
         frame = _parse_participant_csv(text)
         if "ClientType" not in frame or frame.empty:
             continue
-        # Compact historical CSVs already carry one point-in-time date per row;
-        # raw NSE archive reports obtain their date from the filename instead.
         if "date" in frame.columns:
             parsed = frame["date"].map(_parse_date)
             if parsed.isna().any():
@@ -290,9 +292,9 @@ def build_features(oi_dir: str, vol_dir: str | None, ohlc_dir: str) -> tuple[pd.
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--oi", default="/home/user/historical/participant_oi")
-    parser.add_argument("--vol", default="/home/user/historical/participant_vol")
-    parser.add_argument("--ohlc", default="/home/user/historical/index_close")
+    parser.add_argument("--oi", default="historical/participant_oi.csv")
+    parser.add_argument("--vol", default="historical/participant_vol.csv")
+    parser.add_argument("--ohlc", default="historical/nifty_ohlc.csv")
     parser.add_argument("--out", default="/home/user/features/v3_matrix.csv")
     args = parser.parse_args()
 

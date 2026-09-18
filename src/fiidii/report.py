@@ -132,6 +132,309 @@ def _participant_reads_html(reads: dict) -> str:
             f"<tr style='background:#f2f2f2'><th>Group</th>{head}</tr>{''.join(rows)}</table>")
 
 
+def _fmt_price(value) -> str:
+    if value is None:
+        return "—"
+    try:
+        return f"{float(value):,.2f}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def _opening_sniper_html(sniper: dict) -> str:
+    if not sniper:
+        return "<p>No V10 opening sniper status was recorded.</p>"
+    active = sniper.get("active")
+    if active is True:
+        color = "#0f8a3c"
+        status = "ACTIVE"
+    elif active is False:
+        color = "#7a7a7a"
+        status = "NO SIGNAL"
+    else:
+        color = "#f9a825"
+        status = "WAIT FOR OPEN"
+    validation = sniper.get("validation", {})
+    gap = sniper.get("gap_pct")
+    if isinstance(gap, (int, float)):
+        gap_text = f"{gap:+.4f}%"
+    elif gap is not None:
+        gap_text = str(gap)
+    else:
+        gap_text = "—"
+    observed = sniper.get("target_observed_in_quote_range")
+    observed_text = "not checked"
+    if observed is True:
+        observed_text = "target already observed in fetched quote range"
+    elif observed is False:
+        observed_text = "target not observed in fetched quote range yet"
+    return (
+        f"<div style='margin:10px 0;padding:12px 14px;border-radius:8px;"
+        f"background:{color}12;border-left:6px solid {color};font-size:13px'>"
+        f"<div style='font-size:12px;color:#666'>V10 OPENING SNIPER — previous-close touch</div>"
+        f"<div style='font-size:18px;font-weight:700;color:{color}'>{status}</div>"
+        f"<div><b>Rule:</b> abs(open gap) "
+        f"{sniper.get('band_min_abs_gap_pct', 0):.2f}% to &lt;"
+        f"{sniper.get('band_max_abs_gap_pct', 0):.2f}% → target previous close intraday.</div>"
+        f"<div><b>Current signal:</b> {sniper.get('direction_to_target','—')} "
+        f"toward {_fmt_price(sniper.get('target'))}; gap {gap_text}</div>"
+        f"<div><b>Validation:</b> overall {validation.get('overall_hit_rate', 0):.2f}% · "
+        f"train {validation.get('train_2017_2023_hit_rate', 0):.2f}% · "
+        f"val {validation.get('val_2024_2025_hit_rate', 0):.2f}% · "
+        f"2026 confirm {validation.get('confirm_2026_hit_rate', 0):.2f}%.</div>"
+        f"<div><b>Observed status:</b> {observed_text}</div>"
+        f"<div style='font-size:12px;color:#666;margin-top:4px'>{sniper.get('warning','')}</div>"
+        f"</div>"
+    )
+
+
+def _opening_sniper_markdown(sniper: dict) -> list[str]:
+    if not sniper:
+        return ["## V10 Opening Sniper", "", "No V10 opening sniper status was recorded.", ""]
+    validation = sniper.get("validation", {})
+    active = sniper.get("active")
+    status = "ACTIVE" if active is True else "NO SIGNAL" if active is False else "WAIT FOR OPEN"
+    observed = sniper.get("target_observed_in_quote_range")
+    observed_text = "not checked"
+    if observed is True:
+        observed_text = "target already observed in fetched quote range"
+    elif observed is False:
+        observed_text = "target not observed in fetched quote range yet"
+    gap = sniper.get("gap_pct")
+    gap_text = f"{gap:+.4f}%" if isinstance(gap, (int, float)) else "—"
+    return [
+        "## V10 Opening Sniper — Previous-Close Touch",
+        "",
+        f"- **Status:** {status}",
+        (
+            f"- **Rule:** abs(open gap) {sniper.get('band_min_abs_gap_pct', 0):.2f}% "
+            f"to <{sniper.get('band_max_abs_gap_pct', 0):.2f}% → target previous close intraday."
+        ),
+        f"- **Current signal:** {sniper.get('direction_to_target','—')} toward {_fmt_price(sniper.get('target'))}; gap {gap_text}",
+        (
+            f"- **Validation:** overall {validation.get('overall_hit_rate', 0):.2f}% · "
+            f"train {validation.get('train_2017_2023_hit_rate', 0):.2f}% · "
+            f"val {validation.get('val_2024_2025_hit_rate', 0):.2f}% · "
+            f"2026 confirm {validation.get('confirm_2026_hit_rate', 0):.2f}%"
+        ),
+        f"- **Observed status:** {observed_text}",
+        f"- **Warning:** {sniper.get('warning','')}",
+        "",
+    ]
+
+
+def _level_brief(level: dict | None, fallback: str) -> str:
+    if not level:
+        return fallback
+    strike = _fmt_price(level.get("strike"))
+    kind = level.get("kind", "level")
+    source = level.get("source", "")
+    grade = level.get("evidence_grade", "")
+    parts = [str(x) for x in (source, grade) if x]
+    suffix = f" · {' '.join(parts)}" if parts else ""
+    return f"{strike} ({kind}{suffix})"
+
+
+def _first_level_plan(level_predictions: list, *, kind: str) -> dict | None:
+    for plan in level_predictions or []:
+        if plan.get("priority") == "IMMEDIATE" and plan.get("kind") == kind:
+            return plan
+    for plan in level_predictions or []:
+        if plan.get("kind") == kind:
+            return plan
+    return None
+
+
+def _market_possibility_rows(dr: dict, predictions: dict, levels: dict) -> list[dict]:
+    """Human-readable full scenario map for the daily email/report.
+
+    This is intentionally scenario-based rather than a fake certainty forecast:
+    the historical audits do not validate an every-day 85-90% directional model.
+    """
+    nd = predictions.get("next_day", {})
+    sniper = predictions.get("opening_sniper", {})
+    level_plans = nd.get("level_predictions", [])
+    sup = levels.get("immediate_support")
+    res = levels.get("immediate_resistance")
+    sup_text = _level_brief(sup, "nearest support unavailable")
+    res_text = _level_brief(res, "nearest resistance unavailable")
+    sup_plan = _first_level_plan(level_plans, kind="support")
+    res_plan = _first_level_plan(level_plans, kind="resistance")
+
+    bullish_target = "next upper resistance / call wall"
+    bearish_target = "next lower support / put wall"
+    if res_plan:
+        bullish_target = res_plan.get("break_branch", {}).get("target", bullish_target)
+        bearish_target = res_plan.get("hold_or_reject_branch", {}).get("target", bearish_target)
+    if sup_plan:
+        bullish_target = sup_plan.get("hold_or_reject_branch", {}).get("target", bullish_target)
+        bearish_target = sup_plan.get("break_branch", {}).get("target", bearish_target)
+
+    setup = nd.get("actionability", "") or "CONTEXT_ONLY"
+    conflict_note = dr.get("conflict_note") if dr.get("smart_money_conflict") else "No explicit FII/Pro conflict flag."
+    pcr = levels.get("pcr", "n/a")
+    max_pain = levels.get("max_pain", "n/a")
+    sniper_band = (
+        f"{sniper.get('band_min_abs_gap_pct', 0):.2f}% to <"
+        f"{sniper.get('band_max_abs_gap_pct', 0):.2f}%"
+    )
+    sniper_status = sniper.get("status", "WAITING_FOR_OPEN")
+    sniper_signal = sniper.get("direction_to_target", "DEPENDS_ON_OPEN_GAP")
+    sniper_target = _fmt_price(sniper.get("target"))
+    observed = sniper.get("target_observed_in_quote_range")
+    observed_text = "not checked"
+    if observed is True:
+        observed_text = "target already observed"
+    elif observed is False:
+        observed_text = "target not observed yet"
+
+    return [
+        {
+            "possibility": "Base OI context",
+            "trigger": f"Current decoder lean: {nd.get('direction', 'n/a')} / {dr.get('bias', 'n/a')}; actionability {setup}.",
+            "expected": (
+                "Treat this as bias/context only. A real entry needs price confirmation at support/resistance; "
+                "the all-day UP/DOWN/CONSOLIDATION model is not validated at 75-85%+."
+            ),
+            "invalid_or_wait": "If data health is degraded, or FII/Pro conflict appears, downgrade to WAIT / context only.",
+        },
+        {
+            "possibility": "Consolidation / range day",
+            "trigger": f"Price stays between {sup_text} and {res_text}; no clean 10-15m close/retest outside the band.",
+            "expected": (
+                f"Expect chop/mean reversion around option walls and max-pain {max_pain}; avoid chasing mid-range candles."
+            ),
+            "invalid_or_wait": "A sustained break and retest beyond the band cancels range-first thinking.",
+        },
+        {
+            "possibility": "Bullish expansion path",
+            "trigger": f"Support {sup_text} holds/reclaims after a sweep, or resistance {res_text} breaks with a 10-15m close + retest.",
+            "expected": f"Upside route opens toward {bullish_target}; Pro/FII alignment and put writers holding improve quality.",
+            "invalid_or_wait": "Failed retest, bearish engulfing back below the wall, or retail crowding against smart money = no fresh long.",
+        },
+        {
+            "possibility": "Bearish rejection / breakdown path",
+            "trigger": f"Resistance {res_text} rejects after a sweep, or support {sup_text} breaks with failed reclaim.",
+            "expected": f"Downside route opens toward {bearish_target}; call writers defending resistance improve quality.",
+            "invalid_or_wait": "Fast reclaim above broken support/resistance means breakdown/rejection failed; do not average shorts.",
+        },
+        {
+            "possibility": "Liquidity sweep / trap watch",
+            "trigger": "Quick wick beyond support/resistance/round number, then close back inside the prior range.",
+            "expected": "Possible stop-hunt/manipulation day: first move can be false; trade only the reclaim/rejection candle break.",
+            "invalid_or_wait": "If price accepts outside the swept level for 10-15 minutes, treat it as breakout/role-flip, not reversal.",
+        },
+        {
+            "possibility": "V10 tiny-gap sniper",
+            "trigger": f"At cash open, abs(gap) must be {sniper_band}; current status {sniper_status}.",
+            "expected": (
+                f"If active, expect previous-close touch intraday. Direction now: {sniper_signal}; target {sniper_target}. "
+                f"Observed: {observed_text}."
+            ),
+            "invalid_or_wait": "If open gap is outside the band, ignore this module; do not force a trade from it.",
+        },
+        {
+            "possibility": "No-trade / protect-capital conditions",
+            "trigger": "No same-date levels, no confirming candle, conflicting smart money, wide gap already beyond levels, or violent news candle.",
+            "expected": "Stand aside until the next clean level interaction. Missing a trade is better than forcing a low-quality prediction.",
+            "invalid_or_wait": f"Conflict note: {conflict_note}",
+        },
+    ]
+
+
+def _market_possibility_html(dr: dict, predictions: dict, levels: dict) -> str:
+    rows = _market_possibility_rows(dr, predictions, levels)
+    body = "".join(
+        "<tr>"
+        f"<td><b>{row['possibility']}</b></td>"
+        f"<td>{row['trigger']}</td>"
+        f"<td>{row['expected']}</td>"
+        f"<td>{row['invalid_or_wait']}</td>"
+        "</tr>"
+        for row in rows
+    )
+    return (
+        "<table border='0' cellpadding='6' cellspacing='0' width='100%' "
+        "style='border-collapse:collapse;font-size:12px'>"
+        "<tr style='background:#f2f2f2;text-align:left'>"
+        "<th>Market possibility</th><th>Trigger to watch</th><th>What can happen</th><th>Invalidation / wait</th></tr>"
+        f"{body}</table>"
+    )
+
+
+def _weekly_playbook_rows(predictions: dict, levels: dict) -> list[dict]:
+    nw = predictions.get("next_week", {})
+    sup_text = _level_brief(levels.get("immediate_support"), "nearest support unavailable")
+    res_text = _level_brief(levels.get("immediate_resistance"), "nearest resistance unavailable")
+    return [
+        {
+            "day": "Monday",
+            "focus": "Opening balance / weekly range seed",
+            "plan": f"Mark first reaction around {sup_text} / {res_text}. Do not assume trend until one side accepts beyond the range.",
+        },
+        {
+            "day": "Tuesday-Wednesday",
+            "focus": "Expansion attempt",
+            "plan": "If the same side keeps defending levels and Pro/FII context supports it, allow continuation; otherwise expect rotation.",
+        },
+        {
+            "day": "Thursday / expiry context",
+            "focus": "Premium decay, wall defence, false breaks",
+            "plan": "Expect sweeps around option walls/max pain; require stricter candle confirmation and avoid late chasing.",
+        },
+        {
+            "day": "Friday",
+            "focus": "Follow-through vs mean reversion",
+            "plan": "Carry only if the week closes beyond a broken/retested level; otherwise expect mean reversion back into the range.",
+        },
+        {
+            "day": "Weekly validation guard",
+            "focus": nw.get("direction", "NO-VALIDATED-EDGE"),
+            "plan": f"{nw.get('actionability', 'CONTEXT_ONLY')}: weekly direction remains context unless multi-session price + participant confirmation appears.",
+        },
+    ]
+
+
+def _weekly_playbook_html(predictions: dict, levels: dict) -> str:
+    rows = _weekly_playbook_rows(predictions, levels)
+    body = "".join(
+        f"<tr><td><b>{row['day']}</b></td><td>{row['focus']}</td><td>{row['plan']}</td></tr>"
+        for row in rows
+    )
+    return (
+        "<table border='0' cellpadding='6' cellspacing='0' width='100%' "
+        "style='border-collapse:collapse;font-size:12px'>"
+        "<tr style='background:#f2f2f2;text-align:left'><th>Week part</th><th>Focus</th><th>Plan</th></tr>"
+        f"{body}</table>"
+    )
+
+
+def _market_possibility_markdown(dr: dict, predictions: dict, levels: dict) -> list[str]:
+    lines = [
+        "## Full Market Possibility Map",
+        "",
+        "This section is a scenario map for what can happen, not a fake sure-shot call. The validated policy is: context first, entry only after level/price confirmation.",
+        "",
+        "| Market possibility | Trigger to watch | What can happen | Invalidation / wait |",
+        "|---|---|---|---|",
+    ]
+    for row in _market_possibility_rows(dr, predictions, levels):
+        lines.append(
+            f"| {row['possibility']} | {row['trigger']} | {row['expected']} | {row['invalid_or_wait']} |"
+        )
+    lines += [
+        "",
+        "### Mon–Fri Weekly Playbook",
+        "",
+        "| Week part | Focus | Plan |",
+        "|---|---|---|",
+    ]
+    for row in _weekly_playbook_rows(predictions, levels):
+        lines.append(f"| {row['day']} | {row['focus']} | {row['plan']} |")
+    lines.append("")
+    return lines
+
+
 def render_html(dr: dict, predictions: dict, levels: dict,
                 report_date: str, symbol: str = "NIFTY",
                 demo: bool = False) -> str:
@@ -224,12 +527,19 @@ def render_html(dr: dict, predictions: dict, levels: dict,
 Client/Retail is already contra-adjusted. Stock derivatives are diagnostics only in the
 v2 next-day NIFTY score; carry is positional context, not the next-day trigger.</p>
 
+<h2>🗺️ Full Market Possibility Map</h2>
+<p style="font-size:13px;color:#444">This is the complete scenario map for what can happen in the market. It is not a fake sure-shot forecast: the validated policy is context first, entry only after level/price confirmation.</p>
+{_market_possibility_html(dr, predictions, levels)}
+<h3>Mon–Fri Weekly Playbook</h3>
+{_weekly_playbook_html(predictions, levels)}
+
 <h2>🔮 Next-Day Conditional Plan (Gap Up / Flat / Gap Down)</h2>
 <div style="font-size:18px">{_DIR_EMOJI.get(nd['direction'],'')} <b>{nd['direction']}</b>
  · setup strength {nd['confidence']:.0f}/100</div>
 <p><b>Actionability:</b> {nd.get('actionability','')}</p>
 <p style="color:#444">{nd['rationale']}</p>
 <ul>{_gap_html(nd['scenarios'])}</ul>
+{_opening_sniper_html(predictions.get('opening_sniper', {}))}
 
 <h2>🗓️ Next-Week / Positional Context (Mon–Fri)</h2>
 <div style="font-size:18px">{_DIR_EMOJI.get(nw['direction'],'')} <b>{nw['direction']}</b></div>
@@ -336,6 +646,9 @@ def render_markdown(dr: dict, predictions: dict, levels: dict,
         f"- **Retail:** {dr.get('retail_note','')}",
         f"- **Move quality:** {dr.get('move_quality','')}",
         "",
+    ]
+    L += _market_possibility_markdown(dr, predictions, levels)
+    L += [
         "## Next-Day Conditional Plan (Gap Up / Flat / Gap Down)",
         f"- Forced research class: **{nd['direction']}** (setup strength {nd['confidence']:.0f}/100)",
         f"- Actionability: **{nd.get('actionability','')}**",
@@ -344,7 +657,9 @@ def render_markdown(dr: dict, predictions: dict, levels: dict,
     for s in nd["scenarios"]:
         L.append(f"  - **{s.get('open', s.get('trigger',''))}:** "
                  f"{s.get('plan', s.get('then',''))}")
-    L += ["", "## Next-Week / Positional Context (Mon–Fri)",
+    L += [""]
+    L += _opening_sniper_markdown(predictions.get("opening_sniper", {}))
+    L += ["## Next-Week / Positional Context (Mon–Fri)",
           f"- Forecast status: **{nw['direction']}**",
           f"- Unvalidated research lean: **{nw.get('research_lean','')}**",
           f"- Actionability: **{nw.get('actionability','')}**",

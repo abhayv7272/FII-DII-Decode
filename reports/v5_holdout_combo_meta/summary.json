@@ -1,0 +1,9 @@
+{
+  "rows": 757,
+  "feature_columns_after_leakage_guard": 4746,
+  "train2023_25_rules_exported": 13944,
+  "rule_75_exact_holdout_n20": 0,
+  "rule_75_sign_holdout_sign_n20": 7,
+  "combo_75_exact_holdout_n20": 0,
+  "meta_gate_70_precision_holdout_n20": 0
+}

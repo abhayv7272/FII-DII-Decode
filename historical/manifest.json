@@ -1,0 +1,70 @@
+{
+  "source_repo": "sahilempire/groww-market-data",
+  "source_commit": "7d481cf1fcffe44be68852892028195c4f12dddd",
+  "source_download": "https://codeload.github.com/sahilempire/groww-market-data/zip/7d481cf1fcffe44be68852892028195c4f12dddd",
+  "files": {
+    "chain_features.csv": {
+      "bytes": 110894,
+      "sha256": "8aeaa9a1c71443d61c932629726175389cd6a5e77a1eaa807211ceb41e3ccbb5"
+    },
+    "nifty_ohlc.csv": {
+      "bytes": 34145,
+      "sha256": "aa706c289c6af7d00d314438f49a7be0a5999b5f7c25c675eb2ca8f769ff5921"
+    },
+    "nifty_ohlc_long.csv": {
+      "bytes": 440249,
+      "sha256": "ac8746f9aa3821b08c506f01cd020aeb52589327c7b688e71e1ddc56897bd71f"
+    },
+    "participant_oi.csv": {
+      "bytes": 438817,
+      "sha256": "0056415eee0ce82b1aea6bf499bf467a1a41f12b67c612cf3da3969d6e46e7e7"
+    },
+    "participant_vol.csv": {
+      "bytes": 450719,
+      "sha256": "5397a98b23ce9063b684688a7eac1531bdb79a32e17da3867a3f1176ba194673"
+    },
+    "nifty_15m.csv": {
+      "bytes": 6721027,
+      "sha256": "fb9946260ff5bc7ee7b3086939ba58f6ef369054cb3915838307650103866331"
+    },
+    "nifty_15m.csv.manifest.json": {
+      "bytes": 4215,
+      "sha256": "20de1dfbbe7b067dc8e7f2b86156ebc3f8d5161024eda6b12e466a8f9f010889"
+    },
+    "institutional_levels_pdf_2026.csv": {
+      "bytes": 33037,
+      "sha256": "d1c5ca2abb2e88801db10c813423d7ec7a1e88ef47cfbe624f6c88ab8efcc07a"
+    },
+    "nifty_10m.csv": {
+      "bytes": 10215149,
+      "sha256": "9d2d094cda2dd1161c9541af66e70cd6e67162b1e2c3ab038e624e14ac990b01"
+    },
+    "nifty_10m.csv.manifest.json": {
+      "bytes": 4215,
+      "sha256": "a0c58c46f8925fba76ac168fed18145b25db99ee503ebc5828514710402aa178"
+    }
+  },
+  "additional_sources": {
+    "nifty_15m.csv": {
+      "source_repo": "technovusin/nifty50-historical-data",
+      "source_url": "https://github.com/technovusin/nifty50-historical-data",
+      "source_branch": "main",
+      "source_license": "MIT License per upstream repository metadata/README",
+      "raw_files_kept_outside_git": true,
+      "builder": "research/build_intraday_candles.py"
+    },
+    "institutional_levels_pdf_2026.csv": {
+      "source_doc": "Market_Analysis_03_August_2026_Decoded-combined.pdf",
+      "method": "manual audit of Deep Decoded Summary sections; missing July years normalized to 2026",
+      "consumer": "research/v7_intraday_institutional_levels.py"
+    },
+    "nifty_10m.csv": {
+      "source_repo": "technovusin/nifty50-historical-data",
+      "source_url": "https://github.com/technovusin/nifty50-historical-data",
+      "source_branch": "main",
+      "source_license": "MIT License per upstream repository metadata/README",
+      "raw_files_kept_outside_git": true,
+      "builder": "research/build_intraday_candles.py"
+    }
+  }
+}

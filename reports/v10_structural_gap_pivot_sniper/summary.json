@@ -1,0 +1,40 @@
+{
+  "input_bars": "historical/nifty_15m.csv",
+  "rows_daily": 2346,
+  "date_min": "2017-04-03",
+  "date_max": "2026-09-17",
+  "rules_total": 31,
+  "robust_70pct_rules": 5,
+  "robust_gate": {
+    "min_train": 100,
+    "min_val": 40,
+    "min_confirm": 25,
+    "min_hit": 70.0,
+    "train": "<= 2023",
+    "validation": [
+      2024,
+      2025
+    ],
+    "confirmation": 2026
+  },
+  "best_rule": {
+    "family": "gap_fill",
+    "rule": "abs_gap_0.03_0.12_both_fill_prev_close",
+    "direction": "FADE_GAP",
+    "target": "previous_close_touch_intraday",
+    "calls": 393,
+    "hit_rate": 90.33078880407125,
+    "train_2017_2023_calls": 257,
+    "val_2024_2025_calls": 104,
+    "confirm_2026_calls": 32,
+    "train_2017_2023_hit_rate": 89.10505836575877,
+    "val_2024_2025_hit_rate": 94.23076923076923,
+    "confirm_2026_hit_rate": 87.5,
+    "mean_abs_gap_pts": 12.992941014630949,
+    "median_abs_gap_pts": 11.600000000000364
+  },
+  "high_accuracy_level_touch_edge_found": true,
+  "unconditional_daily_direction_edge_found": false,
+  "execution_diagnostics_1m_available": true,
+  "verdict": "HIGH_ACCURACY_LEVEL_TOUCH_EDGE_FOUND_NOT_UNCONDITIONAL_CLOSE_DIRECTION"
+}

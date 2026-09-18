@@ -1,0 +1,10 @@
+{
+  "raw_1m_root": "/home/user/historical/technovusin-nifty50-historical-data/1min",
+  "one_minute_rows": 877729,
+  "date_min": "2017-04-03",
+  "date_max": "2026-09-17",
+  "trades_generated": 64776,
+  "execution_rule_summaries": 768,
+  "robust_positive_70pct_trade_rules": 0,
+  "verdict": "NO_PRODUCTION_TRADE_CONVERSION_YET_KEEP_V10_AS_LEVEL_TOUCH_ALERT"
+}

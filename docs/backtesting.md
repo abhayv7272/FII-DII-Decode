@@ -1,6 +1,6 @@
 # Historical backtesting
 
-The repository includes a point-in-time replay harness for the decoder's **next-session** OI class. Frozen v1 and transcript-grounded v2 are compared on 757 real sessions in [`reports/backtest_v2_2023-08_to_2026-09/report.md`](../reports/backtest_v2_2023-08_to_2026-09/report.md). V2 improves some historical diagnostics but remains below the majority-class baseline and approximately chance on the executable next-open-to-close basis, so it remains experimental. The raw public archive is not vendored, but its compact point-in-time OI, NIFTY OHLC, and participant-volume derivatives are committed under [`historical/`](../historical/); source revision and output hashes are in [`historical/README.md`](../historical/README.md).
+The repository includes a point-in-time replay harness for the decoder's **next-session** OI class. Frozen v1 and transcript-grounded v2 are compared on 757 real sessions in [`reports/backtest_v2_2023-08_to_2026-09/report.md`](../reports/backtest_v2_2023-08_to_2026-09/report.md). V2 improves some historical diagnostics but remains below the majority-class baseline and approximately chance on the executable next-open-to-close basis, so it remains experimental. The bulky raw archive is not vendored; a compact research bundle is now committed under [`historical/`](../historical/) and the pinned source revision/checksums are retained with the reports.
 
 ## What is scored
 
@@ -60,29 +60,29 @@ A timestamp inside `records.timestamp` is also accepted when the filename has no
 From a virtual environment with the requirements installed:
 
 ```bash
-# The compact committed inputs reproduce the published direction replay.
 python backtest.py \
-  --participant-oi historical/participant_oi.csv \
+  --participant-oi historical/participant_oi/ \
   --ohlc historical/nifty_ohlc.csv \
+  --option-chains historical/option_chain/ \
   --symbol NIFTY \
   --decoder-version v2 \
   --output-dir reports/backtest
 ```
 
-Raw archive directories/ZIPs and date-matched option-chain JSONs remain accepted
-when a separate level-proxy study is required. Equivalent package command:
+Equivalent package command:
 
 ```bash
 PYTHONPATH=src python -m fiidii.cli backtest \
-  --participant-oi historical/participant_oi.csv \
+  --participant-oi historical/participant_oi.zip \
   --ohlc historical/nifty_ohlc.csv \
+  --option-chains historical/option_chains.zip \
   --decoder-version v2
 ```
 
 Useful controls:
 
 ```text
---decoder-version v1|v2           # v2 is the production default; v1 is frozen
+--decoder-version v1|v2|v3        # v2 is production default; v3 is opt-in candidate
 --flat-threshold-pct 0.15          # ±0.15% is FLAT (inclusive)
 --level-touch-tolerance-pct 0.05  # range may come within ±0.05% of a level
 --from-date 2025-01-01
@@ -90,6 +90,51 @@ Useful controls:
 ```
 
 Percent arguments are percentage points: `0.15` means 0.15%, not 15%.
+
+## V4 psychology search harness
+
+`research/v4_psychology_search.py` is a research-only harness for aggressive
+accuracy hunting. It builds on `research/v3_features.py` and the compact
+`historical/` bundle, then tests 4/7/15/21-session participant psychology,
+Pro/FII/Client/DII positioning levels, option-chain aggregate levels, gap and
+volatility proxies, and frozen-on-development ML. The search is deliberately
+strict: thresholds and orientations come from 2023-2024 only, while 2025 and
+2026 remain holdouts.
+
+```bash
+# Requires optional research deps: scipy and scikit-learn
+python research/v4_psychology_search.py --out reports/v4_psychology_search
+```
+
+The published run exports `threshold_rules.csv` and ranked holdout views in
+[`reports/v4_psychology_search/`](../reports/v4_psychology_search/). It did not
+find any rule that honestly reached the requested 75-85% zone on both holdouts
+with minimum sample guards.
+
+`research/v5_holdout_combo_meta.py` continues the hunt by fitting rules on
+2023-2025 and reserving 2026 as the final holdout. It also tests voting-rule
+combinations, a leakage-guarded v3 meta-gate, and whatever recent NIFTY 1-minute
+intraday file is available:
+
+```bash
+python research/v5_holdout_combo_meta.py --out reports/v5_holdout_combo_meta
+```
+
+The published v5 run again rejects promotion: no ≥75% exact rule/combination
+survived 2026 with ≥20 calls, and no leakage-guarded v3 meta-gate exceeded 70%
+precision with ≥20 holdout calls.
+
+`research/v6_realworld_selective_search.py` adds pair/conjunction tests and a
+long price-only regime search:
+
+```bash
+python research/v6_realworld_selective_search.py --out reports/v6_realworld_selective
+```
+
+It checks whether two independent OI/psychology rules agreeing, or 10+ years of
+NIFTY price history, can create a practical high-precision next-day filter. The
+published run rejects that too: 319,600 pairs and 2,562 price-only rules produced
+no robust ≥75% holdout result with minimum sample guards.
 
 ## Direction labels and metrics
 
@@ -162,24 +207,7 @@ Do not draw conclusions from a handful of observations. Report the sample size, 
 
 ## Reproduce the published 757-session run
 
-The quickest reproducible direction replay uses the committed compact inputs:
-
-```bash
-PYTHONPATH=src python research/run_v3_comparison.py \
-  --participant-oi historical/participant_oi.csv \
-  --ohlc historical/nifty_ohlc.csv \
-  --output-dir /tmp/reproduced-v3
-```
-
-It produces the same 757 per-date v1/v2/v3 predictions and daily comparison
-metrics as the published candidate evidence package. `historical/README.md`
-contains compact-file SHA-256 hashes and its pinned-source reference.
-
-The published audit originally used a third-party GitHub mirror of raw
-NSE archive-shaped reports, pinned to commit
-`7d481cf1fcffe44be68852892028195c4f12dddd`. The raw files are intentionally
-not vendored here. Fetch only the two required directories to independently
-rebuild the compact inputs or to audit raw source reports:
+The published audit used a third-party GitHub mirror of raw NSE archive-shaped reports, pinned to commit `7d481cf1fcffe44be68852892028195c4f12dddd`. The raw files are intentionally not vendored here. Fetch only the two required directories:
 
 ```bash
 git clone --filter=blob:none --no-checkout --depth=1 \
@@ -275,3 +303,205 @@ tradable level edge**.
 * Daily OHLC cannot verify 10-15 minute candle confirmation, sweep-then-reclaim,
   touch sequencing, stops, or slippage. These are **daily proxy** numbers, not
   trade simulation results.
+
+## V7 intraday + exact dated-level gate
+
+After V4/V5/V6 failed to produce a robust EOD/OI-only 75%+ edge, the next path
+adds the missing execution-time data:
+
+- `historical/nifty_15m.csv` — 15-minute NIFTY candles derived from the public
+  `technovusin/nifty50-historical-data` 1-minute archive. Raw 1-minute files are
+  kept outside Git; `historical/nifty_15m.csv.manifest.json` records upstream
+  files, hashes, and the builder script.
+- `historical/institutional_levels_pdf_2026.csv` — 140 manually audited,
+  date-stamped NIFTY levels from the supplied 2026 market-analysis PDF. Rows are
+  tagged as institutional when the PDF wording calls them institutional or
+  institutional-zone levels; otherwise they remain technical/psychological/
+  option-chain levels.
+- `research/v7_intraday_institutional_levels.py` — scores generic 15m rules over
+  2017-2026 and scores PDF-level 15m confirmation branches over the dated level
+  window.
+
+Run:
+
+```bash
+.venv/bin/python research/build_intraday_candles.py \
+  --raw-root /home/user/historical/technovusin-nifty50-historical-data/1min \
+  --interval 15 \
+  --out historical/nifty_15m.csv
+
+.venv/bin/python research/v7_intraday_institutional_levels.py \
+  --out reports/v7_intraday_institutional_levels
+```
+
+Published V7 result:
+
+| Check | Result |
+|---|---:|
+| 15m bars loaded | 58,397 |
+| Usable sessions | 2,336 (2017-04-03 to 2026-09-17) |
+| PDF level rows | 140 across 28 signal days |
+| Explicit institutional-level rows | 60 |
+| Generic 15m rules clearing 70% train/2025/2026 **post-entry** gate | 0 |
+| PDF-level variants clearing 70% July-Aug/Sep **post-entry** gate | 0 |
+
+Important scoring distinction: many first-15/30/60-minute momentum filters show
+70%+ **open-to-close** direction because the measured day already includes the
+first move. V7 therefore treats the candle close as the earliest entry and uses
+signal-close-to-day-close `post_entry_hit_rate` as the main honest metric. That
+post-entry edge did **not** clear the 70% gate. The best PDF-level first-candle
+branches reached high September-only rates on small samples, but failed the
+July-Aug training split, so they are forward-watch tags only.
+
+## V8 10/15-minute trade-level simulator
+
+V8 tests whether the intraday confirmation idea becomes useful when measured as
+an executable trade instead of a day-label prediction. It enters only after the
+confirmation window has closed and simulates symmetric percentage target/stop
+orders on the remaining bars. Ambiguous OHLC bars that touch target and stop in
+the same candle are counted as losses.
+
+Run:
+
+```bash
+.venv/bin/python research/build_intraday_candles.py \
+  --raw-root /home/user/historical/technovusin-nifty50-historical-data/1min \
+  --interval 10 \
+  --out historical/nifty_10m.csv
+
+.venv/bin/python research/v8_intraday_trade_sim.py \
+  --out reports/v8_intraday_trade_sim
+```
+
+Published V8 result:
+
+| Check | Result |
+|---|---:|
+| 10m bars loaded | 88,764 |
+| 15m bars loaded | 58,397 |
+| Usable sessions | 2,336 |
+| Generic first-window rule grid summaries | 980 |
+| PDF-level trade rule grid summaries | 1,680 |
+| Generic trade rules clearing 70% train/2025/2026 gate | 0 |
+| PDF-level trade rules clearing 70% July-Aug/Sep gate | 0 |
+
+The best 2026-looking generic pockets were downside first-window continuation
+rules around 70-71% in the 2026 slice, but their 2017-2024 and/or 2025 win rates
+were near 50-61%, so they are regime-specific, not robust. The best PDF-level
+pockets again showed 100% on only 2-3 September trades while losing in the
+July-Aug training split; they are not promotable.
+
+## V9 OI + intraday confirmation
+
+V9 retests the core FII/DII/Pro/Client idea after adding long intraday data. It
+combines the prior-day v3 OI lean with next-session first 10/15/30/60-minute
+confirmation and enters only after that candle closes. Execution again uses
+symmetric target/stop percentages and counts ambiguous target+stop candles as
+losses.
+
+Run:
+
+```bash
+PYTHONPATH=research .venv/bin/python research/v9_oi_intraday_confirmation.py \
+  --out reports/v9_oi_intraday_confirmation
+```
+
+Published V9 result:
+
+| Check | Result |
+|---|---:|
+| V3 OI predictions tested | 757 |
+| Trade candidates generated | 2,274,684 |
+| Rule summaries checked | 29,568 |
+| Split | train 2023-2024 / validation 2025 / confirmation 2026 |
+| Rules clearing strict 70% win-rate gate | 0 |
+
+The best 2026-only OI+intraday pockets were tiny (often 4-8 confirmation calls)
+and failed the older train/validation windows. Therefore first-candle
+confirmation does not currently convert the OI lean into a robust executable
+70%+ edge.
+
+## V10 Structural gap/pivot sniper
+
+V10 switches from unconditional daily direction to a narrower, trader-style
+level-touch question: after the NIFTY cash open is known, will a nearby structural
+level be touched intraday?  The high-accuracy pocket is the ultra-small-gap fill:
+if the open is only a tiny distance from the previous close, predict that the
+previous close will be touched in the same session.
+
+Run:
+
+```bash
+PYTHONPATH=research .venv/bin/python research/v10_structural_gap_pivot_sniper.py \
+  --out reports/v10_structural_gap_pivot_sniper
+```
+
+Published V10 result:
+
+| Check | Result |
+|---|---:|
+| Daily intraday sessions | 2,346 |
+| Date range | 2017-04-03 to 2026-09-17 |
+| Structural rules tested | 31 |
+| Rules clearing 70% train/validation/confirmation gate | 5 |
+| Best rule | `abs_gap_0.03_0.12_both_fill_prev_close` |
+| Best rule calls / overall hit-rate | 393 / **90.33%** |
+| Train 2017-2023 | 257 calls / **89.11%** |
+| Validation 2024-2025 | 104 calls / **94.23%** |
+| Confirmation 2026 | 32 calls / **87.50%** |
+
+Interpretation: this finally reaches the requested 75-85%+ accuracy range, but
+only for a selective **previous-close level-touch** prediction available after the
+open, not for an every-day next-close UP/DOWN forecast.  The rule says:
+
+- if the gap is up by 0.03%-0.12%, target a touch of previous close downward;
+- if the gap is down by 0.03%-0.12%, target a touch of previous close upward;
+- otherwise no V10 tiny-gap sniper signal.
+
+`src/fiidii/gap_sniper.py` exposes this as
+`tiny_gap_fill_signal(open_price, previous_close)`.  The normal report now carries
+a V10 opening-sniper playbook/status block, and the manual CLI can evaluate a
+live open directly:
+
+```bash
+PYTHONPATH=src python -m fiidii.cli sniper \
+  --open 23020 --previous-close 23000 --high 23025 --low 22998
+```
+
+V10 also writes optional raw-1m execution diagnostics when the raw Technovusin
+archive is available outside Git.  Those diagnostics are deliberately
+conservative: entry at open, target previous close, stop at 1x/2x/3x target
+distance, and same-minute target+stop counted as a loss.  The high level-touch
+hit-rate does **not** by itself validate a production options trade because the
+average target is only ~13 NIFTY points and execution/slippage dominate.
+
+## V11 Gap-sniper execution audit
+
+V11 asks whether the V10 tiny-gap level-touch edge can be converted into a simple
+production trade.  It uses raw 1-minute candles, enters at the open or after
+1/2/3/5/10/15 minutes if the previous-close target has not already touched, and
+tests stops from 0.75x to 5x of the remaining target distance.  If a one-minute
+candle touches both target and stop, it is counted as a loss.
+
+Run:
+
+```bash
+PYTHONPATH=research .venv/bin/python research/v11_gap_sniper_execution.py \
+  --out reports/v11_gap_sniper_execution
+```
+
+Published V11 result:
+
+| Check | Result |
+|---|---:|
+| Raw 1m rows | 877,729 |
+| Date range | 2017-04-03 to 2026-09-17 |
+| Trade candidates generated | 64,776 |
+| Execution rule summaries | 768 |
+| Robust 70% + positive-P&L trade rules | **0** |
+
+The highest win-rate pockets use very wide stops (4x-5x the tiny target).  They
+can show 77-83% win-rate, but lose average points in one or more splits.  Example:
+0.03%-0.12% gap, entry at open, 5x stop had 82.70% overall win-rate but negative
+average points in train and 2026 confirmation.  Therefore V10 remains a
+high-probability **level-touch alert**, not a standalone options trade.
