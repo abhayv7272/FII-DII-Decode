@@ -216,6 +216,8 @@ def test_levels_and_predictions():
     )
     assert "DEMO FIXTURE" in demo_report
     assert "Level-by-Level Conditional Prediction" in demo_report
+    assert "Full Market Possibility Map" in demo_report
+    assert "Mon–Fri Weekly Playbook" in demo_report
     assert "V10 Opening Sniper" in demo_report
     assert "option-chain support/resistance proxies" in demo_report
     assert "WAIT / NO TRADE AT THIS LEVEL" in demo_report

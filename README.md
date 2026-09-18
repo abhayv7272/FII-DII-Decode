@@ -3,9 +3,11 @@
 Decode **FII / DII / Pro / Client** positioning from validated, official-first market data and get a
 scheduled **daily report** — configured to run every weekday at **9 PM IST** — with a
 conditional **next-day OI lean**, **next-week carry context**, automatic
-option-chain level proxies, and gap-up/flat/gap-down plans. Every level includes
-confirmed hold/reject and break/role-flip branches with the next target. V2 can
-abstain; every possible entry remains conditional on price/level confirmation.
+option-chain level proxies, a full market-possibility map (range, trend,
+sweep/trap, no-trade conditions), and gap-up/flat/gap-down plans. Every level
+includes confirmed hold/reject and break/role-flip branches with the next target.
+V2 can abstain; every possible entry remains conditional on price/level
+confirmation.
 
 > ⚠️ Educational analysis of publicly available data. **Not investment advice.**
 

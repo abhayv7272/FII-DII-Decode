@@ -56,6 +56,11 @@
 
 ## Log (newest first)
 
+### 2026-09-18 (session 16 — full market possibility report expansion)
+- User asked that the email/report should keep the existing pieces and also include a fuller view of what can happen in the market, plus anything technically useful.
+- Added a full market possibility map to the HTML/Markdown report: base OI context, consolidation/range path, bullish expansion path, bearish rejection/breakdown path, liquidity sweep/trap watch, V10 tiny-gap sniper, and no-trade/protect-capital conditions.
+- Added a Mon-Fri weekly playbook section to the report while keeping the weekly direction guard honest (`NO-VALIDATED-EDGE` unless multi-session confirmation appears).
+
 ### 2026-09-18 (session 15 — clarified original prediction-maker goal)
 - User clarified the original aim: build an emailed prediction maker for next-day and Mon-Fri direction/consolidation plus levels/sweeps, and backtest to decide whether it can be deployed.
 - Corrected wording: V10's 90.33% is only a selective at-open previous-close level-touch edge, not every-day next-day UP/DOWN/CONSOLIDATION accuracy and not weekly accuracy.
