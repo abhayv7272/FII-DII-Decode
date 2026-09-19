@@ -56,6 +56,11 @@
 
 ## Log (newest first)
 
+### 2026-09-19 (session 21 — user requested exhaustive deep dive)
+- User explicitly asked for a deep dive of every available avenue to pursue the requested 85% next-day and Monday–Friday prediction achievement, while retaining the existing active session and ongoing chat backups.
+- Continuation rule remains: expand data and hypotheses systematically, but never force the requested percentage by repeatedly selecting on the same holdout. Every future candidate must remain point-in-time, have a declared target/entry time, clear train → validation → confirmation guards, and then require fresh forward evidence before it is labelled deployable.
+- Immediate next work: audit all in-repo signal/data coverage and missing higher-information inputs; identify reproducible historical sources/integration paths; then run the next leak-safe research increment only where the data timing supports it.
+
 ### 2026-09-19 (session 20 — V12 direct Monday–Friday combination search)
 - Added `research/v12_weekly_composite_search.py` and `reports/v12_weekly_composite_search/` to test the requested combinations for the weekly objective directly: the signal is the final available session of a week and the target is the final close of the following Monday–Friday week. It combines 4,746 point-in-time participant-OI, participant-volume, option-chain-proxy, price-regime and v2/v3 signal features; it tests individually fitted threshold rules and development-selected agreement pairs.
 - Locked honest protocol: 2023–24 fit (73 weekly episodes), 2025 validation (52), 2026 confirmation (35); ±0.50% weekly FLAT band; 85% gate needs at least 10 calls in each later period. The run evaluated 18,527 development-fitted single rules and 16,110 agreement pairs. **Result: 0 single rules and 0 pairs passed 85% exact or non-FLAT sign in both holdouts.** Best credible single states were approximately 58–63% minimum exact and at most 83% minimum sign; agreement pairs collapsed to approximately 42–45% minimum exact.
