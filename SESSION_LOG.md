@@ -36,7 +36,7 @@
   2017-23, 94.23% validation 2024-25, 87.50% confirmation 2026. It is a
   level-touch alert, not a standalone options trade. **V11**
   (`reports/v11_gap_sniper_execution/`) tested 64,776 raw-1m execution candidates
-  and found 0 robust 70% + positive-P&L target/stop trade conversions. The full original every-day next-day/weekly prediction maker remains unvalidated at the requested accuracy.
+  and found 0 robust 70% + positive-P&L target/stop trade conversions. **V12's direct Friday-to-following-Monday–Friday composite search** (`reports/v12_weekly_composite_search/`) tested 18,527 clean development-fitted single rules and 16,110 agreement pairs across 4,746 point-in-time feature candidates: 0 passed the 85% validation + confirmation gate. The full original every-day next-day/weekly prediction maker remains unvalidated at the requested accuracy.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
   in `reports/v3_forward_validation/gate_report.md` — state
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
@@ -55,6 +55,13 @@
   or 10-/15-minute intraday candles from scratch.
 
 ## Log (newest first)
+
+### 2026-09-19 (session 20 — V12 direct Monday–Friday combination search)
+- Added `research/v12_weekly_composite_search.py` and `reports/v12_weekly_composite_search/` to test the requested combinations for the weekly objective directly: the signal is the final available session of a week and the target is the final close of the following Monday–Friday week. It combines 4,746 point-in-time participant-OI, participant-volume, option-chain-proxy, price-regime and v2/v3 signal features; it tests individually fitted threshold rules and development-selected agreement pairs.
+- Locked honest protocol: 2023–24 fit (73 weekly episodes), 2025 validation (52), 2026 confirmation (35); ±0.50% weekly FLAT band; 85% gate needs at least 10 calls in each later period. The run evaluated 18,527 development-fitted single rules and 16,110 agreement pairs. **Result: 0 single rules and 0 pairs passed 85% exact or non-FLAT sign in both holdouts.** Best credible single states were approximately 58–63% minimum exact and at most 83% minimum sign; agreement pairs collapsed to approximately 42–45% minimum exact.
+- A first local run exposed an accidental `y_week` target-field inclusion (fake 100% rows). It was rejected before any claim, the leakage guard now blocks every `y_*` label plus all prior outcome/target columns, and the clean rerun contains no target-label candidate. Never use the discarded first-run numbers.
+- Verified the complete requested email/report scenario surface remains present: Base OI, range, bullish and bearish branches, sweep/trap, V10, explicit no-trade conditions and Mon–Fri playbook. Strengthened `tests/test_pipeline.py` to assert all eight modules. Full suite after the V12 run: **55 passed**.
+- No production weekly UP/DOWN module was implemented because the gate was not met. Weekly report status remains `NO-VALIDATED-EDGE` / context-only; V10 remains a separate at-open level-touch alert.
 
 ### 2026-09-19 (session 19 — renewed full-combination accuracy request)
 - User requested a continued, iterative and **honest** backtest → implementation → re-backtest programme combining the available OI, option-level, price/intraday, sweep/trap, V10 and weekly signals to seek 85% accuracy for next-day and Monday–Friday predictions. They explicitly asked that the session remain open and that chat/work be backed up continuously.

@@ -217,7 +217,20 @@ def test_levels_and_predictions():
     assert "DEMO FIXTURE" in demo_report
     assert "Level-by-Level Conditional Prediction" in demo_report
     assert "Full Market Possibility Map" in demo_report
-    assert "Mon–Fri Weekly Playbook" in demo_report
+    # The report is intentionally a complete conditional scenario map rather
+    # than a fake 85%-certain direction call.  Keep every requested module in
+    # the email surface even when the weekly direction stays context-only.
+    for section in (
+        "Base OI context",
+        "Consolidation / range day",
+        "Bullish expansion path",
+        "Bearish rejection / breakdown path",
+        "Liquidity sweep / trap watch",
+        "V10 tiny-gap sniper",
+        "No-trade / protect-capital conditions",
+        "Mon–Fri Weekly Playbook",
+    ):
+        assert section in demo_report
     assert "V10 Opening Sniper" in demo_report
     assert "option-chain support/resistance proxies" in demo_report
     assert "WAIT / NO TRADE AT THIS LEVEL" in demo_report

@@ -25,6 +25,7 @@ Evidence summary:
 - V2 production OI decoder: 37.91% exact UP/FLAT/DOWN on 757 historical sessions, below the 42.14% majority baseline.
 - V3 candidate: 45.05% exact and better than V2/baseline in untouched splits, but not promoted because much of the gain is overnight-gap/non-executable and open-to-close remains near chance.
 - V4-V9 psychology/OI/intraday/level confirmation searches: 0 robust production-ready 70-85% directional/trade rules.
+- V12 direct Friday-to-following-Monday–Friday composite search tested 18,527 development-fitted rules plus 16,110 agreement pairs across 4,746 clean point-in-time features: 0 reached the 85% gate in both 2025 validation and 2026 confirmation with at least 10 calls each. A caught target-label leak was excluded before the clean rerun; see `reports/v12_weekly_composite_search/report.md`.
 - V10 found a **supporting** high-accuracy sub-signal only: at-open tiny-gap previous-close intraday touch.
 - V11 tried to convert V10 into a simple target/stop trade: 0 robust 70% + positive-P&L trade conversions.
 
@@ -112,10 +113,8 @@ If continuing the project, do not claim the full predictor is solved. The best h
 
 ## Current Git state to expect
 
-Latest intended pushed commit before this handoff may be at or after:
-
-- `2becdfa` — `feat: expand market possibility report`
-- then this handoff checkpoint commit.
+This Arena continuation is fixed to `arena/01a0b980-fii-dii-decode`. The initial
+chat-backup commit is `86aa28e`; the V12 code/report checkpoint follows it.
 
 Always run:
 
@@ -124,9 +123,6 @@ git status --short --branch
 git log -3 --oneline --decorate
 ```
 
-If local checkout appears reset to `main`/`7eeb105` with V4-V11 files untracked, fetch and reset to `origin/arena/01a0b16b-fii-dii-decode` before continuing:
-
-```bash
-git fetch origin arena/01a0b16b-fii-dii-decode:refs/remotes/origin/arena/01a0b16b-fii-dii-decode
-git reset --hard origin/arena/01a0b16b-fii-dii-decode
-```
+If a future workspace is unexpectedly missing the branch's committed files, fetch
+the same fixed remote branch and inspect it before making changes; do not switch
+branches or reset away uncommitted user work.

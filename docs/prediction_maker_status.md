@@ -31,6 +31,7 @@ Key evidence:
 - V2 production OI decoder: 37.91% exact UP/FLAT/DOWN on 757 sessions, below 42.14% majority baseline.
 - V3 candidate: 45.05% exact, better than V2/baseline in untouched splits, but not tradable because most gain comes from overnight gap channel and open-to-close remains near chance.
 - V4-V9 aggressive psychology/OI/intraday searches: **0** robust 70-85% directional/trade rules after holdout, sample, leakage, and post-entry guards.
+- V12 direct Friday-to-following-Monday–Friday composite search: 18,527 development-fitted single rules and 16,110 agreement pairs across OI, volume, option-chain proxy, price-regime and v2/v3 signal fields; **0** passed the predeclared 85% gate in both 2025 validation and 2026 confirmation with at least 10 calls per holdout. See `reports/v12_weekly_composite_search/report.md`.
 - V11 execution audit: **0** simple target/stop conversions for V10 passed robust 70% + positive-P&L gates.
 
 Therefore the honest deployment status for the full original aim is:

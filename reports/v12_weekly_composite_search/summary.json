@@ -1,0 +1,19 @@
+{
+  "weekly_rows": 160,
+  "period_counts": {
+    "dev2023_24": 73,
+    "val2025": 52,
+    "confirm2026": 35
+  },
+  "feature_candidates": 4746,
+  "single_rules": 18527,
+  "pairs_checked": 16110,
+  "pairs_exported": 325,
+  "single_pass_exact": 0,
+  "single_pass_sign": 0,
+  "pair_pass_exact": 0,
+  "pair_pass_sign": 0,
+  "flat_band_pct": 0.5,
+  "min_called_each_holdout": 10,
+  "target_accuracy_pct": 85.0
+}
