@@ -26,6 +26,7 @@ Evidence summary:
 - V3 candidate: 45.05% exact and better than V2/baseline in untouched splits, but not promoted because much of the gain is overnight-gap/non-executable and open-to-close remains near chance.
 - V4-V9 psychology/OI/intraday/level confirmation searches: 0 robust production-ready 70-85% directional/trade rules.
 - V12 direct Friday-to-following-Monday–Friday composite search tested 18,527 development-fitted rules plus 16,110 agreement pairs across 4,746 clean point-in-time features: 0 reached the 85% gate in both 2025 validation and 2026 confirmation with at least 10 calls each. A caught target-label leak was excluded before the clean rerun; see `reports/v12_weekly_composite_search/report.md`.
+- V13 added timing-correct same-day India VIX risk-state gates across 745 aligned v3 signal rows: 0 of 1,022 rules reached the 85% gate in both later splits. The third-party historical VIX copy is research-only and no VIX term was promoted; see `reports/v13_india_vix_gate/report.md` and `docs/deep-dive-research-plan.md`.
 - V10 found a **supporting** high-accuracy sub-signal only: at-open tiny-gap previous-close intraday touch.
 - V11 tried to convert V10 into a simple target/stop trade: 0 robust 70% + positive-P&L trade conversions.
 
@@ -87,10 +88,15 @@ PYTHONPATH=src python -m fiidii.cli sniper \
 - `reports/v10_structural_gap_pivot_sniper/report.md` — V10 evidence.
 - `research/v11_gap_sniper_execution.py` — V11 execution audit.
 - `reports/v11_gap_sniper_execution/report.md` — V11 evidence.
+- `research/v12_weekly_composite_search.py` — direct next-Monday–Friday leak-safe combination search.
+- `reports/v12_weekly_composite_search/report.md` — V12 weekly evidence and promotion gate.
+- `research/v13_india_vix_gate.py` — timing-correct external India-VIX gate research.
+- `reports/v13_india_vix_gate/report.md` — V13 daily evidence and promotion gate.
+- `docs/deep-dive-research-plan.md` — complete input coverage, timing, protocol and data-priority map.
 
 ## Latest test status
 
-Latest full suite after report expansion:
+Latest full suite after V12/V13 research and scenario-surface regression checks:
 
 ```text
 55 passed

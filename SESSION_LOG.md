@@ -36,7 +36,7 @@
   2017-23, 94.23% validation 2024-25, 87.50% confirmation 2026. It is a
   level-touch alert, not a standalone options trade. **V11**
   (`reports/v11_gap_sniper_execution/`) tested 64,776 raw-1m execution candidates
-  and found 0 robust 70% + positive-P&L target/stop trade conversions. **V12's direct Friday-to-following-Monday–Friday composite search** (`reports/v12_weekly_composite_search/`) tested 18,527 clean development-fitted single rules and 16,110 agreement pairs across 4,746 point-in-time feature candidates: 0 passed the 85% validation + confirmation gate. The full original every-day next-day/weekly prediction maker remains unvalidated at the requested accuracy.
+  and found 0 robust 70% + positive-P&L target/stop trade conversions. **V12's direct Friday-to-following-Monday–Friday composite search** (`reports/v12_weekly_composite_search/`) tested 18,527 clean development-fitted single rules and 16,110 agreement pairs across 4,746 point-in-time feature candidates: 0 passed the 85% validation + confirmation gate. **V13's timing-correct India-VIX gate** (`reports/v13_india_vix_gate/`) added an external EOD risk state but likewise found 0 of 1,022 rules meeting that daily 85% gate. The full original every-day next-day/weekly prediction maker remains unvalidated at the requested accuracy.
 - **Forward gate:** `research/v3_forward_validation.py` + locked criteria live
   in `reports/v3_forward_validation/gate_report.md` — state
   `COLLECTING_DATA`; rerun as the daily stores/mirror accumulate. Cash probe
@@ -55,6 +55,13 @@
   or 10-/15-minute intraday candles from scratch.
 
 ## Log (newest first)
+
+### 2026-09-19 (session 22 — V13 India-VIX external-risk deep dive)
+- Audited all current in-repo data coverage/timing and recorded the resulting exhaustive evidence map and missing-data protocol in `docs/deep-dive-research-plan.md`. The key constraint is timing: EOD OI cannot capture the following overnight gap; at-open and intraday claims need their own timestamped inputs and execution tests.
+- Added a provenance-pinned, **research-only** India VIX daily source (`historical/india_vix.csv`, 2020-01-02 to 2026-08-24), with source blob, hash, coverage and third-party-verification caveat in `historical/manifest.json` / `historical/SOURCE.md`.
+- Added `research/v13_india_vix_gate.py` and `reports/v13_india_vix_gate/`. It merges only same-day VIX values known by the OI signal close (745 aligned v3 rows; no fill for 12 missing dates) and tests 18 VIX state features as standalone, v3-gate and v3/VIX-agreement rules. Development is 2023-24, validation 2025, confirmation 2026 through VIX coverage; the 85% gate requires 20 calls in each later split.
+- V13 evaluated 1,022 development-fitted rules: **0** passed 85% exact or sign in both holdouts. The best close-to-close VIX/v3-agreement state reached only 65.00% minimum exact / 69.57% minimum sign; executable next-open-to-close gates were weaker (best 50.00% minimum exact / 60.98% minimum sign). No VIX term was promoted to production.
+- Validation after V13: `py_compile`, leakage/timing checks in the script run, and full pytest: **55 passed**. Work remains on the active branch with no session/branch close or switch.
 
 ### 2026-09-19 (session 21 — user requested exhaustive deep dive)
 - User explicitly asked for a deep dive of every available avenue to pursue the requested 85% next-day and Monday–Friday prediction achievement, while retaining the existing active session and ongoing chat backups.

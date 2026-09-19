@@ -169,6 +169,23 @@ train/validation/2026 gate. Treat this as a high-probability sniper context unti
 tick/broker execution, spreads, option premium behavior, and stop logic are
 validated. See the full goal/status clarification in [`docs/prediction_maker_status.md`](docs/prediction_maker_status.md).
 
+### V12/V13 deep-dive status: no 85% weekly or VIX-gated daily claim
+
+The direct Friday-to-following-Monday–Friday search (V12) tests 4,746 clean
+point-in-time features, 18,527 development-fitted rules and 16,110 agreement
+pairs. **Zero** cleared the predeclared 85% gate in both 2025 validation and
+2026 confirmation. See
+[`reports/v12_weekly_composite_search/report.md`](reports/v12_weekly_composite_search/report.md).
+
+V13 then added a timing-correct, research-only historical India-VIX risk-state
+source. It tested 1,022 VIX-direct, VIX-gated and VIX-agreement daily rules on
+745 aligned signal rows: again **zero** cleared the 85% gate in both later
+splits. In particular, the practical next-open-to-close lens stayed weak. VIX is
+not wired into the production decoder. See
+[`reports/v13_india_vix_gate/report.md`](reports/v13_india_vix_gate/report.md)
+and the source/timing/data-acquisition map in
+[`docs/deep-dive-research-plan.md`](docs/deep-dive-research-plan.md).
+
 To keep future sessions reproducible after Arena wipes external directories, a
 compact historical bundle is committed under [`historical/`](historical/) with
 participant OI, participant volume, canonical NIFTY OHLC, long price-regime OHLC,

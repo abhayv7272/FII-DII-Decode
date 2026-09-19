@@ -42,6 +42,10 @@
     "nifty_10m.csv.manifest.json": {
       "bytes": 4215,
       "sha256": "a0c58c46f8925fba76ac168fed18145b25db99ee503ebc5828514710402aa178"
+    },
+    "india_vix.csv": {
+      "bytes": 255090,
+      "sha256": "22b42f2ddd47f8a0c9ed98792fd6daa71c15d0698e9db3905dc5dbcba12c00f8"
     }
   },
   "additional_sources": {
@@ -65,6 +69,18 @@
       "source_license": "MIT License per upstream repository metadata/README",
       "raw_files_kept_outside_git": true,
       "builder": "research/build_intraday_candles.py"
+    },
+    "india_vix.csv": {
+      "source_repo": "tanya459/india-vix-market-data-analysis",
+      "source_url": "https://github.com/tanya459/india-vix-market-data-analysis",
+      "source_branch": "main",
+      "source_file": "Dataset/IndiaVIX_Cleaned_Dataset.csv",
+      "source_blob_sha": "88e1572e626760109e02a240f0db1cff559f9c63",
+      "retrieved_at_ist": "2026-09-19",
+      "coverage_declared_by_source": "2020-01-02 through 2026-08-24",
+      "consumer": "research/v13_india_vix_gate.py",
+      "research_only": true,
+      "caveat": "Third-party derived dataset; use only after date/format checks and do not promote it to production without an independently verifiable source."
     }
   }
 }

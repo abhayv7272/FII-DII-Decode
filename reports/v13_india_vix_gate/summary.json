@@ -1,0 +1,12 @@
+{
+  "signal_rows_after_vix_merge": 745,
+  "vix_first_signal_date": "2023-08-08",
+  "vix_last_signal_date": "2026-08-24",
+  "vix_missing_v3_signal_dates": 12,
+  "vix_feature_count": 18,
+  "rules_exported": 1022,
+  "pass_exact": 0,
+  "pass_sign": 0,
+  "target_accuracy_pct": 85.0,
+  "min_holdout_calls": 20
+}

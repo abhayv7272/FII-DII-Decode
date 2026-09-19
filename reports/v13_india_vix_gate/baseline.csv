@@ -1,0 +1,7 @@
+outcome,strategy,period,n,coverage_pct,up_calls,down_calls,exact_pct,sign_n,sign_pct
+close_to_close,v3_ungated,dev2023_24,341,100.0,174,167,44.87,263,58.17
+close_to_close,v3_ungated,val2025,247,100.0,125,122,43.32,195,54.87
+close_to_close,v3_ungated,confirm2026,157,100.0,81,76,48.41,129,58.91
+open_to_close,v3_ungated,dev2023_24,341,100.0,174,167,38.42,248,52.82
+open_to_close,v3_ungated,val2025,247,100.0,125,122,41.3,201,50.75
+open_to_close,v3_ungated,confirm2026,157,100.0,81,76,38.22,120,50.0

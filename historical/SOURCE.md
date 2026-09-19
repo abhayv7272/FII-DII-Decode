@@ -23,6 +23,11 @@ Files:
   source for published OI backtests).
 - `chain_features.csv` — same-date EOD option-chain aggregate features rebuilt
   from F&O bhavcopy via `research/v3_chain_features.py`.
+- `india_vix.csv` — third-party India VIX daily OHLC-derived dataset, downloaded
+  reproducibly through the GitHub Contents API from the pinned source blob noted
+  in `manifest.json`, covering 2020-01-02 to 2026-08-24. It is strictly
+  **research-only** until independently verified against an exchange-grade
+  source; `research/v13_india_vix_gate.py` enforces timing and quality checks.
 - `nifty_10m.csv` / `nifty_15m.csv` — 10-minute and 15-minute NIFTY 50
   intraday OHLCV bars from 2017-04-03 to 2026-09-17, derived from the public
   `technovusin/nifty50-historical-data` 1-minute archive via
