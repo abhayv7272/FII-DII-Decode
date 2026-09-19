@@ -59,6 +59,8 @@ rejection diagnostic rather than relabelling a later value. GitHub Actions cron
 can start late, so research must use the stored actual timestamp, never merely
 the intended schedule time. These records are zero-weight and cannot change the
 production decoder until a separately frozen forward backtest validates them.
+The predeclared acceptance/session-count gates and the no-outcome readiness audit
+are in [`forward-validation-protocol.md`](forward-validation-protocol.md).
 
 Manual collection:
 

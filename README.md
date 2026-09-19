@@ -317,8 +317,9 @@ PYTHONPATH=src python -m fiidii.cli capture-intraday --symbol NIFTY
 ```
 
 See [`docs/data-fetching.md`](docs/data-fetching.md#forward-pre-open-and-intraday-research-capture)
-for source/timestamp policy, the opt-in raw-snapshot option, and the frozen-study
-requirement.
+for source/timestamp policy and the opt-in raw-snapshot option. The fixed
+collection/readiness/frozen-study gates are in
+[`docs/forward-validation-protocol.md`](docs/forward-validation-protocol.md).
 
 > Note: NSE and some fallback sites block many datacenter IPs, including this
 > build sandbox. The live command now records the failures and exits non-zero

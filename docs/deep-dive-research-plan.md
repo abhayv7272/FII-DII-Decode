@@ -85,7 +85,9 @@ remain separately required sources, not fields to infer or backfill.
 
 The new CSVs are intentionally excluded from `fiidii run`, report scoring and
 all prior historical backtests. Do not start threshold mining until a predeclared
-sample size and frozen train/validation/forward dates have been recorded.
+sample size and frozen train/validation/forward dates have been recorded. The
+concrete 80/200/260-session gates and no-outcome audit are fixed in
+[`forward-validation-protocol.md`](forward-validation-protocol.md).
 
 ## 5. Deep-dive protocol for each new source
 
