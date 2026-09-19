@@ -7,7 +7,7 @@
 
 ---
 
-## Current state (as of 2026-09-18, updated)
+## Current state (as of 2026-09-19, updated)
 
 - **Project:** FII-DII-Decode — NIFTY FII/DII/Pro/Client participant-OI decoder
   (v2 production; **v3 candidate built + published as opt-in research**),
@@ -45,6 +45,13 @@
   Gate is end-to-end smoke-tested on a synthetic forward window
   (`tests/test_research_gates.py`, latest suite 55 passed).
 - **Automation:** unchanged (v2 default), cron `30 15 * * 1-5`.
+- **Forward collection:** `435940a` adds direct-NSE, timestamped pre-open and
+  intraday NIFTY context collection on this Arena branch. It stores separate
+  append-only research CSVs and diagnostics, rejects stale/EOD/fallback data,
+  and is deliberately excluded from `fiidii run` / production scoring. The new
+  weekday capture workflow begins only after this branch is merged to the
+  repository default branch; its first records are collection evidence, not an
+  accuracy claim.
 - **Sandbox caveat:** only files *inside the repo* persist across Arena turns —
   `/home/user/historical`, `/home/user/features`, and venvs are wiped between
   turns. Re-create venv with
@@ -55,6 +62,13 @@
   or 10-/15-minute intraday candles from scratch.
 
 ## Log (newest first)
+
+### 2026-09-19 (session 23 — forward collector implemented and backed up)
+- Implemented and pushed `435940a` (`feat: collect timestamped forward market context`) on the fixed active Arena branch. It adds `capture-preopen` and `capture-intraday` CLI commands, dedicated append-only context stores, direct-NSE source/date/clock validation, full capture-time diagnostics, compact option-chain aggregates/fingerprints, and an explicit `--save-raw` audit path. Production daily decoding and reports do not read these files.
+- Important provenance correction: NSE's pre-open endpoint normally returns constituent rows rather than an official synthetic NIFTY IEP. The collector therefore records a clearly labelled constituent-breadth state (advance/decline/change distribution) unless an actual index quote is supplied; it never fabricates an unweighted index level. A capture outside 09:00–09:14 IST is rejected rather than relabelled as pre-open.
+- Added `.github/workflows/capture-forward-context.yml`: one pre-open capture, first-session chain snapshot, 15-minute session samples and a closing snapshot on weekdays. It commits compact records/diagnostics and retains actual UTC/IST capture timestamps so GitHub scheduler delay is visible. It does not retain raw snapshots by default.
+- Added network-free fixtures/tests for timestamp/source-date/clock checks, signed change-OI/unwind aggregation, direct-only no-fallback policy, delayed pre-open rejection and timestamp-level persistence de-duplication. Validation: `PYTHONPATH=src /tmp/fiidii-research-venv/bin/pytest -q` → **64 passed**; `py_compile` and `git diff --check` passed. No new predictor or accuracy result was claimed.
+- Next: allow sufficient fresh direct captures to accumulate, document a fixed minimum sample/split before feature selection, then run a frozen forward and execution-aware study. Continue collecting other missing timestamped inputs separately; no EOD retuning should be presented as the requested 85% result.
 
 ### 2026-09-19 (session 23 — approved forward high-information data collection)
 - User approved implementation of the next deep-dive path: collect the missing time-sensitive inputs rather than further retuning the same EOD-only history.
