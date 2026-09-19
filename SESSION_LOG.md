@@ -56,6 +56,12 @@
 
 ## Log (newest first)
 
+### 2026-09-19 (session 19 — renewed full-combination accuracy request)
+- User requested a continued, iterative and **honest** backtest → implementation → re-backtest programme combining the available OI, option-level, price/intraday, sweep/trap, V10 and weekly signals to seek 85% accuracy for next-day and Monday–Friday predictions. They explicitly asked that the session remain open and that chat/work be backed up continuously.
+- Research protocol locked for this continuation: no future/outcome field may be a feature; every candidate must be selected on an earlier train split and independently meet its declared accuracy/sample requirements on later validation and 2026 confirmation splits. A high in-sample or small-sample number will not be implemented as a directional/trading claim.
+- Product requirements reconfirmed: retain the full scenario report — base OI context; range, bullish and bearish paths; sweep/manipulation/trap branches; V10 tiny-gap status; explicit WAIT/NO-TRADE gates; and the Monday–Friday playbook. These are already rendered as conditional scenarios. Any predictive confidence/accuracy label must remain tied to validated evidence.
+- Starting state: the full every-day directional/weekly target remains unvalidated; V10 is the only high-accuracy selective at-open previous-close-touch alert, not a general close-direction forecast. This entry is the pre-research chat backup for the new iteration.
+
 ### 2026-09-18 (session 18 — PR opened)
 - User asked to open a pull request for the active branch.
 - Opened PR #7 from `arena/01a0b16b-fii-dii-decode` to `main`: https://github.com/abhayv7272/FII-DII-Decode/pull/7
