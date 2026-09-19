@@ -56,6 +56,11 @@
 
 ## Log (newest first)
 
+### 2026-09-19 (session 23 — approved forward high-information data collection)
+- User approved implementation of the next deep-dive path: collect the missing time-sensitive inputs rather than further retuning the same EOD-only history.
+- Scope starting now: implement a validated forward capture path for timestamped pre-open/index state and compact intraday NIFTY option-chain aggregates, with provenance and date/time quality checks. Preserve existing daily reports and use the new records only for later frozen forward research—not as an unvalidated production-score input.
+- Constraints retained: no session/branch close or switch; back up all chat/work; do not claim 85% until a predeclared forward gate is met with sufficient fresh observations and execution-aware testing.
+
 ### 2026-09-19 (session 22 — V13 India-VIX external-risk deep dive)
 - Audited all current in-repo data coverage/timing and recorded the resulting exhaustive evidence map and missing-data protocol in `docs/deep-dive-research-plan.md`. The key constraint is timing: EOD OI cannot capture the following overnight gap; at-open and intraday claims need their own timestamped inputs and execution tests.
 - Added a provenance-pinned, **research-only** India VIX daily source (`historical/india_vix.csv`, 2020-01-02 to 2026-08-24), with source blob, hash, coverage and third-party-verification caveat in `historical/manifest.json` / `historical/SOURCE.md`.
