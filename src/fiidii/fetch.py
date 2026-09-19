@@ -32,6 +32,7 @@ import requests
 from bs4 import BeautifulSoup
 from dateutil import parser as date_parser
 
+from .context import payload_sha256
 from .nse import ARCHIVES, BASE, DEFAULT_HEADERS, NseClient
 
 log = logging.getLogger(__name__)
@@ -1044,6 +1045,8 @@ def fetch_option_chain(
     symbol: str = "NIFTY",
     expected_date: date | None = None,
     metadata: dict | None = None,
+    *,
+    allow_fallback: bool = True,
 ) -> dict | None:
     url = f"{BASE}/api/option-chain-indices?symbol={symbol}"
     errors = []
@@ -1062,6 +1065,12 @@ def fetch_option_chain(
         return payload
     except RuntimeError as exc:
         errors.append(f"NSE: {exc}")
+
+    if not allow_fallback:
+        warning = f"option chain direct NSE fetch failed: {'; '.join(errors)}"
+        log.warning(warning)
+        _mark_unavailable(metadata, warning)
+        return None
 
     if expected_date is not None:
         try:
@@ -1248,3 +1257,193 @@ def fetch_index_quote(
     log.warning(warning)
     _mark_unavailable(metadata, warning)
     return None
+
+
+# ---------------------------------------------------------------------------
+# NSE pre-open index state (forward research only)
+# ---------------------------------------------------------------------------
+def _first_number(mapping: dict, *keys: str) -> float | None:
+    for key in keys:
+        if mapping.get(key) is None:
+            continue
+        try:
+            value = float(str(mapping[key]).replace(",", ""))
+        except (TypeError, ValueError):
+            continue
+        if math.isfinite(value):
+            return value
+    return None
+
+
+def _normalise_preopen_symbol(symbol: str) -> str:
+    aliases = {
+        "NIFTY": "NIFTY",
+        "NIFTY50": "NIFTY",
+        "BANKNIFTY": "BANKNIFTY",
+        "NIFTYBANK": "BANKNIFTY",
+    }
+    normalised = _normalise_symbol(symbol)
+    return aliases.get(normalised, normalised)
+
+
+def validate_preopen_state(
+    state: Any, expected_date: date | None = None
+) -> tuple[bool, str]:
+    """Reject stale/incomplete NSE pre-open index/basket records.
+
+    The NSE pre-open endpoint normally returns the constituents of a named
+    index, rather than an official synthetic NIFTY IEP.  The collector therefore
+    accepts either a genuine index quote when NSE supplies one or a clearly
+    labelled constituent-breadth aggregate.  It never invents an index level
+    from unweighted stock prices.
+    """
+    if not isinstance(state, dict):
+        return False, "pre-open state is not an object"
+    timestamp = state.get("timestamp")
+    timestamp_date = _parse_date(timestamp)
+    if expected_date and timestamp_date != expected_date:
+        return False, f"pre-open state date {timestamp_date} != requested {expected_date}"
+    if not isinstance(timestamp, str) or ":" not in timestamp:
+        return False, "pre-open state timestamp has no clock time"
+
+    state_type = state.get("state_type")
+    if state_type == "index_quote":
+        for field in ("previous_close", "indicative_price"):
+            value = _first_number(state, field)
+            if value is None or value <= 0:
+                return False, f"pre-open index quote has invalid {field}"
+        return True, "ok"
+    if state_type == "constituent_breadth":
+        count = _first_number(state, "constituent_count")
+        advances = _first_number(state, "advances")
+        declines = _first_number(state, "declines")
+        unchanged = _first_number(state, "unchanged")
+        mean_change = _first_number(state, "mean_pchange")
+        if count is None or count < 5:
+            return False, "pre-open breadth has fewer than five usable constituents"
+        if None in (advances, declines, unchanged, mean_change):
+            return False, "pre-open breadth has incomplete directional metrics"
+        if int(advances + declines + unchanged) != int(count):
+            return False, "pre-open breadth counts do not sum to constituents"
+        return True, "ok"
+    return False, f"unknown pre-open state type {state_type!r}"
+
+
+def _preopen_row(item: dict, payload_timestamp: Any) -> dict[str, Any]:
+    metadata = item.get("metadata") if isinstance(item.get("metadata"), dict) else {}
+    detail = item.get("detail") if isinstance(item.get("detail"), dict) else {}
+    merged = {**item, **metadata}
+    previous_close = _first_number(merged, "previousClose", "previous_close")
+    indicative_price = _first_number(merged, "lastPrice", "last", "iep", "finalPrice", "open")
+    pchange = _first_number(merged, "pChange", "pchange", "perChange")
+    if pchange is None and previous_close and indicative_price:
+        pchange = (indicative_price / previous_close - 1.0) * 100.0
+    return {
+        "symbol": str(merged.get("symbol") or merged.get("identifier") or ""),
+        "timestamp": merged.get("lastUpdateTime") or merged.get("timestamp") or payload_timestamp,
+        "previous_close": previous_close,
+        "indicative_price": indicative_price,
+        "change": _first_number(merged, "change"),
+        "pchange": pchange,
+        "total_buy_quantity": _first_number(merged, "totalBuyQuantity")
+        or _first_number(detail, "totalBuyQuantity"),
+        "total_sell_quantity": _first_number(merged, "totalSellQuantity")
+        or _first_number(detail, "totalSellQuantity"),
+        "final_quantity": _first_number(merged, "finalQuantity")
+        or _first_number(detail, "finalQuantity"),
+        "market_status": merged.get("marketStatus") or detail.get("marketStatus"),
+    }
+
+
+def _preopen_breadth_state(rows: list[dict[str, Any]], symbol: str) -> dict[str, Any]:
+    usable = [
+        row for row in rows
+        if row["previous_close"] is not None and row["previous_close"] > 0
+        and row["indicative_price"] is not None and row["indicative_price"] > 0
+        and row["pchange"] is not None
+    ]
+    timestamps = [row["timestamp"] for row in usable if isinstance(row["timestamp"], str)]
+    ordered_changes = sorted(float(row["pchange"]) for row in usable)
+    midpoint = len(ordered_changes) // 2
+    median_change = (
+        ordered_changes[midpoint]
+        if len(ordered_changes) % 2
+        else (ordered_changes[midpoint - 1] + ordered_changes[midpoint]) / 2
+    ) if ordered_changes else None
+    advances = sum(1 for row in usable if row["pchange"] > 0)
+    declines = sum(1 for row in usable if row["pchange"] < 0)
+    return {
+        "symbol": symbol.upper(),
+        "state_type": "constituent_breadth",
+        # This is an NSE-provided constituent timestamp, not an inferred clock.
+        "timestamp": timestamps[0] if timestamps else None,
+        "constituent_timestamp_count": len(timestamps),
+        "constituent_count": len(usable),
+        "advances": advances,
+        "declines": declines,
+        "unchanged": len(usable) - advances - declines,
+        "mean_pchange": sum(float(row["pchange"]) for row in usable) / len(usable) if usable else None,
+        "median_pchange": median_change,
+        "max_pchange": max((float(row["pchange"]) for row in usable), default=None),
+        "min_pchange": min((float(row["pchange"]) for row in usable), default=None),
+        "total_buy_quantity": sum(row["total_buy_quantity"] or 0.0 for row in usable),
+        "total_sell_quantity": sum(row["total_sell_quantity"] or 0.0 for row in usable),
+        "final_quantity": sum(row["final_quantity"] or 0.0 for row in usable),
+    }
+
+
+def fetch_preopen_index_state(
+    client: NseClient,
+    symbol: str = "NIFTY",
+    expected_date: date | None = None,
+    metadata: dict | None = None,
+) -> dict | None:
+    """Fetch direct-NSE pre-open state without a third-party or EOD fallback.
+
+    ``market-data-pre-open`` is a constituent feed for NIFTY/BANKNIFTY in the
+    normal case.  We retain an official index indication only if the feed offers
+    a real index row; otherwise a source-labelled advance/decline breadth state
+    is more honest than constructing an unweighted pseudo-index.
+    """
+    key = _normalise_preopen_symbol(symbol)
+    url = f"{BASE}/api/market-data-pre-open?key={key}"
+    try:
+        payload = client.get_json(url, referer=BASE + "/market-data-pre-open")
+        if not isinstance(payload, dict) or not isinstance(payload.get("data"), list):
+            raise RuntimeError("NSE pre-open payload has no data array")
+        rows = [
+            _preopen_row(item, payload.get("timestamp"))
+            for item in payload["data"]
+            if isinstance(item, dict)
+        ]
+        wanted = _normalise_symbol(symbol)
+        exact_labels = {wanted, "NIFTY50" if wanted == "NIFTY" else wanted}
+        exact = next(
+            (row for row in rows if _normalise_symbol(row["symbol"]) in exact_labels),
+            None,
+        )
+        if exact is not None:
+            state = {
+                "symbol": symbol.upper(),
+                "state_type": "index_quote",
+                **{key: value for key, value in exact.items() if key != "symbol"},
+            }
+        else:
+            state = _preopen_breadth_state(rows, symbol)
+        state["payload_sha256"] = payload_sha256(payload)
+        valid, reason = validate_preopen_state(state, expected_date)
+        if not valid:
+            raise RuntimeError(reason)
+        _set_metadata(
+            metadata,
+            source="NSE pre-open market-data API",
+            url=url,
+            as_of=expected_date or _parse_date(state["timestamp"]),
+            fallback=False,
+        )
+        return state
+    except (RuntimeError, ValueError, KeyError) as exc:
+        warning = f"pre-open index state failed for {symbol}: {exc}"
+        log.warning(warning)
+        _mark_unavailable(metadata, warning)
+        return None

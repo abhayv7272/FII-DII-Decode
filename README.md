@@ -286,6 +286,9 @@ Highlights:
    normal-looking actionable report.
 7. Defines GitHub Actions automation for 9 PM IST, Mon–Fri. A schedule only runs
    after this workflow is merged to the default branch and Actions is enabled.
+8. Separately captures timestamped direct-NSE pre-open and intraday option-chain
+   context for a future frozen study. It is **not** an input to the production
+   directional score; failed/stale/EOD-fallback capture is rejected.
 
 ## Quick start (local)
 
@@ -305,6 +308,17 @@ PYTHONPATH=src python -m fiidii.cli run --no-email \
 ```
 
 Open `reports/latest.html` to view the result.
+
+For forward-only research collection (it does **not** alter `run`):
+
+```bash
+PYTHONPATH=src python -m fiidii.cli capture-preopen --symbol NIFTY
+PYTHONPATH=src python -m fiidii.cli capture-intraday --symbol NIFTY
+```
+
+See [`docs/data-fetching.md`](docs/data-fetching.md#forward-pre-open-and-intraday-research-capture)
+for source/timestamp policy, the opt-in raw-snapshot option, and the frozen-study
+requirement.
 
 > Note: NSE and some fallback sites block many datacenter IPs, including this
 > build sandbox. The live command now records the failures and exits non-zero

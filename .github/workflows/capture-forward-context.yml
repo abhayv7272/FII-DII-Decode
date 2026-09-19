@@ -1,0 +1,97 @@
+name: Capture Forward Market Context
+
+on:
+  schedule:
+    # GitHub cron is UTC. The payload itself stores the actual UTC + IST capture
+    # timestamp because scheduled workflows may start late.
+    - cron: "40 3 * * 1-5"      # 09:10 IST: NSE pre-open indication
+    - cron: "45 3 * * 1-5"      # 09:15 IST: first cash-session chain state
+    - cron: "*/15 4-9 * * 1-5"  # 09:30-14:45 IST: 15-minute chain aggregates
+    - cron: "0 10 * * 1-5"      # 15:30 IST: closing-session aggregate
+  workflow_dispatch:
+    inputs:
+      capture:
+        description: "Which forward record to capture"
+        type: choice
+        required: true
+        default: intraday
+        options:
+          - preopen
+          - intraday
+      symbol:
+        description: "NSE index symbol"
+        type: string
+        required: true
+        default: NIFTY
+
+permissions:
+  contents: write
+
+concurrency:
+  group: capture-forward-market-context
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Capture timestamped forward context
+        id: capture
+        continue-on-error: true
+        env:
+          PYTHONPATH: src
+          GITHUB_TOKEN: ${{ github.token }}
+          DISPATCH_CAPTURE: ${{ github.event.inputs.capture }}
+          DISPATCH_SYMBOL: ${{ github.event.inputs.symbol }}
+          EVENT_NAME: ${{ github.event_name }}
+          SCHEDULE_EXPR: ${{ github.event.schedule }}
+        run: |
+          SYMBOL="${DISPATCH_SYMBOL:-NIFTY}"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            KIND="$DISPATCH_CAPTURE"
+          elif [ "$SCHEDULE_EXPR" = "40 3 * * 1-5" ]; then
+            KIND="preopen"
+          else
+            KIND="intraday"
+          fi
+          echo "Capturing ${KIND} context for ${SYMBOL} at $(date -u --iso-8601=seconds)"
+          if [ "$KIND" = "preopen" ]; then
+            python -m fiidii.cli capture-preopen --symbol "$SYMBOL"
+          else
+            python -m fiidii.cli capture-intraday --symbol "$SYMBOL"
+          fi
+
+      - name: Commit compact snapshots and diagnostics
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # -A avoids a first-run pathspec failure when only one collector has
+          # created a CSV/status file. The scheduled commands never request raw
+          # snapshots, so this stages only compact records/diagnostics.
+          git add -A -- data
+          if git diff --cached --quiet; then
+            echo "No forward-context data changes to commit."
+          else
+            git commit -m "chore: capture forward market context $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push origin ${{ github.ref_name }}
+          fi
+
+      - name: Fail run when capture was rejected
+        if: steps.capture.outcome != 'success'
+        run: |
+          echo "Capture did not pass date/source/schema validation. Diagnostics were committed when available."
+          exit 1

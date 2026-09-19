@@ -29,6 +29,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from . import fetch, store
+from .context import option_chain_snapshot
 from .decode import decode
 from .email_send import send_report
 from .gap_sniper import tiny_gap_fill_playbook, tiny_gap_fill_signal
@@ -704,6 +705,191 @@ def run(args) -> int:
     return 0
 
 
+def _context_now() -> datetime:
+    """Small seam for deterministic context-collector tests."""
+    return datetime.now(timezone.utc)
+
+
+def _capture_status_name(kind: str, captured_at: datetime) -> str:
+    """Use a capture-time filename so delayed/failed scheduler runs stay auditable."""
+    utc_tag = captured_at.astimezone(timezone.utc).strftime("%Y-%m-%dT%H-%M-%SZ")
+    return f"{kind}_capture_status_{utc_tag}"
+
+
+def _capture_status(
+    *,
+    kind: str,
+    symbol: str,
+    captured_at: datetime,
+    inputs: dict[str, dict],
+    status: str,
+    warning: str = "",
+) -> dict:
+    return {
+        "kind": kind,
+        "symbol": symbol.upper(),
+        "captured_at_utc": captured_at.astimezone(timezone.utc).isoformat(),
+        "captured_at_ist": captured_at.astimezone(ZoneInfo("Asia/Kolkata")).isoformat(),
+        "status": status,
+        "warning": warning,
+        "inputs": inputs,
+        "policy": (
+            "Forward-research collection only. Inputs are timestamped and kept out of "
+            "the production directional score until a frozen forward backtest passes."
+        ),
+    }
+
+
+def run_capture_preopen_command(args) -> int:
+    """Persist the direct-NSE indication visible before the cash-market open.
+
+    There is intentionally no fallback: an EOD bar, an old quote, or a later
+    third-party value would not represent pre-open information.
+    """
+    captured_at = _context_now()
+    captured_ist = captured_at.astimezone(ZoneInfo("Asia/Kolkata"))
+    session_date = captured_ist.date()
+    symbol = args.symbol.upper()
+    # A job delayed until continuous trading cannot honestly be labelled a
+    # pre-open observation. Keep a timestamped diagnostic instead of backfilling
+    # from a later quote.
+    ist_minutes = captured_ist.hour * 60 + captured_ist.minute
+    if not 9 * 60 <= ist_minutes < 9 * 60 + 15:
+        warning = "actual capture time is outside the 09:00-09:14 IST pre-open window"
+        status = _capture_status(
+            kind="preopen", symbol=symbol, captured_at=captured_at,
+            inputs={"preopen": {"status": "not_attempted", "fallback": False}},
+            status="rejected", warning=warning,
+        )
+        store.save_json(status, _capture_status_name("preopen", captured_at))
+        print(f"ERROR: {warning}", file=sys.stderr)
+        return 2
+    metadata: dict = {}
+    client = NseClient(timeout=12, max_retries=2, backoff=1.5)
+    state = fetch.fetch_preopen_index_state(
+        client, symbol=symbol, expected_date=session_date, metadata=metadata
+    )
+    if state is None:
+        status = _capture_status(
+            kind="preopen", symbol=symbol, captured_at=captured_at,
+            inputs={"preopen": metadata}, status="unavailable",
+            warning=metadata.get("warning", "NSE pre-open state unavailable"),
+        )
+        store.save_json(status, _capture_status_name("preopen", captured_at))
+        print(f"ERROR: {status['warning']}", file=sys.stderr)
+        return 2
+
+    row = {
+        "captured_at_utc": captured_at.astimezone(timezone.utc).isoformat(),
+        "captured_at_ist": captured_at.astimezone(ZoneInfo("Asia/Kolkata")).isoformat(),
+        "session_date": session_date.isoformat(),
+        "source": metadata.get("source"),
+        "source_url": metadata.get("url"),
+        "source_fallback": bool(metadata.get("fallback", False)),
+        "source_as_of": metadata.get("as_of"),
+        **state,
+    }
+    store.append_df(pd.DataFrame([row]), "preopen_snapshots", dedup_on=["symbol", "captured_at_utc"])
+    status = _capture_status(
+        kind="preopen", symbol=symbol, captured_at=captured_at,
+        inputs={"preopen": metadata}, status="available",
+    )
+    store.save_json(status, _capture_status_name("preopen", captured_at))
+    if row.get("state_type") == "index_quote":
+        detail = (
+            f"indicative {row['indicative_price']:.2f} vs previous close "
+            f"{row['previous_close']:.2f}"
+        )
+    else:
+        detail = (
+            f"breadth {int(row['advances'])} up / {int(row['declines'])} down / "
+            f"{int(row['unchanged'])} flat; mean change {row['mean_pchange']:.3f}%"
+        )
+    print(f"Stored pre-open {symbol} snapshot at {row['captured_at_ist']}: {detail}")
+    return 0
+
+
+def run_capture_intraday_command(args) -> int:
+    """Persist a compact direct-NSE intraday option-chain aggregate snapshot."""
+    captured_at = _context_now()
+    session_date = captured_at.astimezone(ZoneInfo("Asia/Kolkata")).date()
+    symbol = args.symbol.upper()
+    client = NseClient(timeout=12, max_retries=2, backoff=1.5)
+    chain_meta: dict = {}
+    quote_meta: dict = {}
+    chain = fetch.fetch_option_chain(
+        client,
+        symbol=symbol,
+        expected_date=session_date,
+        metadata=chain_meta,
+        allow_fallback=False,
+    )
+    # An EOD web-rendering fallback is explicitly unsuitable for a timed
+    # intraday research snapshot even when its calendar date happens to match.
+    if chain is None or chain_meta.get("fallback"):
+        warning = chain_meta.get(
+            "warning", "Direct NSE intraday option-chain snapshot unavailable"
+        )
+        status = _capture_status(
+            kind="intraday_option_chain", symbol=symbol, captured_at=captured_at,
+            inputs={"option_chain": chain_meta}, status="unavailable", warning=warning,
+        )
+        store.save_json(status, _capture_status_name("intraday", captured_at))
+        print(f"ERROR: {warning}", file=sys.stderr)
+        return 2
+
+    quote = fetch.fetch_index_quote(
+        client, symbol=symbol, expected_date=session_date, metadata=quote_meta
+    )
+    # Daily Yahoo fallbacks are suitable for a completed EOD bar but not for an
+    # intraday state. Keep the chain record and omit quote fields instead.
+    if quote_meta.get("fallback"):
+        quote = None
+    try:
+        row = option_chain_snapshot(
+            chain,
+            symbol=symbol,
+            captured_at=captured_at,
+            source_metadata=chain_meta,
+            quote=quote,
+        )
+    except ValueError as exc:
+        status = _capture_status(
+            kind="intraday_option_chain", symbol=symbol, captured_at=captured_at,
+            inputs={"option_chain": chain_meta, "index_quote": quote_meta},
+            status="rejected", warning=f"Snapshot reducer rejected payload: {exc}",
+        )
+        store.save_json(status, _capture_status_name("intraday", captured_at))
+        print(f"ERROR: {status['warning']}", file=sys.stderr)
+        return 2
+
+    raw_path = None
+    if args.save_raw:
+        raw_path = store.save_intraday_option_chain(chain, symbol, row["captured_at_utc"])
+        row["raw_snapshot_path"] = str(raw_path)
+    store.append_df(
+        pd.DataFrame([row]), "intraday_option_snapshots",
+        dedup_on=["symbol", "captured_at_utc"],
+    )
+    status = _capture_status(
+        kind="intraday_option_chain", symbol=symbol, captured_at=captured_at,
+        inputs={"option_chain": chain_meta, "index_quote": quote_meta}, status="available",
+        warning=(
+            "Index quote was unavailable from a direct intraday source; option-chain aggregate was stored without quote fields."
+            if quote is None else ""
+        ),
+    )
+    if raw_path is not None:
+        status["raw_snapshot_path"] = str(raw_path)
+    store.save_json(status, _capture_status_name("intraday", captured_at))
+    pcr_text = f"{row['pcr_oi']:.3f}" if row["pcr_oi"] is not None else "n/a"
+    print(
+        f"Stored intraday {symbol} chain snapshot at {row['captured_at_ist']}: "
+        f"spot {row['spot']:.2f}, PCR OI {pcr_text}, strikes {row['strike_count']}"
+    )
+    return 0
+
+
 def run_sniper_command(args) -> int:
     """Evaluate the V10 tiny-gap previous-close-touch rule from manual prices."""
     signal = tiny_gap_fill_signal(
@@ -824,6 +1010,25 @@ def main(argv=None) -> int:
         ),
     )
     r.set_defaults(func=run)
+
+    preopen = sub.add_parser(
+        "capture-preopen",
+        help="store a direct-NSE timestamped pre-open indication for forward research",
+    )
+    preopen.add_argument("--symbol", default="NIFTY")
+    preopen.set_defaults(func=run_capture_preopen_command)
+
+    intraday = sub.add_parser(
+        "capture-intraday",
+        help="store compact direct-NSE intraday option-chain aggregates for forward research",
+    )
+    intraday.add_argument("--symbol", default="NIFTY")
+    intraday.add_argument(
+        "--save-raw",
+        action="store_true",
+        help="also save this full raw chain snapshot (manual/audit use; off by default)",
+    )
+    intraday.set_defaults(func=run_capture_intraday_command)
 
     s = sub.add_parser(
         "sniper",

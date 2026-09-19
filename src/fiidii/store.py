@@ -9,6 +9,9 @@ Layout:
   data/fii_dii_cash.csv
   data/index_ohlc.csv          # live session bars accumulated for forward tests
   data/option_chain/<SYMBOL>_<DATE>.json
+  data/preopen_snapshots.csv   # timestamped pre-open state for forward research
+  data/intraday_option_snapshots.csv  # compact time-stamped chain aggregates
+  data/intraday_option_chain/  # opt-in raw snapshots; never the default
   data/decoded.csv             # decoded metrics per date (the "signal" history)
 """
 from __future__ import annotations
@@ -27,6 +30,7 @@ DATA_DIR = Path(os.environ.get("FIIDII_DATA_DIR", "data"))
 def _ensure() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     (DATA_DIR / "option_chain").mkdir(parents=True, exist_ok=True)
+    (DATA_DIR / "intraday_option_chain").mkdir(parents=True, exist_ok=True)
 
 
 def append_df(df: pd.DataFrame, name: str, dedup_on: Optional[list[str]] = None) -> None:
@@ -62,6 +66,23 @@ def load_option_chain(symbol: str, d: date) -> Optional[dict]:
     if path.exists():
         return json.loads(path.read_text())
     return None
+
+
+def save_intraday_option_chain(raw: dict, symbol: str, captured_at_utc: str) -> Path:
+    """Save an opt-in raw chain snapshot under a date partition.
+
+    Scheduled collection writes compact aggregate rows by default. This raw
+    method exists for a deliberately selected manual/audit capture, not for
+    silently committing an unbounded high-frequency archive.
+    """
+    _ensure()
+    safe_time = str(captured_at_utc).replace(":", "-").replace("+", "_")
+    session_date = str(captured_at_utc)[:10]
+    folder = DATA_DIR / "intraday_option_chain" / symbol.upper() / session_date
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"{safe_time}.json"
+    path.write_text(json.dumps(raw, separators=(",", ":"), default=str))
+    return path
 
 
 def save_json(obj: dict, name: str) -> Path:

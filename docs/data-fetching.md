@@ -22,12 +22,50 @@ record in `data/fetch_status_<YYYY-MM-DD>.json`.
 | Option chain | NSE index option-chain API | Same-date MarketNetra public EOD table | No direction block; missing chain blocks actionable levels and gap plans |
 | Index OHLC | NSE all-indices API | Exact daily Yahoo Finance chart bar | No; an incomplete bar is never persisted |
 | Participant volume | NSE clearing archive | None | No; currently collected for research but not scored by locked v2 |
+| Pre-open index/breadth state | NSE pre-open market-data API | **None**; stale/later values are rejected | No; forward research capture only |
+| Intraday option-chain aggregates | NSE index option-chain API | **None**; EOD fallback is rejected for timed capture | No; forward research capture only |
 | Exact institutional references | User-provided dated JSON | None; option-chain levels are labelled proxies, never exact replacements | No |
 
 Third-party fallbacks are independently named in output. They are never labelled
 as direct NSE responses, even if the site says its data originated at NSE.
 `GITHUB_TOKEN`, when present on GitHub Actions, is used only to increase the rate
 limit for public repository reads; no market-data credential is required.
+
+## Forward pre-open and intraday research capture
+
+The ordinary 9 PM report cannot reconstruct what was visible before the next
+open or during a level interaction. The separate **Capture Forward Market
+Context** workflow therefore writes two compact, timestamped research datasets:
+
+- `data/preopen_snapshots.csv` from `fiidii capture-preopen`; and
+- `data/intraday_option_snapshots.csv` from `fiidii capture-intraday`.
+
+Both commands record actual UTC and IST capture time, source/as-of metadata and
+a status diagnostic. The NSE pre-open endpoint normally supplies constituent
+rows, not an official synthetic NIFTY IEP; in that case the collector labels the
+record `constituent_breadth` (advances/declines and change distribution) rather
+than inventing an unweighted index level. The intraday record stores aggregate
+OI, signed change-OI (including largest build/unwind walls), volume, PCR,
+near-ATM state, walls, IV summaries and a SHA-256
+payload fingerprint—not a large raw strike array. `capture-intraday --save-raw`
+is an explicit manual/audit opt-in for a full raw snapshot; scheduled collection
+keeps it off to avoid an unbounded repository archive.
+
+There is intentionally **no fallback** for either time-sensitive collector. A
+same-date EOD web page, Yahoo daily bar or delayed provider response does not
+prove what was available pre-open/intraday and is rejected. Pre-open collection
+also rejects an actual capture outside 09:00–09:14 IST; it stores an explicit
+rejection diagnostic rather than relabelling a later value. GitHub Actions cron
+can start late, so research must use the stored actual timestamp, never merely
+the intended schedule time. These records are zero-weight and cannot change the
+production decoder until a separately frozen forward backtest validates them.
+
+Manual collection:
+
+```bash
+PYTHONPATH=src python -m fiidii.cli capture-preopen --symbol NIFTY
+PYTHONPATH=src python -m fiidii.cli capture-intraday --symbol NIFTY
+```
 
 ## Acceptance checks
 

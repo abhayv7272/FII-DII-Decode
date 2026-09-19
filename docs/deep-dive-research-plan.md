@@ -64,6 +64,29 @@ next-open or intraday move.
 | 5 | Exact timestamped institutional levels | Separates externally supplied levels from reproducible option-chain proxies. | Record level time, subsequent first touch/reclaim/break and no-touch cases every day; score forward without retuning. |
 | 6 | Broker/tick option-premium execution | A NIFTY level touch is not automatically an option P&L result. | Include actual available premium, bid/ask, fees, fill delay, exits and conservative same-bar ambiguity rules. |
 
+### 4.1 Implemented forward collection (not a model result)
+
+The repository now has a direct-NSE-only collector for the first high-information
+slice of priority 1. `capture-preopen` records a validated NIFTY pre-open
+state—an official index quote only when NSE supplies one, otherwise clearly
+labelled constituent breadth; `capture-intraday` records timestamped NIFTY chain OI, change-OI,
+volume, OI-weighted IV, near-ATM totals, ATM strike, PCRs, OI/ΔOI walls and a
+payload fingerprint. Every aggregate has actual UTC/IST capture time, source
+metadata and the source chain timestamp. A source date mismatch, no clock time,
+stale pre-open record or any EOD/third-party fallback fails closed.
+
+The scheduled collector samples pre-open once, then the option chain at the
+first cash-session point, every 15 minutes during the session and once at 15:30
+IST. It persists the actual capture timestamp, so GitHub Actions queue delay is
+observable rather than silently treated as a 09:15/15-minute capture. Full raw
+chains are retained only with the explicit `--save-raw` audit option. This is
+not yet bid/ask, premium, GIFT, sector/breadth or cash-flow coverage; those
+remain separately required sources, not fields to infer or backfill.
+
+The new CSVs are intentionally excluded from `fiidii run`, report scoring and
+all prior historical backtests. Do not start threshold mining until a predeclared
+sample size and frozen train/validation/forward dates have been recorded.
+
 ## 5. Deep-dive protocol for each new source
 
 1. **Provenance:** commit/record raw source URL, retrieval date, content hash,
