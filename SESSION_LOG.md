@@ -47,11 +47,12 @@
 - **Automation:** unchanged (v2 default), cron `30 15 * * 1-5`.
 - **Forward collection:** `435940a` adds direct-NSE, timestamped pre-open and
   intraday NIFTY context collection on this Arena branch; `4160822` adds the
-  collection-only readiness audit and fixed 80/200/260-session study gates. The
-  stores remain separate from `fiidii run` / production scoring, reject
-  stale/EOD/fallback data, and cannot produce an accuracy claim. The weekday
-  capture workflow begins only after this branch is merged to the repository
-  default branch; its first records are collection evidence, not an edge.
+  collection-only readiness audit and fixed 80/200/260-session study gates; and
+  `5b69255` rejects same-date cached/stale source clocks. The stores remain
+  separate from `fiidii run` / production scoring, reject stale/EOD/fallback
+  data, and cannot produce an accuracy claim. The weekday capture workflow
+  begins only after this branch is merged to the repository default branch; its
+  first records are collection evidence, not an edge.
 - **Sandbox caveat:** only files *inside the repo* persist across Arena turns —
   `/home/user/historical`, `/home/user/features`, and venvs are wiped between
   turns. Re-create venv with
@@ -62,6 +63,12 @@
   or 10-/15-minute intraday candles from scratch.
 
 ## Log (newest first)
+
+### 2026-09-19 (session 25 — same-date freshness hardening)
+- Continued the forward-collection audit and pushed `5b69255` (`fix: reject stale same-day forward snapshots`). Date equality alone could still accept a cached intraday/pre-open payload from earlier that same session, so that loophole is now closed.
+- Intraday chains must have a parseable NSE source clock within 20 minutes of actual capture (and no implausible future clock); the stored aggregate records source IST time and lag seconds. Pre-open source clocks must be within 10 minutes, and a constituent-breadth aggregate is rejected if **any** constituent is stale, undated or has no clock time—not merely if the first row is fresh.
+- The no-outcome readiness audit now requires and checks those recorded source lags as part of a complete session. Protocol/data-source docs were updated. Added fixture checks for stale same-day chains, delayed pre-open source, stale constituent rows and invalid audit lag.
+- Validation: full suite remains **67 passed**; `py_compile` and `git diff --check` passed. This is data quality hardening only—no live collection, rule fitting, outcome join or accuracy claim.
 
 ### 2026-09-19 (session 24 — forward study gates frozen before data)
 - Continued after the collector checkpoint and pushed `4160822` (`research: freeze forward context readiness gates`). Added `docs/forward-validation-protocol.md`, which freezes accepted-session quality rules and forbids outcome/model/accuracy work during collection.
