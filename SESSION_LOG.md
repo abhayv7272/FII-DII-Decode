@@ -46,12 +46,12 @@
   (`tests/test_research_gates.py`, latest suite 55 passed).
 - **Automation:** unchanged (v2 default), cron `30 15 * * 1-5`.
 - **Forward collection:** `435940a` adds direct-NSE, timestamped pre-open and
-  intraday NIFTY context collection on this Arena branch. It stores separate
-  append-only research CSVs and diagnostics, rejects stale/EOD/fallback data,
-  and is deliberately excluded from `fiidii run` / production scoring. The new
-  weekday capture workflow begins only after this branch is merged to the
-  repository default branch; its first records are collection evidence, not an
-  accuracy claim.
+  intraday NIFTY context collection on this Arena branch; `4160822` adds the
+  collection-only readiness audit and fixed 80/200/260-session study gates. The
+  stores remain separate from `fiidii run` / production scoring, reject
+  stale/EOD/fallback data, and cannot produce an accuracy claim. The weekday
+  capture workflow begins only after this branch is merged to the repository
+  default branch; its first records are collection evidence, not an edge.
 - **Sandbox caveat:** only files *inside the repo* persist across Arena turns —
   `/home/user/historical`, `/home/user/features`, and venvs are wiped between
   turns. Re-create venv with
@@ -62,6 +62,13 @@
   or 10-/15-minute intraday candles from scratch.
 
 ## Log (newest first)
+
+### 2026-09-19 (session 24 — forward study gates frozen before data)
+- Continued after the collector checkpoint and pushed `4160822` (`research: freeze forward context readiness gates`). Added `docs/forward-validation-protocol.md`, which freezes accepted-session quality rules and forbids outcome/model/accuracy work during collection.
+- Added `src/fiidii/forward_audit.py` and `research/forward_context_readiness.py`. The audit reads only the two forward context CSVs; it verifies direct source, fallback flag, actual IST capture windows, source clock/date, hashes, duplicate timestamps, early/late intraday coverage and per-session completeness. It does not join labels, fit a rule or output a prediction/accuracy.
+- Fixed thresholds: 80 complete sessions permits only a quality review; 200 permits the first frozen 80-development / 60-validation / 60-confirmation study; promotion needs the next 60 untouched sessions (260 total). Weekly remains context-only until a separate 130-completed-Friday protocol is satisfied. Session—not intraday-row—counts are used.
+- Added network-free audit tests. Validation: `PYTHONPATH=src /tmp/fiidii-research-venv/bin/pytest -q` → **67 passed**; relevant `py_compile` and `git diff --check` passed. No fresh direct capture exists yet and no directional/model claim was added.
+- Next: wait for/default-branch-enable the capture workflow, periodically run the no-outcome readiness report, and do not tune thresholds until the fixed collection gate is genuinely met.
 
 ### 2026-09-19 (session 23 — forward collector implemented and backed up)
 - Implemented and pushed `435940a` (`feat: collect timestamped forward market context`) on the fixed active Arena branch. It adds `capture-preopen` and `capture-intraday` CLI commands, dedicated append-only context stores, direct-NSE source/date/clock validation, full capture-time diagnostics, compact option-chain aggregates/fingerprints, and an explicit `--save-raw` audit path. Production daily decoding and reports do not read these files.
