@@ -1286,8 +1286,27 @@ def _normalise_preopen_symbol(symbol: str) -> str:
     return aliases.get(normalised, normalised)
 
 
+MAX_PREOPEN_SOURCE_LAG = timedelta(minutes=10)
+MAX_SOURCE_FUTURE_SKEW = timedelta(minutes=2)
+
+
+def _timestamp_ist(value: Any) -> datetime | None:
+    if value in (None, ""):
+        return None
+    try:
+        parsed = date_parser.parse(str(value), dayfirst=True, fuzzy=True)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    ist = ZoneInfo("Asia/Kolkata")
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=ist)
+    return parsed.astimezone(ist)
+
+
 def validate_preopen_state(
-    state: Any, expected_date: date | None = None
+    state: Any,
+    expected_date: date | None = None,
+    captured_at: datetime | None = None,
 ) -> tuple[bool, str]:
     """Reject stale/incomplete NSE pre-open index/basket records.
 
@@ -1305,6 +1324,18 @@ def validate_preopen_state(
         return False, f"pre-open state date {timestamp_date} != requested {expected_date}"
     if not isinstance(timestamp, str) or ":" not in timestamp:
         return False, "pre-open state timestamp has no clock time"
+    if captured_at is not None:
+        if captured_at.tzinfo is None:
+            return False, "pre-open capture timestamp is timezone-naive"
+        source_ist = _timestamp_ist(timestamp)
+        captured_ist = captured_at.astimezone(ZoneInfo("Asia/Kolkata"))
+        if source_ist is None:
+            return False, "pre-open source timestamp is unparseable"
+        source_lag = captured_ist - source_ist
+        if source_lag < -MAX_SOURCE_FUTURE_SKEW:
+            return False, "pre-open source timestamp is implausibly after capture"
+        if source_lag > MAX_PREOPEN_SOURCE_LAG:
+            return False, f"pre-open source timestamp is stale by {source_lag.total_seconds() / 60:.1f} minutes"
 
     state_type = state.get("state_type")
     if state_type == "index_quote":
@@ -1325,6 +1356,24 @@ def validate_preopen_state(
             return False, "pre-open breadth has incomplete directional metrics"
         if int(advances + declines + unchanged) != int(count):
             return False, "pre-open breadth counts do not sum to constituents"
+        # A valid top-level timestamp cannot make a mixed stale constituent
+        # response safe. Every input to the aggregate must carry a same-date
+        # NSE clock timestamp, otherwise the aggregate is rejected as stale.
+        if _first_number(state, "constituent_timestamp_count") != count:
+            return False, "pre-open breadth has missing constituent timestamps"
+        if _first_number(state, "constituent_timestamp_without_clock_count") != 0:
+            return False, "pre-open breadth has constituent timestamp without clock time"
+        if _first_number(state, "constituent_timestamp_invalid_date_count") != 0:
+            return False, "pre-open breadth has invalid constituent timestamp date"
+        earliest = _parse_date(state.get("constituent_timestamp_earliest"))
+        latest = _parse_date(state.get("constituent_timestamp_latest"))
+        if earliest != timestamp_date or latest != timestamp_date:
+            return False, "pre-open breadth has mixed/stale constituent timestamp dates"
+        if captured_at is not None:
+            earliest_source = _timestamp_ist(state.get("constituent_timestamp_earliest"))
+            captured_ist = captured_at.astimezone(ZoneInfo("Asia/Kolkata"))
+            if earliest_source is None or captured_ist - earliest_source > MAX_PREOPEN_SOURCE_LAG:
+                return False, "pre-open breadth has stale constituent source timestamp"
         return True, "ok"
     return False, f"unknown pre-open state type {state_type!r}"
 
@@ -1363,6 +1412,7 @@ def _preopen_breadth_state(rows: list[dict[str, Any]], symbol: str) -> dict[str,
         and row["pchange"] is not None
     ]
     timestamps = [row["timestamp"] for row in usable if isinstance(row["timestamp"], str)]
+    timestamp_dates = [_parse_date(value) for value in timestamps]
     ordered_changes = sorted(float(row["pchange"]) for row in usable)
     midpoint = len(ordered_changes) // 2
     median_change = (
@@ -1378,6 +1428,10 @@ def _preopen_breadth_state(rows: list[dict[str, Any]], symbol: str) -> dict[str,
         # This is an NSE-provided constituent timestamp, not an inferred clock.
         "timestamp": timestamps[0] if timestamps else None,
         "constituent_timestamp_count": len(timestamps),
+        "constituent_timestamp_without_clock_count": sum(":" not in value for value in timestamps),
+        "constituent_timestamp_earliest": min(timestamps) if timestamps else None,
+        "constituent_timestamp_latest": max(timestamps) if timestamps else None,
+        "constituent_timestamp_invalid_date_count": sum(value is None for value in timestamp_dates),
         "constituent_count": len(usable),
         "advances": advances,
         "declines": declines,
@@ -1397,6 +1451,8 @@ def fetch_preopen_index_state(
     symbol: str = "NIFTY",
     expected_date: date | None = None,
     metadata: dict | None = None,
+    *,
+    captured_at: datetime | None = None,
 ) -> dict | None:
     """Fetch direct-NSE pre-open state without a third-party or EOD fallback.
 
@@ -1431,9 +1487,16 @@ def fetch_preopen_index_state(
         else:
             state = _preopen_breadth_state(rows, symbol)
         state["payload_sha256"] = payload_sha256(payload)
-        valid, reason = validate_preopen_state(state, expected_date)
+        valid, reason = validate_preopen_state(state, expected_date, captured_at)
         if not valid:
             raise RuntimeError(reason)
+        if captured_at is not None:
+            # Breadth is only as fresh as its oldest constituent input.
+            source_clock = state.get("constituent_timestamp_earliest") or state["timestamp"]
+            source_ist = _timestamp_ist(source_clock)
+            state["source_lag_seconds"] = round(
+                (captured_at.astimezone(ZoneInfo("Asia/Kolkata")) - source_ist).total_seconds(), 3
+            )
         _set_metadata(
             metadata,
             source="NSE pre-open market-data API",

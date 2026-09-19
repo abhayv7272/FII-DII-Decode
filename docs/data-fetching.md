@@ -44,8 +44,13 @@ Both commands record actual UTC and IST capture time, source/as-of metadata and
 a status diagnostic. The NSE pre-open endpoint normally supplies constituent
 rows, not an official synthetic NIFTY IEP; in that case the collector labels the
 record `constituent_breadth` (advances/declines and change distribution) rather
-than inventing an unweighted index level. The intraday record stores aggregate
-OI, signed change-OI (including largest build/unwind walls), volume, PCR,
+than inventing an unweighted index level. Each usable constituent must itself
+have a same-date NSE clock timestamp; one stale/undated row rejects the whole
+breadth aggregate. A pre-open source clock may be no more than 10 minutes behind
+actual capture, and an intraday chain clock no more than 20 minutes behind; a
+same-date cached response is therefore not silently accepted as live. The
+intraday record stores aggregate OI, signed change-OI (including largest
+build/unwind walls), volume, PCR,
 near-ATM state, walls, IV summaries and a SHA-256
 payload fingerprint—not a large raw strike array. `capture-intraday --save-raw`
 is an explicit manual/audit opt-in for a full raw snapshot; scheduled collection

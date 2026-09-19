@@ -30,6 +30,7 @@ def _complete_session_frames():
             "timestamp": "19-Sep-2026 09:09:30",
             "state_type": "constituent_breadth",
             "payload_sha256": "preopenhash",
+            "source_lag_seconds": 30,
         }
     ])
     intraday_times = [time(9, 15)]
@@ -49,6 +50,7 @@ def _complete_session_frames():
             "source": "NSE option-chain API",
             "source_fallback": False,
             "source_timestamp": f"19-Sep-2026 {value:%H:%M}:00",
+            "source_lag_seconds": 15,
             "payload_sha256": f"chainhash-{number}",
         }
         for number, value in enumerate(intraday_times)
@@ -68,11 +70,13 @@ def test_forward_audit_accepts_a_complete_direct_timed_session():
 
 def test_forward_audit_rejects_fallback_and_missing_late_coverage():
     preopen, intraday = _complete_session_frames()
+    preopen.loc[0, "source_lag_seconds"] = 601
     intraday.loc[0, "source_fallback"] = True
     intraday = intraday.iloc[:-1].copy()
     summary = audit_forward_context(preopen, intraday)
     reasons = summary["sessions"][0]["reasons"]
     assert summary["complete_sessions"] == 0
+    assert "preopen_source_lag_invalid" in reasons
     assert "intraday_not_direct_nse" in reasons
     assert "intraday_too_few_snapshots" in reasons
     assert "intraday_missing_late_window" in reasons

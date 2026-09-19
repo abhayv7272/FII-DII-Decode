@@ -767,7 +767,11 @@ def run_capture_preopen_command(args) -> int:
     metadata: dict = {}
     client = NseClient(timeout=12, max_retries=2, backoff=1.5)
     state = fetch.fetch_preopen_index_state(
-        client, symbol=symbol, expected_date=session_date, metadata=metadata
+        client,
+        symbol=symbol,
+        expected_date=session_date,
+        metadata=metadata,
+        captured_at=captured_at,
     )
     if state is None:
         status = _capture_status(

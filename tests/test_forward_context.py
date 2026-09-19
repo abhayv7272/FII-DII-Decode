@@ -117,6 +117,15 @@ def test_option_chain_snapshot_requires_timezone_aware_capture_and_usable_rows()
             captured_at=datetime(2026, 9, 19, 4, 35, tzinfo=timezone.utc),
             source_metadata={},
         )
+    stale_same_day = _chain()
+    stale_same_day["records"]["timestamp"] = "19-Sep-2026 09:00:00"
+    with pytest.raises(ValueError, match="stale by"):
+        option_chain_snapshot(
+            stale_same_day,
+            symbol="NIFTY",
+            captured_at=datetime(2026, 9, 19, 4, 35, tzinfo=timezone.utc),
+            source_metadata={},
+        )
 
 
 def test_preopen_fetch_normalises_direct_nse_payload_and_rejects_stale_state():
@@ -154,6 +163,16 @@ def test_preopen_fetch_normalises_direct_nse_payload_and_rejects_stale_state():
     assert fetch.fetch_preopen_index_state(Client(), "NIFTY", date(2026, 9, 18), stale_meta) is None
     assert "requested" in stale_meta["warning"]
 
+    delayed_meta: dict = {}
+    assert fetch.fetch_preopen_index_state(
+        Client(),
+        "NIFTY",
+        date(2026, 9, 19),
+        delayed_meta,
+        captured_at=datetime(2026, 9, 19, 3, 50, tzinfo=timezone.utc),  # 09:20 IST
+    ) is None
+    assert "stale by" in delayed_meta["warning"]
+
 
 def test_preopen_constituent_feed_is_labelled_breadth_not_an_invented_index_level():
     changes = (1.2, -0.5, 0.0, 0.3, -0.2)
@@ -183,6 +202,24 @@ def test_preopen_constituent_feed_is_labelled_breadth_not_an_invented_index_leve
     assert (state["advances"], state["declines"], state["unchanged"]) == (2, 2, 1)
     assert state["mean_pchange"] == pytest.approx(0.16)
     assert state.get("indicative_price") is None
+
+    # One same-date-but-stale constituent must invalidate the whole aggregate
+    # rather than letting the first/current timestamp mask a mixed payload.
+    payload["data"][-1]["metadata"]["lastUpdateTime"] = "19-Sep-2026 09:00:00"
+    stale_lag_metadata: dict = {}
+    assert fetch.fetch_preopen_index_state(
+        Client(),
+        "NIFTY",
+        date(2026, 9, 19),
+        stale_lag_metadata,
+        captured_at=datetime(2026, 9, 19, 3, 44, tzinfo=timezone.utc),  # 09:14 IST
+    ) is None
+    assert "stale constituent" in stale_lag_metadata["warning"]
+
+    payload["data"][-1]["metadata"]["lastUpdateTime"] = "18-Sep-2026 09:07:00"
+    stale_metadata: dict = {}
+    assert fetch.fetch_preopen_index_state(Client(), "NIFTY", date(2026, 9, 19), stale_metadata) is None
+    assert "mixed/stale" in stale_metadata["warning"]
 
 
 def test_preopen_cli_rejects_a_delayed_non_preopen_capture(monkeypatch):

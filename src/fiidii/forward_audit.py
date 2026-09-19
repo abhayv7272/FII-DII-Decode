@@ -26,6 +26,8 @@ INTRADAY_FIRST_LATEST = time(9, 25)
 INTRADAY_LAST_EARLIEST = time(15, 20)
 INTRADAY_END = time(15, 45)
 MIN_INTRADAY_SNAPSHOTS = 20
+MAX_PREOPEN_SOURCE_LAG_SECONDS = 10 * 60
+MAX_INTRADAY_SOURCE_LAG_SECONDS = 20 * 60
 
 # These are session counts, never 15-minute-row counts: intraday samples inside
 # one day are correlated and must not be used to inflate statistical evidence.
@@ -52,6 +54,11 @@ def _source_timestamp_date(value: Any) -> date | None:
     if pd.isna(parsed):
         return None
     return parsed.date()
+
+
+def _lag_invalid(value: Any, maximum_seconds: float) -> bool:
+    number = pd.to_numeric(value, errors="coerce")
+    return bool(pd.isna(number) or number < -120 or number > maximum_seconds)
 
 
 def _session_date(value: Any) -> date | None:
@@ -83,6 +90,8 @@ def _preopen_reasons(rows: pd.DataFrame, session: date) -> list[str]:
         reasons.append("preopen_unknown_state_type")
     if not str(row.get("payload_sha256", "")).strip():
         reasons.append("preopen_missing_payload_fingerprint")
+    if _lag_invalid(row.get("source_lag_seconds"), MAX_PREOPEN_SOURCE_LAG_SECONDS):
+        reasons.append("preopen_source_lag_invalid")
     return reasons
 
 
@@ -103,6 +112,10 @@ def _intraday_reasons(rows: pd.DataFrame, session: date) -> list[str]:
         reasons.append("intraday_source_timestamp_invalid")
     if not rows.get("payload_sha256", pd.Series(dtype=str)).astype(str).str.strip().ne("").all():
         reasons.append("intraday_missing_payload_fingerprint")
+    if rows.get("source_lag_seconds", pd.Series(dtype=float)).map(
+        lambda value: _lag_invalid(value, MAX_INTRADAY_SOURCE_LAG_SECONDS)
+    ).any():
+        reasons.append("intraday_source_lag_invalid")
     if rows["captured_at_utc"].duplicated().any():
         reasons.append("intraday_duplicate_capture_timestamp")
     if len(rows) < MIN_INTRADAY_SNAPSHOTS:
@@ -119,8 +132,8 @@ def _intraday_reasons(rows: pd.DataFrame, session: date) -> list[str]:
 
 def audit_forward_context(preopen: pd.DataFrame, intraday: pd.DataFrame) -> dict[str, Any]:
     """Audit direct/timed collection coverage without accessing labels/outcomes."""
-    required_preopen = {"session_date", "captured_at_utc", "source", "source_fallback", "timestamp", "state_type", "payload_sha256"}
-    required_intraday = {"session_date", "captured_at_utc", "source", "source_fallback", "source_timestamp", "payload_sha256"}
+    required_preopen = {"session_date", "captured_at_utc", "source", "source_fallback", "timestamp", "state_type", "payload_sha256", "source_lag_seconds"}
+    required_intraday = {"session_date", "captured_at_utc", "source", "source_fallback", "source_timestamp", "payload_sha256", "source_lag_seconds"}
     preopen = preopen.copy()
     intraday = intraday.copy()
     missing_preopen = sorted(required_preopen - set(preopen.columns))

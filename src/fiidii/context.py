@@ -13,13 +13,15 @@ from __future__ import annotations
 import hashlib
 import json
 import math
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
 from zoneinfo import ZoneInfo
 
 from dateutil import parser as date_parser
 
 IST = ZoneInfo("Asia/Kolkata")
+MAX_INTRADAY_SOURCE_LAG = timedelta(minutes=20)
+MAX_SOURCE_FUTURE_SKEW = timedelta(minutes=2)
 
 
 def _number(value: Any) -> float | None:
@@ -48,6 +50,18 @@ def _date(value: Any) -> date | None:
         return date_parser.parse(str(value), dayfirst=True, fuzzy=True).date()
     except (TypeError, ValueError, OverflowError):
         return None
+
+
+def _timestamp_ist(value: Any) -> datetime | None:
+    if value in (None, ""):
+        return None
+    try:
+        parsed = date_parser.parse(str(value), dayfirst=True, fuzzy=True)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=IST)
+    return parsed.astimezone(IST)
 
 
 def payload_sha256(payload: dict) -> str:
@@ -107,9 +121,11 @@ def option_chain_snapshot(
     if spot is None or spot <= 0 or not isinstance(raw_rows, list):
         raise ValueError("option chain has no positive spot/data rows")
 
-    capture_date = captured_at.astimezone(IST).date()
+    captured_ist = captured_at.astimezone(IST)
+    capture_date = captured_ist.date()
     source_timestamp = records.get("timestamp")
-    if _date(source_timestamp) != capture_date:
+    source_ist = _timestamp_ist(source_timestamp)
+    if source_ist is None or source_ist.date() != capture_date:
         raise ValueError(
             f"option-chain source timestamp date {_date(source_timestamp)} != capture date {capture_date}"
         )
@@ -117,6 +133,13 @@ def option_chain_snapshot(
     # intraday interaction. NSE's live endpoint supplies a clock timestamp.
     if not isinstance(source_timestamp, str) or ":" not in source_timestamp:
         raise ValueError("option-chain source timestamp has no clock time")
+    source_lag = captured_ist - source_ist
+    if source_lag < -MAX_SOURCE_FUTURE_SKEW:
+        raise ValueError("option-chain source timestamp is implausibly after capture")
+    if source_lag > MAX_INTRADAY_SOURCE_LAG:
+        raise ValueError(
+            f"option-chain source timestamp is stale by {source_lag.total_seconds() / 60:.1f} minutes"
+        )
     expiry, rows = _expiry_for_snapshot(raw_rows, capture_date)
     parsed: list[dict[str, Any]] = []
     for row in rows:
@@ -173,6 +196,8 @@ def option_chain_snapshot(
         "source_as_of": source_metadata.get("as_of"),
         "source_fallback": bool(source_metadata.get("fallback", False)),
         "source_timestamp": source_timestamp,
+        "source_timestamp_ist": source_ist.isoformat(),
+        "source_lag_seconds": round(source_lag.total_seconds(), 3),
         "payload_sha256": payload_sha256(raw),
         "spot": spot,
         "selected_expiry": expiry.isoformat() if expiry else None,

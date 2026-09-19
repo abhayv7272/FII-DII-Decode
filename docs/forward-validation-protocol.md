@@ -23,12 +23,14 @@ A session is `complete` only when the automated audit verifies all of the
 following:
 
 1. Exactly one direct NSE pre-open record, captured between **09:00 and 09:14
-   IST**, with matching session date, source clock timestamp and payload hash.
-   The normal NSE constituent response is kept as `constituent_breadth`; it is
+   IST**, with matching session date, source clock timestamp, payload hash and
+   a source-to-capture lag no greater than 10 minutes. The normal NSE constituent
+   response is kept as `constituent_breadth`; it is
    never converted to an invented unweighted NIFTY index level.
 2. At least **20** direct NSE NIFTY option-chain snapshots. Their actual capture
    times must be in 09:15–15:45 IST, include an early capture no later than
-   09:25 and a late capture no earlier than 15:20.
+   09:25 and a late capture no earlier than 15:20. The direct NSE source clock
+   may lag actual capture by no more than 20 minutes.
 3. Each intraday row has a same-session source clock timestamp, source payload
    SHA-256, no timestamp duplicate and `source_fallback=false`.
 4. Any source failure, delayed pre-open run, EOD/third-party fallback, stale
