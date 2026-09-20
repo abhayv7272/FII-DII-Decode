@@ -1,0 +1,89 @@
+{
+  "data_start": "2016-09-19",
+  "data_end": "2026-09-18",
+  "rows": 2467,
+  "last_ohlcv": {
+    "Open": 23334.69921875,
+    "High": 23389.150390625,
+    "Low": 23286.599609375,
+    "Close": 23346.400390625,
+    "Volume": 375300.0
+  },
+  "prediction": {
+    "label": "DOWN",
+    "confidence": 0.38742405980839323,
+    "probabilities": {
+      "DOWN": 0.38742405980839323,
+      "FLAT": 0.2569194979912523,
+      "UP": 0.3556564422003545
+    },
+    "actionable": false
+  },
+  "gate": 0.65,
+  "metrics": {
+    "validation_sessions": 494,
+    "all_accuracy": 0.37449392712550605,
+    "balanced_accuracy": 0.36471446816274405,
+    "selected_accuracy": NaN,
+    "coverage": 0.0,
+    "selected_signals": 0,
+    "confusion_matrix": [
+      [
+        79,
+        27,
+        74
+      ],
+      [
+        47,
+        33,
+        60
+      ],
+      [
+        64,
+        37,
+        73
+      ]
+    ]
+  },
+  "levels": {
+    "pivot": 23275.93359375,
+    "support_1": 23188.31640625,
+    "resistance_1": 23358.216796875,
+    "support_20d": 23116.099609375,
+    "resistance_20d": 24378.599609375,
+    "atr14_points": 195.56808035714286,
+    "previous_close": 23346.400390625
+  },
+  "week": [
+    {
+      "session": 1,
+      "expected_center": 23344.225934427406,
+      "lower_risk_band": 23148.657854070265,
+      "upper_risk_band": 23539.794014784547
+    },
+    {
+      "session": 2,
+      "expected_center": 23343.325245179574,
+      "lower_risk_band": 23066.75021357123,
+      "upper_risk_band": 23619.900276787917
+    },
+    {
+      "session": 3,
+      "expected_center": 23342.634122011936,
+      "lower_risk_band": 23003.90027049465,
+      "upper_risk_band": 23681.36797352922
+    },
+    {
+      "session": 4,
+      "expected_center": 23342.051478229812,
+      "lower_risk_band": 22950.915317515526,
+      "upper_risk_band": 23733.1876389441
+    },
+    {
+      "session": 5,
+      "expected_center": 23341.538158753086,
+      "lower_risk_band": 22904.234636845373,
+      "upper_risk_band": 23778.8416806608
+    }
+  ]
+}

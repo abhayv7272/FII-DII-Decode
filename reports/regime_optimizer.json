@@ -1,0 +1,181 @@
+{
+  "policy_ranking": [
+    {
+      "policy": "all",
+      "signals": 1000,
+      "coverage": 1.0,
+      "oof_accuracy": 0.514,
+      "fold_min": 0.484,
+      "fold_std": 0.03206243908376282,
+      "stable": true,
+      "score": 0.4871148239397792
+    },
+    {
+      "policy": "bull",
+      "signals": 894,
+      "coverage": 0.894,
+      "oof_accuracy": 0.5134228187919463,
+      "fold_min": 0.4780701754385965,
+      "fold_std": 0.034626970550929316,
+      "stable": true,
+      "score": 0.4849698465050799
+    },
+    {
+      "policy": "bull_lowvol",
+      "signals": 501,
+      "coverage": 0.501,
+      "oof_accuracy": 0.5189620758483033,
+      "fold_min": 0.42857142857142855,
+      "fold_std": 0.054608411349402794,
+      "stable": false,
+      "score": 0.4807117575554539
+    },
+    {
+      "policy": "above20",
+      "signals": 652,
+      "coverage": 0.652,
+      "oof_accuracy": 0.5138036809815951,
+      "fold_min": 0.47333333333333333,
+      "fold_std": 0.050499544160038275,
+      "stable": true,
+      "score": 0.4801965054911818
+    },
+    {
+      "policy": "lowvol",
+      "signals": 522,
+      "coverage": 0.522,
+      "oof_accuracy": 0.5172413793103449,
+      "fold_min": 0.42424242424242425,
+      "fold_std": 0.056019206920695494,
+      "stable": false,
+      "score": 0.47969528456547195
+    },
+    {
+      "policy": "predict_down",
+      "signals": 615,
+      "coverage": 0.615,
+      "oof_accuracy": 0.510569105691057,
+      "fold_min": 0.45698924731182794,
+      "fold_std": 0.036130109961306694,
+      "stable": true,
+      "score": 0.4764529970560871
+    },
+    {
+      "policy": "predict_up",
+      "signals": 385,
+      "coverage": 0.385,
+      "oof_accuracy": 0.5194805194805194,
+      "fold_min": 0.4491525423728814,
+      "fold_std": 0.046908261909706456,
+      "stable": false,
+      "score": 0.4763236718815339
+    },
+    {
+      "policy": "highvol",
+      "signals": 478,
+      "coverage": 0.478,
+      "oof_accuracy": 0.5104602510460251,
+      "fold_min": 0.4230769230769231,
+      "fold_std": 0.05063190297957911,
+      "stable": false,
+      "score": 0.4714900539658581
+    },
+    {
+      "policy": "below20",
+      "signals": 348,
+      "coverage": 0.348,
+      "oof_accuracy": 0.514367816091954,
+      "fold_min": 0.453125,
+      "fold_std": 0.04479772245884827,
+      "stable": true,
+      "score": 0.46914390687542623
+    },
+    {
+      "policy": "bull_highvol",
+      "signals": 393,
+      "coverage": 0.393,
+      "oof_accuracy": 0.5063613231552163,
+      "fold_min": 0.3902439024390244,
+      "fold_std": 0.0712027810020302,
+      "stable": false,
+      "score": 0.4629626044034493
+    },
+    {
+      "policy": "confidence_0.55",
+      "signals": 448,
+      "coverage": 0.448,
+      "oof_accuracy": 0.4955357142857143,
+      "fold_min": 0.4827586206896552,
+      "fold_std": 0.01842604126705149,
+      "stable": true,
+      "score": 0.45638551895471685
+    },
+    {
+      "policy": "bear_highvol",
+      "signals": 85,
+      "coverage": 0.085,
+      "oof_accuracy": 0.5294117647058824,
+      "fold_min": 0.527027027027027,
+      "fold_std": 0.0,
+      "stable": false,
+      "score": 0.4410897623275279
+    },
+    {
+      "policy": "bear",
+      "signals": 106,
+      "coverage": 0.106,
+      "oof_accuracy": 0.5188679245283019,
+      "fold_min": 0.5119047619047619,
+      "fold_std": 0.016774891774891776,
+      "stable": false,
+      "score": 0.4392985855649109
+    },
+    {
+      "policy": "confidence_0.60",
+      "signals": 119,
+      "coverage": 0.119,
+      "oof_accuracy": 0.4957983193277311,
+      "fold_min": 0.4166666666666667,
+      "fold_std": 0.053792084936635044,
+      "stable": false,
+      "score": 0.4199460550368622
+    },
+    {
+      "policy": "confidence_0.65",
+      "signals": 11,
+      "coverage": 0.011,
+      "oof_accuracy": 0.6363636363636364,
+      "fold_min": NaN,
+      "fold_std": NaN,
+      "stable": false,
+      "score": -0.6053277098851789
+    },
+    {
+      "policy": "bear_lowvol",
+      "signals": 21,
+      "coverage": 0.021,
+      "oof_accuracy": 0.47619047619047616,
+      "fold_min": NaN,
+      "fold_std": NaN,
+      "stable": false,
+      "score": -0.6894117105386139
+    }
+  ],
+  "chosen_on_oof": {
+    "policy": "all",
+    "signals": 1000,
+    "coverage": 1.0,
+    "oof_accuracy": 0.514,
+    "fold_min": 0.484,
+    "fold_std": 0.03206243908376282,
+    "stable": true,
+    "score": 0.4871148239397792
+  },
+  "holdout": {
+    "policy": "all",
+    "signals": 494,
+    "coverage": 1.0,
+    "accuracy": 0.5404858299595142,
+    "all_accuracy": 0.5404858299595142
+  }
+}

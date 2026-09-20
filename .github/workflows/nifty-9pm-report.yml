@@ -1,0 +1,133 @@
+name: NIFTY 9 PM Prediction Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      session_date:
+        description: "auto or YYYY-MM-DD"
+        required: false
+        default: "auto"
+  schedule:
+    # GitHub cron is UTC. 15:30 UTC = 21:00 IST.
+    - cron: "30 15 * * 1-5"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nifty-9pm-production
+  cancel-in-progress: false
+
+env:
+  TZ: Asia/Kolkata
+  PYTHONUNBUFFERED: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+jobs:
+  generate-and-email:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run safety and regression tests
+        id: tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest -q tests 2>&1 | tee test_output.log
+
+      - name: Run resilient production pipeline
+        id: pipeline
+        if: steps.tests.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          RUN_DATE="${{ github.event.inputs.session_date }}"
+          if [ -z "$RUN_DATE" ]; then RUN_DATE="auto"; fi
+          set -o pipefail
+          python run_production.py --date "$RUN_DATE" 2>&1 | tee production_output.log
+
+      - name: Prepare success or failure email body
+        if: always()
+        run: |
+          python scripts/prepare_ci_email.py \
+            --tests "${{ steps.tests.outcome }}" \
+            --pipeline "${{ steps.pipeline.outcome }}"
+
+      - name: Upload full run evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nifty-report-${{ github.run_number }}
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            reports/daily/
+            reports/ultra_hard_audit.md
+            reports/reproducibility_audit.json
+            data/hub/latest_manifest.json
+            data/hub/runs/
+            test_output.log
+            production_output.log
+
+      - name: Email report to Abhay
+        if: always()
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          REPORT_EMAIL_TO: abhayv7272@gmail.com
+        run: python scripts/send_email_report.py --to "abhayv7272@gmail.com"
+
+      - name: Commit compact state and reports
+        if: always() && steps.tests.outcome == 'success' && steps.pipeline.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          git config user.name "nifty-report-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f \
+            data/historical_option_features.csv \
+            data/historical_futures_features.csv \
+            data/historical_participant_oi.csv \
+            data/hub/latest_manifest.json \
+            data/hub/last_good/ \
+            reports/daily/ \
+            reports/reproducibility_audit.json
+          if git diff --cached --quiet; then
+            echo "No compact state changes to commit."
+          else
+            git commit -m "chore: update nightly NIFTY report [skip ci]"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Mark workflow failed after notification if tests or pipeline failed
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ steps.tests.outcome }}" != "success" ]; then
+            echo "Safety/regression tests failed; failure email was prepared before this step."
+            exit 1
+          fi
+          if [ "${{ steps.pipeline.outcome }}" != "success" ]; then
+            echo "Production pipeline failed or was skipped; WAIT/failure email was prepared before this step."
+            exit 1
+          fi
+          echo "Tests and production pipeline succeeded."

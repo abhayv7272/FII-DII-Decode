@@ -1,0 +1,28 @@
+{
+  "target": "D+1 open-to-close direction",
+  "selection_rule": "No derivative specialist may be promoted unless repaired-data holdout accuracy, selected accuracy, minimum sample and 10-bps net return all pass.",
+  "research_champion": {
+    "name": "price-plus-derivatives logistic specialist",
+    "data": "495 complete option + futures + participant sessions; 493 labeled sessions",
+    "later_test_sessions": 99,
+    "accuracy": 0.5454545455,
+    "balanced_accuracy": 0.5551470588,
+    "selected_signals": 35,
+    "selected_accuracy": 0.60,
+    "coverage": 0.3535353535,
+    "status": "REJECTED_BY_PROMOTION_GATE",
+    "note": "After repairing 37 omitted sessions and removing the unlabeled final row, selected accuracy fell to 60% and 10-bps net return to -3.99%. Live direction is disabled."
+  },
+  "production_champion": {
+    "name": "none — WAIT policy",
+    "later_test_sessions": 0,
+    "accuracy": 0.0,
+    "balanced_accuracy": 0.0,
+    "status": "NO_MODEL_CURRENTLY_MEETS_PRODUCTION_GATE"
+  },
+  "rejected": [
+    {"name":"previous EOD option-futures specialist","accuracy":0.6413,"status":"REVOKED","reason":"Optimistic result depended on 37 omitted sessions and a mislabeled final session."},
+    {"name":"repaired price-plus-derivatives specialist","accuracy":0.5455,"status":"REJECTED","reason":"Selected accuracy 60%; negative after 3/6/10-bps costs."},
+    {"name":"all 287 indicators","accuracy":0.5101,"status":"REJECTED","reason":"Indicator redundancy reduced accuracy."}
+  ]
+}

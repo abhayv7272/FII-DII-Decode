@@ -1,0 +1,26 @@
+group,ticker,source_date,close,return_1d,volume,timing_rule,status,error
+india_sector,^NSEBANK,2026-09-18,56358.69921875,0.0054044271774083,237800.0,at_or_before_D,ok,
+india_sector,^CNXIT,2026-09-18,28854.55078125,-0.010325592070080325,62900.0,at_or_before_D,ok,
+india_sector,^CNXAUTO,,,,,at_or_before_D,failed,fewer than two timing-safe completed bars
+india_sector,^CNXPHARMA,2026-09-18,26710.099609375,0.004922998556204483,31176700.0,at_or_before_D,ok,
+india_sector,^CNXMETAL,,,,,at_or_before_D,failed,fewer than two timing-safe completed bars
+india_sector,^CNXENERGY,,,,,at_or_before_D,failed,fewer than two timing-safe completed bars
+india_heavyweight,HDFCBANK.NS,2026-09-18,731.0,0.02524544179523147,39400710.0,at_or_before_D,ok,
+india_heavyweight,ICICIBANK.NS,2026-09-18,1338.9000244140625,-0.006455885522031357,7509409.0,at_or_before_D,ok,
+india_heavyweight,RELIANCE.NS,2026-09-18,1226.4000244140625,-0.014068654760452604,15122715.0,at_or_before_D,ok,
+india_heavyweight,INFY.NS,2026-09-18,1051.4000244140625,-0.0068013898903500625,22124953.0,at_or_before_D,ok,
+india_heavyweight,TCS.NS,2026-09-18,2105.0,-0.038812785388127824,6875428.0,at_or_before_D,ok,
+india_heavyweight,BHARTIARTL.NS,2026-09-18,1893.300048828125,0.031209176921636717,14189780.0,at_or_before_D,ok,
+india_heavyweight,SBIN.NS,2026-09-18,996.2000122070312,0.00758571852675316,5699456.0,at_or_before_D,ok,
+india_heavyweight,ITC.NS,2026-09-18,262.29998779296875,-0.0146507296589804,14399150.0,at_or_before_D,ok,
+india_heavyweight,LT.NS,2026-09-18,3885.0,0.01272093463564583,1547690.0,at_or_before_D,ok,
+india_heavyweight,AXISBANK.NS,2026-09-18,1257.0,0.013709677419354804,5693016.0,at_or_before_D,ok,
+asia,^N225,2026-09-18,65018.94921875,0.013762875421466036,197700000.0,at_or_before_D,ok,
+asia,^HSI,2026-09-18,24750.779296875,0.005953849509851006,3420800000.0,at_or_before_D,ok,
+prior_global,SPY,2026-09-17,762.5999755859375,0.011338754633487547,49652800.0,strictly_before_D,ok,
+prior_global,QQQ,2026-09-17,716.9199829101562,0.0173118582049816,37270300.0,strictly_before_D,ok,
+prior_global,^VIX,2026-09-17,15.4399995803833,-0.12817615027883267,0.0,strictly_before_D,ok,
+prior_global,DX-Y.NYB,2026-09-17,100.22000122070312,-0.0008971821361879462,0.0,strictly_before_D,ok,
+prior_global,CL=F,2026-09-17,101.91000366210938,-0.005076604915719485,265972.0,strictly_before_D,ok,
+prior_global,GC=F,2026-09-17,4399.7001953125,0.002780671296296333,169188.0,strictly_before_D,ok,
+prior_global,USDINR=X,2026-09-17,96.1323013305664,0.001454304994732425,0.0,strictly_before_D,ok,

@@ -1,0 +1,36 @@
+Maine workspace mein `market prediction for github` naam ka complete hardened NIFTY prediction project attach/upload kiya hai. Is folder ko pehle poora inspect karo, especially:
+
+- `docs/CHAT_HANDOFF.md`
+- `docs/original-fii-dii-spec.txt`
+- `reports/ultra_hard_audit.md`
+- `GITHUB_SETUP.md`
+- `.github/workflows/nifty-9pm-report.yml`
+- `src/data_hub.py`
+- `src/professional_report.py`
+- `reports/model_registry.json`
+
+Ab mere connected GitHub repository mein isi folder ke CONTENTS ko repository root par professionally set up karo. Existing hardened safety behavior ko weak mat karna aur purani revoked 64.13%/91.67% accuracy ko valid claim mat karna. Current corrected production policy WAIT/fail-closed hai jab tak promotion gates pass na hon.
+
+Required work:
+
+1. Repository structure verify/fix karo.
+2. GitHub Actions workflow ko test karo jo Monday-Friday 9:00 PM IST (`30 15 * * 1-5` UTC) par chale.
+3. Workflow tests → resilient data fetch → date/freshness validation → prediction → professional Markdown/JSON report → artifact upload → email sequence follow kare.
+4. Daily report `abhayv7272@gmail.com` par bhejna hai.
+5. Gmail password hardcode mat karna. Mujhe exact GitHub Secrets setup karvao: SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD (Gmail App Password), SMTP_FROM.
+6. Primary/fallback adapters, last-good cache, SHA-256 provenance, atomic writes, run lock, business-day staleness, model/session matching aur research-promotion gate preserve karo.
+7. GitHub-hosted runner par NSE block ho to fail-closed WAIT email bhejo; zarurat ho to self-hosted runner ya licensed API adapter ka safe option do.
+8. Workflow ko manual `workflow_dispatch` se run karke logs inspect karo. Jo errors milen unhe fix karo.
+9. Success/failure dono cases mein email report ensure karo.
+10. Compact historical state aur reports ko repository mein persist karo; raw large snapshots ko Actions artifacts mein rakho.
+11. Final mein changed files, workflow result, email status, remaining secrets/manual steps aur authoritative model status clearly batao.
+
+Financial-safety rules:
+
+- Forced BUY/SELL mat banana.
+- Critical data stale/missing/date-mismatched ho to WAIT.
+- Model confidence high ho lekin corrected backtest/cost promotion gate fail ho to WAIT.
+- Raw class probability ko calibrated profit probability mat bolo.
+- Long-term investment ko next-day model se directly recommend mat karo.
+
+Pehle files read karo, phir changes implement karo; sirf generic instructions mat do.

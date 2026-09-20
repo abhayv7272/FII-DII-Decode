@@ -1,0 +1,21 @@
+{
+  "result": "PASS",
+  "runs": 2,
+  "session": "2026-09-18",
+  "checks": {
+    "prediction": true,
+    "decision": true,
+    "quality": true,
+    "sources_and_hashes": true
+  },
+  "prediction": {
+    "direction": "UP",
+    "p_up": 0.8793847530458853,
+    "p_down": 0.12061524695411474,
+    "confidence": 0.8793847530458853,
+    "gate": 0.7500000000000002,
+    "confidence_pass": true,
+    "research_approved": false,
+    "model_pass": false
+  }
+}

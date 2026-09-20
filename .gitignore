@@ -1,0 +1,31 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Runtime-heavy snapshots and logs (uploaded as Actions artifacts instead)
+data/hub/runs/*
+!data/hub/runs/.gitkeep
+data/hub/production.log
+production_output.log
+test_output.log
+
+# Secrets — never commit
+.env
+.env.*
+*.pem
+*.key
+secrets.json
+
+# Temporary/atomic files
+*.tmp

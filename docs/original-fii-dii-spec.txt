@@ -1,0 +1,584 @@
+﻿FII-DII Decode Prediction System
+Prediction Inputs, Working aur Contribution
+1. System ka final aim
+System ka target hai:
+
+Har trading day raat 9 PM IST par D-day ka available data lekar D+1 yani next trading day ka conditional prediction banana.
+
+Output ideally yeh hoga:
+
+Next-day UP / DOWN / RANGE-FLAT context
+Support aur resistance zones
+Bullish continuation path
+Bearish breakdown/rejection path
+Sweep / trap warning
+V10 tiny-gap prior-close-touch alert
+WAIT / NO TRADE condition
+Source quality aur confidence status
+Important:
+
+D = aaj ka completed trading session
+D+1 = agla trading day
+D+1 ke open/high/low/close ko D ke prediction feature mein use nahi karna hai. Agar use karenge to future leakage ho jayega.
+2. 9 PM prediction ka timing
+Din ka flow
+Market open se pehle
+Pre-open data milta hai:
+
+constituent breadth
+advances / declines
+pre-open change
+buy/sell imbalance, agar source deta hai
+Market ke during
+Intraday option-chain data milta hai:
+
+OI
+change in OI
+volume
+IV
+option walls
+ATM positioning
+PCR changes
+Market close ke baad, 9 PM ke around
+D-day ka following data combine hota hai:
+
+Participant OI
+Cash flow
+Option-chain final state
+NIFTY quote/OHLC
+Same-day pre-open context
+Same-day intraday option-chain context
+Levels / PCR / max pain
+Decoder metrics
+Uske basis par D+1 ka conditional plan banta hai.
+
+3. FII / DII / Pro / Client OI
+Participant OI system ka base structural input hai.
+
+Current day ka Open Interest previous valid trading day ke Open Interest se compare hota hai.
+
+OI change ka meaning
+OI pattern	Meaning	Directional effect
+Long OI up + Short OI down	Fresh longs / short pressure reduce	Bullish pressure
+Short OI up + Long OI down	Fresh shorts / long exit	Bearish pressure
+Short OI down	Short covering	Bullish, but fresh long se weak
+Long OI down	Long unwinding	Bearish, but fresh short se weak
+Participant role
+Pro
+Near-term next-day structure mein useful input.
+Pro ka fresh index futures positioning short-term context de sakta hai.
+Lekin Pro alone guaranteed direction nahi deta.
+FII
+Carry aur broader derivative positioning context.
+FII activity important hai, but single-day FII number ko guaranteed signal nahi maana ja sakta.
+Client
+Crowd positioning ka input.
+Kabhi-kabhi contrarian risk batata hai.
+Primary trend signal nahi.
+DII F&O
+Direct directional score mein limited ya zero weight.
+Reason: standalone stable edge prove nahi hua.
+FII vs Pro conflict
+Agar FII aur Pro opposite direction suggest karte hain:
+
+confidence reduce hoti hai,
+reversal confirmation chahiye,
+WAIT / NO TRADE more appropriate ho sakta hai.
+4. Participant volume
+OI batata hai ki positions active kitni hain.
+Participant volume batata hai ki activity kitni hui.
+
+Possible interpretation
+High volume + fresh long OI = conviction ka possible sign
+High volume + fresh short OI = bearish conviction ka possible sign
+High volume + little net OI change = churn / two-sided trading / range risk
+Low volume + strong OI reading = false move risk
+Participant volume useful context hai, but standalone 80% directional edge prove nahi hua.
+
+5. FII / DII cash flow
+Cash flow derivative OI ko confirm ya contradict kar sakta hai.
+
+Example:
+
+Derivative OI bullish ho
+But cash FII selling strong ho
+To bullish setup weak ho sakta hai.
+
+Cash flow ka use:
+
+confirmation
+divergence detection
+confidence reduce/increase
+risk context
+Cash flow ko automatic BUY/SELL signal nahi maana jana chahiye.
+
+6. NIFTY price action aur OHLC
+NIFTY ka:
+
+Open
+High
+Low
+Close
+Previous close
+Daily range
+market structure samajhne mein use hota hai.
+
+Price condition	Meaning
+Open vs previous close	Gap up / flat / gap down
+High-low range	Expansion ya compression
+Close near high	Buyers controlled late session, possible strength clue
+Close near low	Sellers controlled late session, possible weakness clue
+Small overlapping ranges	Chop / range / mean-reversion risk
+Break and reclaim	Role-flip / trap possibility
+Break and reject	Failed breakout / breakdown possibility
+Price action entry confirmation ke liye important hai.
+Price-only rules se stable 80% general edge prove nahi hua.
+
+7. EOD option chain
+Option chain se system following cheezein derive karta hai:
+
+Call OI walls
+Put OI walls
+Change in OI
+PCR
+Max pain
+ATM / near-ATM OI
+Volume
+IV
+Call OI wall
+High call OI strike:
+
+possible resistance zone
+potential supply area
+breakout ke liye call wall absorb/unwind hona zaroori ho sakta hai
+Put OI wall
+High put OI strike:
+
+possible support zone
+downside break ke liye put wall fail/unwind hona zaroori ho sakta hai
+Change in OI
+Change in OI important hai because wall static nahi hoti.
+
+Positive OI change = build-up
+Negative OI change = unwind
+Call build wall = possible resistance strengthening
+Put build wall = possible support strengthening
+Call unwind = resistance weak ho sakti hai
+Put unwind = support weak ho sakta hai
+PCR
+Put Call Ratio sentiment/crowding context deta hai.
+
+High PCR = possible put-heavy positioning
+Low PCR = call-heavy positioning
+Extreme PCR direct reversal guarantee nahi deta
+Max pain
+Expiry/range context ke liye useful ho sakta hai.
+Max pain ko exact target ya guaranteed settlement level nahi maana jana chahiye.
+
+IV
+Implied Volatility uncertainty batata hai.
+
+IV high = risk / expected movement large ho sakta hai
+IV low = compressed move, possible expansion risk
+IV direction itself direct UP/DOWN signal nahi hai
+8. Support, resistance aur institutional levels
+System do types ke levels ko alag rakhta hai:
+
+Option-chain proxy levels
+Option OI se derived.
+
+Exact institutional levels
+External source se supplied dated/timestamped levels.
+
+Dono ko mix nahi karna chahiye.
+
+Bullish scenario
+Support hold
+Price reclaim kare
+Confirming candle aaye
+Resistance break ho
+Resistance retest hold ho
+Next upside target activate ho
+Bearish scenario
+Resistance reject
+Support break
+Failed reclaim
+Breakdown continuation
+Next downside target activate ho
+Rule
+Level ke paas sirf touch hone se trade valid nahi hota.
+
+Need:
+
+hold
+reject
+reclaim
+role flip
+completed confirming candle
+risk/reward check
+Confirmation nahi to:
+
+WAIT / NO TRADE
+
+9. Sweep, wick aur trap logic
+Market kabhi level ke upar/neeche jaa kar stops trigger karta hai aur phir reverse karta hai.
+
+Isko sweep/trap context mein dekha jata hai.
+
+Bull trap
+Price resistance ke upar nikle
+Sustain na kare
+Wapas resistance ke neeche aa jaye
+Failed reclaim aaye
+Possible bearish trap context.
+
+Bear trap
+Price support ke neeche jaye
+Sustain na kare
+Wapas support ke upar reclaim kare
+Possible bullish trap context.
+
+Wick alone enough nahi.
+Close aur follow-through confirmation necessary hai.
+
+10. V10 tiny-gap previous-close-touch module
+V10 ek narrow structural setup hai.
+
+Condition:
+
+Open aur previous close ke beech very small gap
+Approx tiny-gap band
+Prior close touch hone ki probability historically high mili
+V10 kya karta hai:
+
+Prior close ko magnet/target level ki tarah watch karta hai
+Tiny gap active/inactive batata hai
+High/low available ho to prior-close touch range mein hua ya nahi, batata hai
+V10 kya nahi karta:
+
+Full next-day UP/DOWN/RANGE forecast nahi
+Weekly forecast nahi
+Automatic options trade nahi
+Guaranteed profit nahi
+V10 mein prior-close touch ka historical result strong tha, but execution target/stop/premium analysis mein robust standalone trade prove nahi hua.
+
+11. India VIX
+India VIX volatility/risk context deta hai.
+
+Use:
+
+expected movement/range context
+volatility spike risk
+stop/risk management context
+confidence reduce/increase
+India VIX historical test mein:
+
+standalone VIX direction
+VIX-gated OI direction
+VIX + v3 agreement
+test hua.
+
+But VIX addition se robust promotable general next-day edge prove nahi hua.
+
+Isliye VIX ko abhi:
+
+qualitative risk context
+
+ki tarah use karna chahiye, not guaranteed direction signal.
+
+12. Pre-open direct NSE context
+Pre-open collector direct NSE source se data leta hai.
+
+NSE pre-open response usually constituent rows deta hai. Isliye system fake unweighted NIFTY index banane ke bajay breadth store karta hai.
+
+Collected fields:
+
+advances
+declines
+unchanged stocks
+mean pre-open percent change
+median pre-open percent change
+strongest / weakest move context
+buy/sell quantity if available
+source timestamp
+actual capture timestamp
+payload fingerprint
+Prediction mein use
+Pre-open breadth help kar sakta hai:
+
+opening sentiment samajhne mein
+gap quality dekhne mein
+broad participation vs few-stock move distinguish karne mein
+overnight risk context mein
+Strict quality rules
+Pre-open record reject hoga agar:
+
+capture 09:00–09:14 IST window ke bahar hai
+timestamp missing hai
+source stale hai
+wrong session date hai
+constituent timestamps mixed/stale hain
+later EOD value ko pre-open label diya gaya hai
+13. Intraday direct NSE option-chain context
+EOD chain ek final snapshot hai.
+Intraday option-chain data batata hai ki D session ke andar positioning kaise change hui.
+
+Collected fields:
+
+Spot
+Call OI
+Put OI
+Call change-OI
+Put change-OI
+Call/put volume
+PCR OI
+PCR change-OI
+PCR volume
+ATM strike
+Near-ATM OI
+Call wall / put wall
+Change-OI wall
+Unwind wall
+IV summaries
+Source timestamp
+Capture-to-source lag
+Payload hash
+D+1 prediction mein use
+At 9 PM, D-day complete ho chuka hai. Isliye same-D intraday state legally use ho sakti hai for D+1 prediction.
+
+Possible useful observations:
+
+Day start vs day end PCR shift
+Call/put OI wall shift
+Closing-side build-up
+Closing-side unwind
+Spot near which wall close hua
+IV expansion/compression
+OI build with price move vs OI build against price move
+Yeh data abhi collect ho raha hai. Iska enough historical forward sample aane ke baad hi honest combined backtest possible hoga.
+
+14. 9 PM EOD research snapshot
+Successful 9 PM run ab following type ka record preserve karta hai:
+
+text
+
+D-day known inputs at 9 PM
+        +
+same-D pre-open context
+        +
+same-D intraday option-chain context
+        =
+D+1 research decision snapshot
+Stored file:
+
+text
+
+data/eod_research_snapshots.csv
+Snapshot mein save hoga:
+
+decision UTC/IST timestamp
+decoder metrics
+OI-derived values
+levels
+quote/OHLC values
+input source status
+fallback status
+pre-open state
+intraday first/last/min/max values
+source-lag information
+Snapshot mein intentionally nahi hoga:
+
+D+1 open
+D+1 high
+D+1 low
+D+1 close
+actual direction
+target hit
+future return
+Reason:
+
+Future leakage avoid karna.
+
+15. Future important inputs jo add karne chahiye
+A. GIFT Nifty aur global context
+Needed:
+
+GIFT Nifty
+US market close
+Asia market move
+USDINR
+Crude
+Bond yields
+Major event calendar
+Use:
+
+next-day gap risk
+overnight context
+risk-on / risk-off environment
+Requirement:
+
+timestamped
+reproducible source
+prediction time se pehle available hona chahiye
+B. Heavyweight aur sector breadth
+NIFTY ko often few heavyweight stocks drive karte hain:
+
+HDFC Bank
+ICICI Bank
+Reliance
+Infosys
+TCS
+Bharti Airtel
+SBI etc.
+Need:
+
+Banking breadth
+IT breadth
+Energy breadth
+heavyweight intraday direction
+VWAP / opening range / market breadth
+Use:
+
+NIFTY move broad hai ya sirf 1–2 stocks ka
+OI prediction ko sector confirmation milega ya nahi
+C. Option premium, bid-ask aur Greeks
+OI wall touch hona automatically profitable option trade nahi hota.
+
+Needed:
+
+option LTP/premium
+bid-ask spread
+delta
+theta
+IV
+slippage
+fees
+fill delay
+Use:
+
+actual option trade validation
+stop/target realistic hai ya nahi
+level touch ke baad real P&L possible hai ya nahi
+D. Exact institutional levels
+Needed:
+
+source
+date
+timestamp
+method/provenance
+later first touch/break/reclaim result
+Use:
+
+option proxy aur true external level ka comparison
+forward level-reaction study
+16. Final output ka correct format
+Prediction report ko forcefully UP/DOWN nahi bolna chahiye.
+
+Correct output structure:
+
+Base context
+Bullish / bearish / mixed
+OI strength
+Pro/FII agreement or conflict
+Cash confirmation/divergence
+Range path
+Agar price walls ke beech hai
+Chop/mean-reversion possibility
+No-trend warning
+Bullish path
+Support hold
+Reclaim
+Resistance break
+Retest hold
+Next target
+Bearish path
+Resistance reject
+Support breakdown
+Failed reclaim
+Next downside target
+Sweep/trap path
+Wick above/below key level
+Reclaim/reject confirmation
+Stop-hunt warning
+V10
+Tiny gap active/inactive
+Prior-close touch watch
+Risk gate
+WAIT / NO TRADE
+Missing data
+FII-Pro conflict
+Weak level confirmation
+Abnormal gap
+Unclear entry
+Low confidence
+17. Accuracy backtest rules
+Agar target 80%+ hai, to test honest hona chahiye.
+
+Wrong method
+Same historical period par repeatedly rules tune karna
+Best result choose karke claim karna
+Future data feature mein use karna
+Sign-only accuracy ko full exact prediction bolna
+5 trades/sample ko 80% edge bolna
+Correct method
+Earlier data = development
+Middle unseen data = validation
+Later unseen data = confirmation
+New future live data = forward test
+Exact UP/FLAT/DOWN accuracy separate
+Non-FLAT sign accuracy separate
+Coverage report mandatory
+Skipped days and skip reason mandatory
+Execution test separate
+Fresh forward result pass hone ke baad hi production promotion
+Current session-count plan
+80 complete sessions: data quality review only
+200 complete sessions: first frozen study
+260 complete sessions: fresh-forward promotion check
+Intraday ke 20–26 rows ek day mein ho sakte hain, but woh 20 independent samples nahi hain. Ek trading day ko ek independent session treat karna chahiye.
+
+18. Current honest position
+System ke paas ab:
+
+structured OI decoder
+option level engine
+scenario report
+range/bull/bear/sweep logic
+V10 level-touch module
+direct pre-open collector
+direct intraday option-chain collector
+9 PM D-day snapshot architecture
+forward quality checks
+backtest framework
+Lekin:
+
+General next-day 80% validated directional edge abhi prove nahi hua.
+
+Isliye current honest state:
+
+text
+
+General direction:
+WAIT / NO TRADE
+or
+CONTEXT_ONLY
+V10 ek useful selective level-touch observation hai, but universal next-day predictor nahi.
+
+19. Final one-line working
+text
+
+FII/DII/Pro/Client OI
++ volume
++ cash flow
++ NIFTY price structure
++ option-chain walls/PCR/IV
++ pre-open breadth
++ intraday option-chain movement
++ levels
++ risk/global/sector context
+=
+D at 9 PM snapshot
+=
+D+1 conditional prediction
+=
+backtest + validation + fresh forward proof
