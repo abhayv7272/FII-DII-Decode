@@ -1,0 +1,443 @@
+{
+  "0.65": {
+    "target": 0.65,
+    "folds": 6,
+    "test_sessions": 1316,
+    "selected_signals": 10,
+    "coverage": 0.007598784194528876,
+    "all_accuracy": 0.5121580547112462,
+    "selected_accuracy": 0.5,
+    "folds_with_gate": 1,
+    "minimum_calibration_signals": 25,
+    "fold_details": [
+      {
+        "fold": 1,
+        "train": 900,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2021-05-25",
+        "test_end": "2022-05-25",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 2,
+        "train": 1150,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2022-05-26",
+        "test_end": "2023-05-29",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 3,
+        "train": 1400,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2023-05-30",
+        "test_end": "2024-06-05",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 4,
+        "train": 1650,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2024-06-06",
+        "test_end": "2025-06-09",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 5,
+        "train": 1900,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2025-06-10",
+        "test_end": "2026-06-15",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 6,
+        "train": 2150,
+        "calibration": 250,
+        "test": 66,
+        "test_start": "2026-06-16",
+        "test_end": "2026-09-17",
+        "gate": 0.6000000000000001,
+        "calibration_selected_signals": 40,
+        "calibration_selected_accuracy": 0.65,
+        "test_signals": 10,
+        "test_selected_accuracy": 0.5
+      }
+    ],
+    "regimes": {
+      "trend_regime:BEAR": {
+        "sessions": 328,
+        "signals": 10,
+        "coverage": 0.03048780487804878,
+        "all_accuracy": 0.5121951219512195,
+        "selected_accuracy": 0.5
+      },
+      "trend_regime:BULL": {
+        "sessions": 988,
+        "signals": 0,
+        "coverage": 0.0,
+        "all_accuracy": 0.5121457489878543,
+        "selected_accuracy": null
+      },
+      "vol_regime:HIGH_VOL": {
+        "sessions": 550,
+        "signals": 5,
+        "coverage": 0.00909090909090909,
+        "all_accuracy": 0.4781818181818182,
+        "selected_accuracy": 0.8
+      },
+      "vol_regime:LOW_VOL": {
+        "sessions": 766,
+        "signals": 5,
+        "coverage": 0.006527415143603133,
+        "all_accuracy": 0.5365535248041775,
+        "selected_accuracy": 0.2
+      }
+    },
+    "cost_stress": {
+      "3": {
+        "trades": 10,
+        "gross_total_return": -0.015120087837105167,
+        "net_total_return": -0.018075281119390274,
+        "average_net_trade": -0.001806815256260219,
+        "win_rate_after_cost": 0.4,
+        "max_drawdown": -0.020854929396284305
+      },
+      "6": {
+        "trades": 10,
+        "gross_total_return": -0.015120087837105167,
+        "net_total_return": -0.021022491516869968,
+        "average_net_trade": -0.0021068152562602185,
+        "win_rate_after_cost": 0.4,
+        "max_drawdown": -0.022915513985914182
+      },
+      "10": {
+        "trades": 10,
+        "gross_total_return": -0.015120087837105167,
+        "net_total_return": -0.02493972069361383,
+        "average_net_trade": -0.002506815256260219,
+        "win_rate_after_cost": 0.3,
+        "max_drawdown": -0.025959606027239457
+      }
+    }
+  },
+  "0.7": {
+    "target": 0.7,
+    "folds": 6,
+    "test_sessions": 1316,
+    "selected_signals": 9,
+    "coverage": 0.006838905775075988,
+    "all_accuracy": 0.5121580547112462,
+    "selected_accuracy": 0.4444444444444444,
+    "folds_with_gate": 1,
+    "minimum_calibration_signals": 25,
+    "fold_details": [
+      {
+        "fold": 1,
+        "train": 900,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2021-05-25",
+        "test_end": "2022-05-25",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 2,
+        "train": 1150,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2022-05-26",
+        "test_end": "2023-05-29",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 3,
+        "train": 1400,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2023-05-30",
+        "test_end": "2024-06-05",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 4,
+        "train": 1650,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2024-06-06",
+        "test_end": "2025-06-09",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 5,
+        "train": 1900,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2025-06-10",
+        "test_end": "2026-06-15",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 6,
+        "train": 2150,
+        "calibration": 250,
+        "test": 66,
+        "test_start": "2026-06-16",
+        "test_end": "2026-09-17",
+        "gate": 0.6100000000000001,
+        "calibration_selected_signals": 28,
+        "calibration_selected_accuracy": 0.75,
+        "test_signals": 9,
+        "test_selected_accuracy": 0.4444444444444444
+      }
+    ],
+    "regimes": {
+      "trend_regime:BEAR": {
+        "sessions": 328,
+        "signals": 9,
+        "coverage": 0.027439024390243903,
+        "all_accuracy": 0.5121951219512195,
+        "selected_accuracy": 0.4444444444444444
+      },
+      "trend_regime:BULL": {
+        "sessions": 988,
+        "signals": 0,
+        "coverage": 0.0,
+        "all_accuracy": 0.5121457489878543,
+        "selected_accuracy": null
+      },
+      "vol_regime:HIGH_VOL": {
+        "sessions": 550,
+        "signals": 4,
+        "coverage": 0.007272727272727273,
+        "all_accuracy": 0.4781818181818182,
+        "selected_accuracy": 0.75
+      },
+      "vol_regime:LOW_VOL": {
+        "sessions": 766,
+        "signals": 5,
+        "coverage": 0.006527415143603133,
+        "all_accuracy": 0.5365535248041775,
+        "selected_accuracy": 0.2
+      }
+    },
+    "cost_stress": {
+      "3": {
+        "trades": 9,
+        "gross_total_return": -0.021368592661547336,
+        "net_total_return": -0.024014098770265502,
+        "average_net_trade": -0.0026836771792093737,
+        "win_rate_after_cost": 0.3333333333333333,
+        "max_drawdown": -0.02677693534669756
+      },
+      "6": {
+        "trades": 9,
+        "gross_total_return": -0.021368592661547336,
+        "net_total_return": -0.026653246083109594,
+        "average_net_trade": -0.002983677179209373,
+        "win_rate_after_cost": 0.3333333333333333,
+        "max_drawdown": -0.028535380513542763
+      },
+      "10": {
+        "trades": 9,
+        "gross_total_return": -0.021368592661547336,
+        "net_total_return": -0.030162240824947117,
+        "average_net_trade": -0.0033836771792093733,
+        "win_rate_after_cost": 0.2222222222222222,
+        "max_drawdown": -0.03117666355097859
+      }
+    }
+  },
+  "0.75": {
+    "target": 0.75,
+    "folds": 6,
+    "test_sessions": 1316,
+    "selected_signals": 9,
+    "coverage": 0.006838905775075988,
+    "all_accuracy": 0.5121580547112462,
+    "selected_accuracy": 0.4444444444444444,
+    "folds_with_gate": 1,
+    "minimum_calibration_signals": 25,
+    "fold_details": [
+      {
+        "fold": 1,
+        "train": 900,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2021-05-25",
+        "test_end": "2022-05-25",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 2,
+        "train": 1150,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2022-05-26",
+        "test_end": "2023-05-29",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 3,
+        "train": 1400,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2023-05-30",
+        "test_end": "2024-06-05",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 4,
+        "train": 1650,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2024-06-06",
+        "test_end": "2025-06-09",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 5,
+        "train": 1900,
+        "calibration": 250,
+        "test": 250,
+        "test_start": "2025-06-10",
+        "test_end": "2026-06-15",
+        "gate": null,
+        "calibration_selected_signals": 0,
+        "calibration_selected_accuracy": null,
+        "test_signals": 0,
+        "test_selected_accuracy": null
+      },
+      {
+        "fold": 6,
+        "train": 2150,
+        "calibration": 250,
+        "test": 66,
+        "test_start": "2026-06-16",
+        "test_end": "2026-09-17",
+        "gate": 0.6100000000000001,
+        "calibration_selected_signals": 28,
+        "calibration_selected_accuracy": 0.75,
+        "test_signals": 9,
+        "test_selected_accuracy": 0.4444444444444444
+      }
+    ],
+    "regimes": {
+      "trend_regime:BEAR": {
+        "sessions": 328,
+        "signals": 9,
+        "coverage": 0.027439024390243903,
+        "all_accuracy": 0.5121951219512195,
+        "selected_accuracy": 0.4444444444444444
+      },
+      "trend_regime:BULL": {
+        "sessions": 988,
+        "signals": 0,
+        "coverage": 0.0,
+        "all_accuracy": 0.5121457489878543,
+        "selected_accuracy": null
+      },
+      "vol_regime:HIGH_VOL": {
+        "sessions": 550,
+        "signals": 4,
+        "coverage": 0.007272727272727273,
+        "all_accuracy": 0.4781818181818182,
+        "selected_accuracy": 0.75
+      },
+      "vol_regime:LOW_VOL": {
+        "sessions": 766,
+        "signals": 5,
+        "coverage": 0.006527415143603133,
+        "all_accuracy": 0.5365535248041775,
+        "selected_accuracy": 0.2
+      }
+    },
+    "cost_stress": {
+      "3": {
+        "trades": 9,
+        "gross_total_return": -0.021368592661547336,
+        "net_total_return": -0.024014098770265502,
+        "average_net_trade": -0.0026836771792093737,
+        "win_rate_after_cost": 0.3333333333333333,
+        "max_drawdown": -0.02677693534669756
+      },
+      "6": {
+        "trades": 9,
+        "gross_total_return": -0.021368592661547336,
+        "net_total_return": -0.026653246083109594,
+        "average_net_trade": -0.002983677179209373,
+        "win_rate_after_cost": 0.3333333333333333,
+        "max_drawdown": -0.028535380513542763
+      },
+      "10": {
+        "trades": 9,
+        "gross_total_return": -0.021368592661547336,
+        "net_total_return": -0.030162240824947117,
+        "average_net_trade": -0.0033836771792093733,
+        "win_rate_after_cost": 0.2222222222222222,
+        "max_drawdown": -0.03117666355097859
+      }
+    }
+  }
+}

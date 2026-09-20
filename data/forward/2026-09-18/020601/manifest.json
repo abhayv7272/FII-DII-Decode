@@ -1,0 +1,62 @@
+{
+  "mode": "eod",
+  "session_date": "2026-09-18",
+  "captured_ist": "2026-09-20T02:06:01.388322+05:30",
+  "records": [
+    {
+      "dataset": "participant_oi",
+      "session_date": "2026-09-18",
+      "captured_ist": "2026-09-20T02:06:01.388322+05:30",
+      "status": "ok",
+      "rows": 5,
+      "source_timestamp": null,
+      "sha256": "46f0e3895861dc9cf5a7381b413ab8f1f98ed228ed1aa2000ccb27fa8c560ac8",
+      "path": "data/forward/2026-09-18/020601/participant_oi.csv",
+      "error": null
+    },
+    {
+      "dataset": "participant_volume",
+      "session_date": "2026-09-18",
+      "captured_ist": "2026-09-20T02:06:01.388322+05:30",
+      "status": "ok",
+      "rows": 5,
+      "source_timestamp": null,
+      "sha256": "e99957fdbe9eef2f4ba12f469375b607583b9f39922128f5ee772295b940dc26",
+      "path": "data/forward/2026-09-18/020601/participant_volume.csv",
+      "error": null
+    },
+    {
+      "dataset": "fii_derivatives",
+      "session_date": "2026-09-18",
+      "captured_ist": "2026-09-20T02:06:01.388322+05:30",
+      "status": "ok",
+      "rows": 15,
+      "source_timestamp": null,
+      "sha256": "f305a2a382066bac54729d46ac190216cf499b7a787ef7155581503f7265b2ba",
+      "path": "data/forward/2026-09-18/020601/fii_derivatives.csv",
+      "error": null
+    },
+    {
+      "dataset": "india_vix",
+      "session_date": "2026-09-18",
+      "captured_ist": "2026-09-20T02:06:01.388322+05:30",
+      "status": "ok",
+      "rows": 1,
+      "source_timestamp": null,
+      "sha256": "51a29016b34a1dd78d6f90918eb8f1936fe63c8b15c6436afd86a5d34df86521",
+      "path": "data/forward/2026-09-18/020601/india_vix.csv",
+      "error": null
+    },
+    {
+      "dataset": "fii_dii_cash_latest",
+      "session_date": "2026-09-18",
+      "captured_ist": "2026-09-20T02:06:01.388322+05:30",
+      "status": "ok",
+      "rows": 2,
+      "source_timestamp": null,
+      "sha256": "63cd12b099c4d8ff683e13dd1e0a50223fea3498bf4b21e2536c1842cf99e70e",
+      "path": "data/forward/2026-09-18/020601/fii_dii_cash_latest.json",
+      "error": null
+    }
+  ]
+}

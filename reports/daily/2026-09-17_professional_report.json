@@ -1,0 +1,105 @@
+{
+  "session_date": "2026-09-17",
+  "decision_time_ist": "2026-09-20T05:03:57.695339+05:30",
+  "decision": "WAIT / NO TRADE",
+  "quality_score": 0.95,
+  "prediction": {
+    "as_of": "2026-09-17",
+    "direction": "UP",
+    "p_up": 0.5038713066211092,
+    "p_down": 0.49612869337889076,
+    "confidence": 0.5038713066211092,
+    "gate": 0.7500000000000002,
+    "confidence_pass": false,
+    "research_approved": false,
+    "model_pass": false,
+    "backtest": {
+      "sessions": 99,
+      "accuracy": 0.5454545454545454,
+      "balanced_accuracy": 0.5551470588235294,
+      "signals": 35,
+      "coverage": 0.35353535353535354,
+      "selected_accuracy": 0.6,
+      "costs": {
+        "3": {
+          "net_return": -0.016079576930604356,
+          "avg_trade": -0.000447222604664808,
+          "win_rate": 0.5142857142857142,
+          "max_drawdown": -0.025569475679320997
+        },
+        "6": {
+          "net_return": -0.026363126219642874,
+          "avg_trade": -0.0007472226046648078,
+          "win_rate": 0.5142857142857142,
+          "max_drawdown": -0.02937053967787151
+        },
+        "10": {
+          "net_return": -0.03991224150409334,
+          "avg_trade": -0.0011472226046648083,
+          "win_rate": 0.4857142857142857,
+          "max_drawdown": -0.04206614914961271
+        }
+      }
+    },
+    "error": null
+  },
+  "prediction_date_matches_session": true,
+  "event_risk": {
+    "blocked": false,
+    "status": "NO_VERIFIED_CALENDAR",
+    "events": []
+  },
+  "levels": {
+    "pivot": 23275.93359375,
+    "support_1": 23188.31640625,
+    "resistance_1": 23358.216796875,
+    "support_20d": 23116.099609375,
+    "resistance_20d": 24378.599609375,
+    "atr14_points": 195.06096540178572,
+    "previous_close": 23270.599609375
+  },
+  "trade_stance": "NO DIRECTIONAL POSITION",
+  "swing_stance": "Do not initiate a new swing position until the confidence/data gate and price trigger both pass.",
+  "investment_context": "Fresh long-term investment should be deferred or evaluated fundamentally; index is below its 200-day trend.",
+  "weekly_scenarios": [
+    {
+      "date": "2026-09-18",
+      "session": 1,
+      "expected_center": 23271.128207939815,
+      "lower_risk_band": 23076.06724253803,
+      "upper_risk_band": 23466.1891733416
+    },
+    {
+      "date": "2026-09-21",
+      "session": 2,
+      "expected_center": 23271.347160634414,
+      "lower_risk_band": 22995.48929787362,
+      "upper_risk_band": 23547.205023395207
+    },
+    {
+      "date": "2026-09-22",
+      "session": 3,
+      "expected_center": 23271.515168946073,
+      "lower_risk_band": 22933.659666296746,
+      "upper_risk_band": 23609.3706715954
+    },
+    {
+      "date": "2026-09-23",
+      "session": 4,
+      "expected_center": 23271.656806504634,
+      "lower_risk_band": 22881.53487570106,
+      "upper_risk_band": 23661.778737308206
+    },
+    {
+      "date": "2026-09-24",
+      "session": 5,
+      "expected_center": 23271.78159169874,
+      "lower_risk_band": 22835.61201330361,
+      "upper_risk_band": 23707.951170093867
+    }
+  ],
+  "failed_sources": [
+    "fii_dii_cash"
+  ],
+  "cached_sources": []
+}

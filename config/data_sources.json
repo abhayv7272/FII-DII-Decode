@@ -1,0 +1,18 @@
+{
+  "policy": {
+    "minimum_quality_score": 0.75,
+    "critical_datasets": ["nifty_price", "nifty_options_eod", "nifty_futures_eod"],
+    "cached_source_credit": 0.6,
+    "max_stale_trading_days": 1,
+    "retries_per_adapter": 3
+  },
+  "priorities": {
+    "nifty_price": ["Yahoo Finance/yfinance", "NSE index archive", "Yahoo chart API", "last-good cache"],
+    "nifty_options_eod": ["NSE contract archive via nselib", "NSE F&O bhavcopy", "last-good cache"],
+    "nifty_futures_eod": ["NSE contract archive via nselib", "NSE F&O bhavcopy", "last-good cache"],
+    "participant_oi": ["NSE participant archive via nselib", "direct NSE archive CSV", "last-good cache"],
+    "india_vix": ["NSE VIX archive", "Yahoo chart API", "last-good cache"],
+    "fii_dii_cash": ["NSE FII/DII API", "Groww public table", "last-good cache"],
+    "cross_market": ["yfinance multi-asset", "Yahoo chart multi-asset", "last-good cache"]
+  }
+}

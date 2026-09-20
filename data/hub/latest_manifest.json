@@ -1,0 +1,94 @@
+{
+  "run_id": "20260920_053610_470217",
+  "requested_date": "auto",
+  "session_date": "2026-09-18",
+  "decision_ist": "2026-09-20T05:36:10.470217+05:30",
+  "quality_score": 0.6,
+  "prediction_allowed": false,
+  "results": [
+    {
+      "dataset": "nifty_price",
+      "source": "last_good_cache",
+      "status": "cached",
+      "as_of": "2026-09-18",
+      "rows": 2467,
+      "latency_ms": 0,
+      "path": "data/hub/runs/20260920_053610_470217/nifty_price__canonical_truncated.csv",
+      "sha256": "8764e621f1d1804a2f00ffd29b757c3e320a5c4aca510b8a20ca3e88c0c07a11",
+      "error": "yahoo_yfinance: nifty_price failed validation from yahoo_yfinance; nse_index_archive:  Resource not available MSG: HTTPSConnectionPool(host='www.nseindia.com', port=443): Max retries exceeded with url: /reports-indices-historical-index-data (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); yahoo_chart: HTTPSConnectionPool(host='query1.finance.yahoo.com', port=443): Max retries exceeded with url: /v8/finance/chart/%5ENSEI?period1=1474502400&period2=1789948800&interval=1d&events=history (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))",
+      "stale_days": null
+    },
+    {
+      "dataset": "nifty_options_eod",
+      "source": "last_good_cache",
+      "status": "cached",
+      "as_of": "2026-09-18",
+      "rows": 1700,
+      "latency_ms": 0,
+      "path": "data/hub/runs/20260920_053610_470217/nifty_options_eod__last_good_cache.csv",
+      "sha256": "3a8acd00ebc2efeb2d77ede656bd9409b89900671afc5421b16ccb81dc3ca26f",
+      "error": "nselib_contract_archive:  Invalid parameters : NSE error : HTTPSConnectionPool(host='www.nseindia.com', port=443): Max retries exceeded with url: /report-detail/fo_eq_security (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); nse_bhavcopy: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+      "stale_days": 0
+    },
+    {
+      "dataset": "nifty_futures_eod",
+      "source": "last_good_cache",
+      "status": "cached",
+      "as_of": "2026-09-18",
+      "rows": 3,
+      "latency_ms": 0,
+      "path": "data/hub/runs/20260920_053610_470217/nifty_futures_eod__last_good_cache.csv",
+      "sha256": "d74d8fdc3ee3be05e968db87b9f49edf580a55ad72ae8628313b5533c044b900",
+      "error": "nselib_contract_archive:  Invalid parameters : NSE error:HTTPSConnectionPool(host='www.nseindia.com', port=443): Max retries exceeded with url: /report-detail/fo_eq_security (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); nse_bhavcopy: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",
+      "stale_days": 0
+    },
+    {
+      "dataset": "participant_oi",
+      "source": "last_good_cache",
+      "status": "cached",
+      "as_of": "2026-09-18",
+      "rows": 5,
+      "latency_ms": 0,
+      "path": "data/hub/runs/20260920_053610_470217/participant_oi__last_good_cache.csv",
+      "sha256": "46f0e3895861dc9cf5a7381b413ab8f1f98ed228ed1aa2000ccb27fa8c560ac8",
+      "error": "nselib_participant_archive: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')); direct_nse_archive: HTTPSConnectionPool(host='nsearchives.nseindia.com', port=443): Max retries exceeded with url: /content/nsccl/fao_participant_oi_18092026.csv (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))",
+      "stale_days": 0
+    },
+    {
+      "dataset": "india_vix",
+      "source": "last_good_cache",
+      "status": "cached",
+      "as_of": "2026-09-18",
+      "rows": 1,
+      "latency_ms": 0,
+      "path": "data/hub/runs/20260920_053610_470217/india_vix__last_good_cache.csv",
+      "sha256": "51a29016b34a1dd78d6f90918eb8f1936fe63c8b15c6436afd86a5d34df86521",
+      "error": "nse_vix_archive:  Resource not available MSG: HTTPSConnectionPool(host='nsewebsite-staging.nseindia.com', port=443): Max retries exceeded with url: /report-detail/eq_security (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); yahoo_vix_chart: HTTPSConnectionPool(host='query1.finance.yahoo.com', port=443): Max retries exceeded with url: /v8/finance/chart/%5EINDIAVIX?period1=1789084800&period2=1789776000&interval=1d&events=history (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))",
+      "stale_days": 0
+    },
+    {
+      "dataset": "fii_dii_cash",
+      "source": "last_good_cache",
+      "status": "cached",
+      "as_of": "2026-09-18",
+      "rows": 2,
+      "latency_ms": 0,
+      "path": "data/hub/runs/20260920_053610_470217/fii_dii_cash__last_good_cache.csv",
+      "sha256": "52236265bda3aa87f47245bb4963172d462f51137f12c9d90aed4d288be5e2d6",
+      "error": "nse_fiidii_api: HTTPSConnectionPool(host='www.nseindia.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); groww_public_table: <urlopen error TLS/SSL connection has been closed (EOF) (_ssl.c:992)>",
+      "stale_days": 0
+    },
+    {
+      "dataset": "cross_market",
+      "source": "last_good_cache",
+      "status": "cached",
+      "as_of": "2026-09-18",
+      "rows": 25,
+      "latency_ms": 0,
+      "path": "data/hub/runs/20260920_053610_470217/cross_market__last_good_cache.csv",
+      "sha256": "de0a059b7f570feb6e49608bf2afedaeb3daff5bce57770eb16490af42e4f75b",
+      "error": "yfinance_multi_asset: cross_market failed validation from yfinance_multi_asset; yahoo_chart_multi_asset: HTTPSConnectionPool(host='query1.finance.yahoo.com', port=443): Max retries exceeded with url: /v8/finance/chart/%5ENSEBANK?period1=1788393600&period2=1789776000&interval=1d&events=history (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))",
+      "stale_days": 0
+    }
+  ]
+}

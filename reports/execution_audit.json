@@ -1,0 +1,75 @@
+{
+  "summary": {
+    "split": {
+      "train": 1479,
+      "meta_train": 247,
+      "gate_calibration": 246,
+      "later_test": 494
+    },
+    "target_precision": 0.7,
+    "gate": null,
+    "gate_calibration_signals": 0,
+    "gate_calibration_accuracy": null,
+    "all_test_accuracy": 0.5526315789473685,
+    "all_test_balanced_accuracy": 0.5450428194993412,
+    "selected_test_signals": 0,
+    "coverage": 0.0,
+    "selected_test_accuracy": null,
+    "cost_stress": {
+      "3": {
+        "net_total_return": 0,
+        "average_net_trade": null,
+        "win_rate_after_cost": null,
+        "max_drawdown": null
+      },
+      "6": {
+        "net_total_return": 0,
+        "average_net_trade": null,
+        "win_rate_after_cost": null,
+        "max_drawdown": null
+      },
+      "10": {
+        "net_total_return": 0,
+        "average_net_trade": null,
+        "win_rate_after_cost": null,
+        "max_drawdown": null
+      }
+    },
+    "regimes": {
+      "trend_regime:BEAR": {
+        "sessions": 251,
+        "signals": 0,
+        "coverage": 0.0,
+        "all_accuracy": 0.5099601593625498,
+        "selected_accuracy": null
+      },
+      "trend_regime:BULL": {
+        "sessions": 243,
+        "signals": 0,
+        "coverage": 0.0,
+        "all_accuracy": 0.5967078189300411,
+        "selected_accuracy": null
+      },
+      "vol_regime:HIGH_VOL": {
+        "sessions": 339,
+        "signals": 0,
+        "coverage": 0.0,
+        "all_accuracy": 0.5486725663716814,
+        "selected_accuracy": null
+      },
+      "vol_regime:LOW_VOL": {
+        "sessions": 155,
+        "signals": 0,
+        "coverage": 0.0,
+        "all_accuracy": 0.5612903225806452,
+        "selected_accuracy": null
+      }
+    }
+  },
+  "latest": {
+    "direction": "UP",
+    "direction_probability": 0.5346078407771161,
+    "estimated_signal_quality": 0.4678316510008878,
+    "actionable": false
+  }
+}

@@ -1,0 +1,3 @@
+Date,Event,Severity,Expected_Time_IST,Notes
+2026-10-01,Example RBI policy,HIGH,10:00,Replace example with verified calendar data
+2026-10-07,Example US Fed event,HIGH,23:30,Use timestamp known before prediction

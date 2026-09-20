@@ -1,0 +1,10 @@
+{
+  "train_sessions": 1972,
+  "later_test_sessions": 494,
+  "test_accuracy": 0.5546558704453441,
+  "test_balanced_accuracy": 0.5147810218978102,
+  "up_base_rate": 0.5546558704453441,
+  "latest_direction": "GAP_UP",
+  "latest_confidence": 0.5829232110111454,
+  "warning": "Gap forecast is context; a 9 PM decision cannot capture the already-realized next open without an overnight instrument."
+}

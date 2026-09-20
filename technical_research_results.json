@@ -1,0 +1,54 @@
+[
+  {
+    "target": 0.6,
+    "raw_features": 287,
+    "selected_features": 242,
+    "cal_gate": 0.5,
+    "cal_acc": 0.5030425963488844,
+    "cal_n": 493,
+    "test_all_accuracy": 0.5101214574898786,
+    "test_balanced_accuracy": 0.5144638608581508,
+    "test_selected_accuracy": 0.5101214574898786,
+    "test_signals": 494,
+    "test_coverage": 1.0
+  },
+  {
+    "target": 0.65,
+    "raw_features": 287,
+    "selected_features": 242,
+    "cal_gate": 0.5,
+    "cal_acc": 0.5030425963488844,
+    "cal_n": 493,
+    "test_all_accuracy": 0.5101214574898786,
+    "test_balanced_accuracy": 0.5144638608581508,
+    "test_selected_accuracy": 0.5101214574898786,
+    "test_signals": 494,
+    "test_coverage": 1.0
+  },
+  {
+    "target": 0.7,
+    "raw_features": 287,
+    "selected_features": 242,
+    "cal_gate": 0.5,
+    "cal_acc": 0.5030425963488844,
+    "cal_n": 493,
+    "test_all_accuracy": 0.5101214574898786,
+    "test_balanced_accuracy": 0.5144638608581508,
+    "test_selected_accuracy": 0.5101214574898786,
+    "test_signals": 494,
+    "test_coverage": 1.0
+  },
+  {
+    "target": 0.75,
+    "raw_features": 287,
+    "selected_features": 242,
+    "cal_gate": 0.5,
+    "cal_acc": 0.5030425963488844,
+    "cal_n": 493,
+    "test_all_accuracy": 0.5101214574898786,
+    "test_balanced_accuracy": 0.5144638608581508,
+    "test_selected_accuracy": 0.5101214574898786,
+    "test_signals": 494,
+    "test_coverage": 1.0
+  }
+]
