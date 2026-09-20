@@ -1,14 +1,13 @@
 # NIFTY Professional Decision Report — 2026-09-18
 
-**Generated:** 2026-09-20T05:48:56.911304+05:30
-**Data quality:** 60%
-**Data gate:** **FAIL-CLOSED**
+**Generated:** 2026-09-20T06:03:54.970202+05:30
+**Data quality:** 100%
+**Data gate:** **PASS**
 **Final decision:** **WAIT / NO TRADE**
 
 **Event-calendar status:** NO_VERIFIED_CALENDAR — verified calendar unavailable; check manually
 **RESEARCH PROMOTION GATE FAILED:** corrected holdout/cost metrics do not support a live directional trade.
 **Diagnostic only:** raw class probability is not a calibrated profit probability and is excluded from the weekly centre.
-**DATA GATE FAIL-CLOSED:** critical price/options/futures were not all fresh/date-matched, compact history failed, or overall quality was below threshold.
 
 ## Executive view
 
@@ -16,7 +15,7 @@
 - UP/DOWN probability: **87.94% / 12.06%**
 - Model confidence: **87.94%**; frozen gate: **75%**
 - Prediction/session match: **True**
-- Critical fresh/date-matched data: **nifty_price=False, nifty_options_eod=False, nifty_futures_eod=False**
+- Critical fresh/date-matched data: **nifty_price=True, nifty_options_eod=True, nifty_futures_eod=True**
 - Compact history update ok: **True**
 - Trading stance: **NO DIRECTIONAL POSITION**
 - Swing stance: Do not initiate a new swing position until the confidence/data gate and price trigger both pass.
@@ -59,15 +58,15 @@ A wick/sweep alone is not entry confirmation. Wait for a completed candle and fo
 
 ## Data-source health
 
-| Dataset           | Selected source   | Status   | As-of      |   Rows |   Stale days | Error                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-|:------------------|:------------------|:---------|:-----------|-------:|-------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| nifty_price       | last_good_cache   | cached   | 2026-09-18 |   2467 |              | yahoo_yfinance: nifty_price failed validation from yahoo_yfinance; nse_index_archive:  Resource not available MSG: HTTPSConnectionPool(host='www.nseindia.com', port=443): Max retries exceeded with url: /reports-indices-historical-index-data (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); yahoo_chart: HTTPSConnectionPool(host='query1.finance.yahoo.com', port=443): Max retries exceeded with url: /v8/finance/chart/%5ENSEI?period1=1474502400&period2=1789948800&interval=1d&events=history (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))) |
-| nifty_options_eod | last_good_cache   | cached   | 2026-09-18 |   1700 |            0 | nselib_contract_archive:  Invalid parameters : NSE error : HTTPSConnectionPool(host='www.nseindia.com', port=443): Max retries exceeded with url: /report-detail/fo_eq_security (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); nse_bhavcopy: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))                                                                                                                                                                                                                                                                   |
-| nifty_futures_eod | last_good_cache   | cached   | 2026-09-18 |      3 |            0 | nselib_contract_archive:  Invalid parameters : NSE error:HTTPSConnectionPool(host='www.nseindia.com', port=443): Max retries exceeded with url: /report-detail/fo_eq_security (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); nse_bhavcopy: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))                                                                                                                                                                                                                                                                     |
-| participant_oi    | last_good_cache   | cached   | 2026-09-18 |      5 |            0 | nselib_participant_archive: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')); direct_nse_archive: HTTPSConnectionPool(host='nsearchives.nseindia.com', port=443): Max retries exceeded with url: /content/nsccl/fao_participant_oi_18092026.csv (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))                                                                                                                                                                                                                                                                   |
-| india_vix         | last_good_cache   | cached   | 2026-09-18 |      1 |            0 | nse_vix_archive:  Resource not available MSG: HTTPSConnectionPool(host='nsewebsite-staging.nseindia.com', port=443): Max retries exceeded with url: /report-detail/eq_security (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); yahoo_vix_chart: HTTPSConnectionPool(host='query1.finance.yahoo.com', port=443): Max retries exceeded with url: /v8/finance/chart/%5EINDIAVIX?period1=1789084800&period2=1789776000&interval=1d&events=history (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))                                                           |
-| fii_dii_cash      | last_good_cache   | cached   | 2026-09-18 |      2 |            0 | nse_fiidii_api: HTTPSConnectionPool(host='www.nseindia.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)'))); groww_public_table: <urlopen error TLS/SSL connection has been closed (EOF) (_ssl.c:992)>                                                                                                                                                                                                                                                                                                                                                           |
-| cross_market      | last_good_cache   | cached   | 2026-09-18 |     25 |            0 | yfinance_multi_asset: cross_market failed validation from yfinance_multi_asset; yahoo_chart_multi_asset: HTTPSConnectionPool(host='query1.finance.yahoo.com', port=443): Max retries exceeded with url: /v8/finance/chart/%5ENSEBANK?period1=1788393600&period2=1789776000&interval=1d&events=history (Caused by SSLError(SSLZeroReturnError(6, 'TLS/SSL connection has been closed (EOF) (_ssl.c:992)')))                                                                                                                                                                                                                                                         |
+| Dataset           | Selected source            | Status   | As-of      |   Rows | Stale days   | Error   |
+|:------------------|:---------------------------|:---------|:-----------|-------:|:-------------|:--------|
+| nifty_price       | yahoo_yfinance             | fresh    | 2026-09-18 |   2467 |              |         |
+| nifty_options_eod | nselib_contract_archive    | fresh    | 2026-09-18 |   1700 |              |         |
+| nifty_futures_eod | nselib_contract_archive    | fresh    | 2026-09-18 |      3 |              |         |
+| participant_oi    | nselib_participant_archive | fresh    | 2026-09-18 |      5 |              |         |
+| india_vix         | nse_vix_archive            | fresh    | 2026-09-18 |      1 |              |         |
+| fii_dii_cash      | nse_fiidii_api             | fresh    | 2026-09-18 |      2 |              |         |
+| cross_market      | yfinance_multi_asset       | fresh    | 2026-09-18 |     25 |              |         |
 
 ## Model evidence
 

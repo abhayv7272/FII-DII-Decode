@@ -1,24 +1,24 @@
 {
   "session_date": "2026-09-18",
-  "decision_time_ist": "2026-09-20T05:48:56.911304+05:30",
+  "decision_time_ist": "2026-09-20T06:03:54.970202+05:30",
   "decision": "WAIT / NO TRADE",
-  "quality_score": 0.6,
+  "quality_score": 1.0,
   "data_gate": {
-    "passed": false,
-    "quality_score": 0.6,
+    "passed": true,
+    "quality_score": 1.0,
     "critical_fresh_date_matched": {
-      "nifty_price": false,
-      "nifty_options_eod": false,
-      "nifty_futures_eod": false
+      "nifty_price": true,
+      "nifty_options_eod": true,
+      "nifty_futures_eod": true
     },
     "history_update_ok": true
   },
   "prediction": {
     "as_of": "2026-09-18",
     "direction": "UP",
-    "p_up": 0.8793847530458853,
-    "p_down": 0.12061524695411474,
-    "confidence": 0.8793847530458853,
+    "p_up": 0.8793847530458726,
+    "p_down": 0.1206152469541274,
+    "confidence": 0.8793847530458726,
     "gate": 0.7500000000000002,
     "confidence_pass": true,
     "research_approved": false,
@@ -109,13 +109,5 @@
     }
   ],
   "failed_sources": [],
-  "cached_sources": [
-    "nifty_price",
-    "nifty_options_eod",
-    "nifty_futures_eod",
-    "participant_oi",
-    "india_vix",
-    "fii_dii_cash",
-    "cross_market"
-  ]
+  "cached_sources": []
 }
