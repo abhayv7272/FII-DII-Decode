@@ -132,7 +132,11 @@ if registry_path.exists():
             msg=f'Research candidate: **{research["name"]}** — all-day {research["accuracy"]:.2%}, balanced {research["balanced_accuracy"]:.2%}, selected {research["selected_accuracy"]:.2%} on {research["selected_signals"]} signals.'
             (st.error if str(research.get('status','')).startswith(('REJECTED','REVOKED')) else st.success)(msg)
             st.warning(research["note"])
-        if production: st.info(f'Production champion retained pending forward proof: **{production["name"]}** — {production["accuracy"]:.2%} across {production["later_test_sessions"]} sessions.')
+        if production:
+            if production.get("status") == "NO_MODEL_CURRENTLY_MEETS_PRODUCTION_GATE":
+                st.error("Production champion: **none**. Authoritative policy remains **WAIT / NO TRADE** until promotion gates pass.")
+            else:
+                st.info(f'Production champion: **{production["name"]}** — {production["accuracy"]:.2%} across {production["later_test_sessions"]} sessions.')
         rejected=registry.get("rejected",registry.get("challengers",[]));st.dataframe(pd.DataFrame(rejected),use_container_width=True,hide_index=True)
         st.caption(registry["selection_rule"])
 
@@ -147,7 +151,7 @@ if derivative_report.exists():
     q4.metric("Selected sample",f'{dh["signals"]}/{dh["sessions"]}')
     if dl:
         st.markdown(f'Latest specialist: **{dl["direction"]}**, confidence **{dl["confidence"]:.2%}**, frozen gate **{dl["gate"]:.0%}** → **{"ACTIONABLE" if dl["actionable"] else "WAIT"}**')
-    st.caption("EOD strike-wise option/futures data; not 10/15-minute historical chain. Selected accuracy is provisional because only 12 later signals exist.")
+    st.caption("EOD strike-wise option/futures data; not 10/15-minute historical chain. Selected accuracy is provisional and not a production approval unless the full promotion/cost gate passes.")
 
 gap_report=Path("reports/gap_audit.json")
 if gap_report.exists():
@@ -194,7 +198,8 @@ with right:
 
 st.subheader("Next 5 sessions (Mon–Fri style risk map)")
 atr_pct=levels["atr14_points"]/levels["previous_close"]
-week=recursive_week_scenarios(levels["previous_close"],pred["probabilities"],atr_pct,5)
+week_probs = pred["probabilities"] if direction["actionable"] and pred["actionable"] else {"UP": .5, "DOWN": .5, "FLAT": 0}
+week=recursive_week_scenarios(levels["previous_close"],week_probs,atr_pct,5)
 # Map to actual weekdays, excluding weekends; exchange holidays require a supplied calendar.
 future_dates=pd.bdate_range(price.index[-1]+pd.Timedelta(days=1),periods=5)
 week.insert(0,"date",future_dates.date)

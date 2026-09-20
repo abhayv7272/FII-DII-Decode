@@ -9,7 +9,7 @@ def main():
  ap.add_argument('--runs',type=int,default=2);ap.add_argument('--date',default='auto');args=ap.parse_args()
  outputs=[]
  for _ in range(args.runs):
-  p=subprocess.run([sys.executable,'run_production.py','--date',args.date],check=True,capture_output=True,text=True)
+  p=subprocess.run([sys.executable,'run_production.py','--date',args.date],check=True,capture_output=True,text=True)  # noqa: S603 - fixed argv, shell=False; date is passed as a plain CLI value
   outputs.append(json.loads(p.stdout))
  first=outputs[0];checks={
   'prediction':all(all(x['prediction'][k]==first['prediction'][k] for k in PRED_FIELDS) for x in outputs[1:]),

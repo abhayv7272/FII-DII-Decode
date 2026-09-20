@@ -1,14 +1,14 @@
 # NIFTY Professional Decision Report — 2026-09-18
 
-**Generated:** 2026-09-20T05:36:10.470217+05:30  
-**Data quality:** 60%  
-**Data gate:** **FAIL-CLOSED**  
+**Generated:** 2026-09-20T05:48:56.911304+05:30
+**Data quality:** 60%
+**Data gate:** **FAIL-CLOSED**
 **Final decision:** **WAIT / NO TRADE**
 
 **Event-calendar status:** NO_VERIFIED_CALENDAR — verified calendar unavailable; check manually
 **RESEARCH PROMOTION GATE FAILED:** corrected holdout/cost metrics do not support a live directional trade.
 **Diagnostic only:** raw class probability is not a calibrated profit probability and is excluded from the weekly centre.
-**DATA GATE FAIL-CLOSED:** critical price/options/futures were not all fresh/date-matched or overall quality was below threshold.
+**DATA GATE FAIL-CLOSED:** critical price/options/futures were not all fresh/date-matched, compact history failed, or overall quality was below threshold.
 
 ## Executive view
 
@@ -17,6 +17,7 @@
 - Model confidence: **87.94%**; frozen gate: **75%**
 - Prediction/session match: **True**
 - Critical fresh/date-matched data: **nifty_price=False, nifty_options_eod=False, nifty_futures_eod=False**
+- Compact history update ok: **True**
 - Trading stance: **NO DIRECTIONAL POSITION**
 - Swing stance: Do not initiate a new swing position until the confidence/data gate and price trigger both pass.
 - Investment context: Fresh long-term investment should be deferred or evaluated fundamentally; index is below its 200-day trend.
@@ -72,7 +73,7 @@ A wick/sweep alone is not entry confirmation. Wait for a completed candle and fo
 
 - Later research test: 54.55% accuracy across 99 sessions.
 - Selected research sample: 35 signals, 60.00% observed accuracy; this sample is provisional.
-- Current report automatically becomes WAIT if critical data or confidence gates fail.
+- Current report automatically becomes WAIT if critical data, compact-history, date, event, confidence or research-promotion gates fail.
 
 ## Risk notice
 

@@ -83,9 +83,10 @@ def train_walk_forward(features: pd.DataFrame, y: pd.Series, target_precision=.8
 def predict_latest(result: ModelResult, feature_row: pd.DataFrame) -> dict:
     p = result.model.predict_proba(feature_row[result.columns])[0]
     aligned = np.zeros(3)
-    for cls, prob in zip(result.model.classes_, p): aligned[int(cls)] = prob
+    for cls, prob in zip(result.model.classes_, p, strict=True):
+        aligned[int(cls)] = float(prob)
     idx = int(aligned.argmax()); conf = float(aligned[idx])
-    return {"label": LABELS[idx], "confidence": conf, "probabilities": dict(zip(LABELS, aligned)),
+    return {"label": str(LABELS[idx]), "confidence": conf, "probabilities": {str(label): float(prob) for label, prob in zip(LABELS, aligned, strict=True)},
             "actionable": conf >= result.confidence_gate}
 
 
