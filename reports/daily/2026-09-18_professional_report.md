@@ -1,6 +1,6 @@
 # NIFTY Professional Decision Report — 2026-09-18
 
-**Generated:** 2026-09-20T06:03:54.970202+05:30
+**Generated:** 2026-09-20T06:31:24.996850+05:30
 **Data quality:** 100%
 **Data gate:** **PASS**
 **Final decision:** **WAIT / NO TRADE**
