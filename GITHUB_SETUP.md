@@ -76,6 +76,17 @@ Never put the App Password in code, README, chat screenshots, issues, commits, A
 
 The email contains the Markdown report and attaches the JSON report, latest source manifest, and ultra-hard audit.
 
+### HTML email format (Gmail-compatible)
+
+Since the HTML upgrade, the nightly email is sent as **multipart/alternative**:
+
+- **text/html** — styled dashboard view (header, decision badge, color-coded gates, metric cards, key levels, weekly risk map, source-health pills, safety boxes). Rendering lives in `src/email_template.py` and uses only **inline CSS with table layout** so Gmail renders it correctly (Gmail strips `<style>` blocks and does not support flexbox/grid).
+- **text/plain** — the original Markdown report, preserved verbatim as the fallback part.
+
+Attachments (Markdown report, JSON report, source manifest, ultra-hard audit) are unchanged, and pipeline-failure runs get a dedicated red failure template whose safe decision is always **WAIT / NO TRADE**.
+
+**Safety note:** the HTML layer is presentation-only. The decision string, gate states and probabilities are rendered verbatim from the report JSON; raw class probabilities are always labelled as class probabilities (never profit probabilities) while the research promotion gate is failed. A WAIT / NO TRADE outcome can never be rewritten into a trade instruction by the template. Tests: `tests/test_email_template.py`.
+
 ## 6. Automatic schedule
 
 Workflow file:
