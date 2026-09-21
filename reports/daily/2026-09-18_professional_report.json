@@ -1,11 +1,11 @@
 {
   "session_date": "2026-09-18",
-  "decision_time_ist": "2026-09-20T06:31:24.996850+05:30",
+  "decision_time_ist": "2026-09-22T01:36:06.714151+05:30",
   "decision": "WAIT / NO TRADE",
-  "quality_score": 1.0,
+  "quality_score": 0.98,
   "data_gate": {
     "passed": true,
-    "quality_score": 1.0,
+    "quality_score": 0.98,
     "critical_fresh_date_matched": {
       "nifty_price": true,
       "nifty_options_eod": true,
@@ -109,5 +109,7 @@
     }
   ],
   "failed_sources": [],
-  "cached_sources": []
+  "cached_sources": [
+    "fii_dii_cash"
+  ]
 }

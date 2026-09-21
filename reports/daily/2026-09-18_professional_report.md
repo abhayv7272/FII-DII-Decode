@@ -1,7 +1,7 @@
 # NIFTY Professional Decision Report — 2026-09-18
 
-**Generated:** 2026-09-20T06:31:24.996850+05:30
-**Data quality:** 100%
+**Generated:** 2026-09-22T01:36:06.714151+05:30
+**Data quality:** 98%
 **Data gate:** **PASS**
 **Final decision:** **WAIT / NO TRADE**
 
@@ -58,15 +58,15 @@ A wick/sweep alone is not entry confirmation. Wait for a completed candle and fo
 
 ## Data-source health
 
-| Dataset           | Selected source            | Status   | As-of      |   Rows | Stale days   | Error   |
-|:------------------|:---------------------------|:---------|:-----------|-------:|:-------------|:--------|
-| nifty_price       | yahoo_yfinance             | fresh    | 2026-09-18 |   2467 |              |         |
-| nifty_options_eod | nselib_contract_archive    | fresh    | 2026-09-18 |   1700 |              |         |
-| nifty_futures_eod | nselib_contract_archive    | fresh    | 2026-09-18 |      3 |              |         |
-| participant_oi    | nselib_participant_archive | fresh    | 2026-09-18 |      5 |              |         |
-| india_vix         | nse_vix_archive            | fresh    | 2026-09-18 |      1 |              |         |
-| fii_dii_cash      | nse_fiidii_api             | fresh    | 2026-09-18 |      2 |              |         |
-| cross_market      | yfinance_multi_asset       | fresh    | 2026-09-18 |     25 |              |         |
+| Dataset           | Selected source            | Status   | As-of      |   Rows |   Stale days | Error                                                                                                                                              |
+|:------------------|:---------------------------|:---------|:-----------|-------:|-------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------|
+| nifty_price       | yahoo_yfinance             | fresh    | 2026-09-18 |   2465 |              |                                                                                                                                                    |
+| nifty_options_eod | nselib_contract_archive    | fresh    | 2026-09-18 |   1700 |              |                                                                                                                                                    |
+| nifty_futures_eod | nselib_contract_archive    | fresh    | 2026-09-18 |      3 |              |                                                                                                                                                    |
+| participant_oi    | nselib_participant_archive | fresh    | 2026-09-18 |      5 |              |                                                                                                                                                    |
+| india_vix         | nse_vix_archive            | fresh    | 2026-09-18 |      1 |              |                                                                                                                                                    |
+| fii_dii_cash      | last_good_cache            | cached   | 2026-09-18 |      2 |            0 | nse_fiidii_api: future-dated payload 2026-09-21 for session 2026-09-18; groww_public_table: future-dated payload 2026-09-21 for session 2026-09-18 |
+| cross_market      | yfinance_multi_asset       | fresh    | 2026-09-18 |     25 |              |                                                                                                                                                    |
 
 ## Model evidence
 
