@@ -1,6 +1,6 @@
 # NIFTY Professional Decision Report — 2026-09-21
 
-**Generated:** 2026-09-23T00:32:42.710056+05:30
+**Generated:** 2026-09-24T00:39:50.150004+05:30
 **Data quality:** 98%
 **Data gate:** **PASS**
 **Final decision:** **WAIT / NO TRADE**
@@ -60,12 +60,12 @@ A wick/sweep alone is not entry confirmation. Wait for a completed candle and fo
 
 | Dataset           | Selected source            | Status   | As-of      |   Rows |   Stale days | Error                                                                                                                                              |
 |:------------------|:---------------------------|:---------|:-----------|-------:|-------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------|
-| nifty_price       | yahoo_yfinance             | fresh    | 2026-09-21 |   2465 |              |                                                                                                                                                    |
+| nifty_price       | yahoo_yfinance             | fresh    | 2026-09-21 |   2464 |              |                                                                                                                                                    |
 | nifty_options_eod | nse_bhavcopy               | fresh    | 2026-09-21 |   1704 |              |                                                                                                                                                    |
 | nifty_futures_eod | nse_bhavcopy               | fresh    | 2026-09-21 |      3 |              |                                                                                                                                                    |
 | participant_oi    | nselib_participant_archive | fresh    | 2026-09-21 |      5 |              |                                                                                                                                                    |
 | india_vix         | yahoo_vix_chart            | fresh    | 2026-09-21 |      5 |              |                                                                                                                                                    |
-| fii_dii_cash      | last_good_cache            | cached   | 2026-09-18 |      2 |            1 | nse_fiidii_api: future-dated payload 2026-09-22 for session 2026-09-21; groww_public_table: future-dated payload 2026-09-22 for session 2026-09-21 |
+| fii_dii_cash      | last_good_cache            | cached   | 2026-09-18 |      2 |            1 | nse_fiidii_api: future-dated payload 2026-09-23 for session 2026-09-21; groww_public_table: future-dated payload 2026-09-23 for session 2026-09-21 |
 | cross_market      | yfinance_multi_asset       | fresh    | 2026-09-21 |     25 |              |                                                                                                                                                    |
 
 ## Model evidence

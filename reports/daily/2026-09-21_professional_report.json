@@ -1,6 +1,6 @@
 {
   "session_date": "2026-09-21",
-  "decision_time_ist": "2026-09-23T00:32:42.710056+05:30",
+  "decision_time_ist": "2026-09-24T00:39:50.150004+05:30",
   "decision": "WAIT / NO TRADE",
   "quality_score": 0.98,
   "data_gate": {
@@ -16,9 +16,9 @@
   "prediction": {
     "as_of": "2026-09-21",
     "direction": "DOWN",
-    "p_up": 0.3881849890581514,
-    "p_down": 0.6118150109418485,
-    "confidence": 0.6118150109418485,
+    "p_up": 0.3881849890582206,
+    "p_down": 0.6118150109417795,
+    "confidence": 0.6118150109417795,
     "gate": 0.7500000000000002,
     "confidence_pass": false,
     "research_approved": false,
