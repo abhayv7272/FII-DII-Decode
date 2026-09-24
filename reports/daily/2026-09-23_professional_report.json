@@ -1,0 +1,115 @@
+{
+  "session_date": "2026-09-23",
+  "decision_time_ist": "2026-09-25T00:54:33.308001+05:30",
+  "decision": "WAIT / NO TRADE",
+  "quality_score": 0.95,
+  "data_gate": {
+    "passed": true,
+    "quality_score": 0.95,
+    "critical_fresh_date_matched": {
+      "nifty_price": true,
+      "nifty_options_eod": true,
+      "nifty_futures_eod": true
+    },
+    "history_update_ok": true
+  },
+  "prediction": {
+    "as_of": "2026-09-23",
+    "direction": "UP",
+    "p_up": 0.5485557206681813,
+    "p_down": 0.45144427933181874,
+    "confidence": 0.5485557206681813,
+    "gate": 0.7500000000000002,
+    "confidence_pass": false,
+    "research_approved": false,
+    "model_pass": false,
+    "backtest": {
+      "sessions": 99,
+      "accuracy": 0.5454545454545454,
+      "balanced_accuracy": 0.5551470588235294,
+      "signals": 35,
+      "coverage": 0.35353535353535354,
+      "selected_accuracy": 0.6,
+      "costs": {
+        "3": {
+          "net_return": -0.016079576930604356,
+          "avg_trade": -0.000447222604664808,
+          "win_rate": 0.5142857142857142,
+          "max_drawdown": -0.025569475679320997
+        },
+        "6": {
+          "net_return": -0.026363126219642874,
+          "avg_trade": -0.0007472226046648078,
+          "win_rate": 0.5142857142857142,
+          "max_drawdown": -0.02937053967787151
+        },
+        "10": {
+          "net_return": -0.03991224150409334,
+          "avg_trade": -0.0011472226046648083,
+          "win_rate": 0.4857142857142857,
+          "max_drawdown": -0.04206614914961271
+        }
+      }
+    },
+    "error": null
+  },
+  "prediction_date_matches_session": true,
+  "event_risk": {
+    "blocked": false,
+    "status": "NO_VERIFIED_CALENDAR",
+    "events": []
+  },
+  "levels": {
+    "pivot": 23421.083984375,
+    "support_1": 23375.267578125,
+    "resistance_1": 23492.6171875,
+    "support_20d": 23116.099609375,
+    "resistance_20d": 24378.599609375,
+    "atr14_points": 188.189453125,
+    "previous_close": 23446.80078125
+  },
+  "trade_stance": "NO DIRECTIONAL POSITION",
+  "swing_stance": "Do not initiate a new swing position until the confidence/data gate and price trigger both pass.",
+  "investment_context": "Fresh long-term investment should be deferred or evaluated fundamentally; index is below its 200-day trend.",
+  "weekly_scenarios": [
+    {
+      "date": "2026-09-24",
+      "session": 1,
+      "expected_center": 23446.80078125,
+      "lower_risk_band": 23258.611328125,
+      "upper_risk_band": 23634.990234375
+    },
+    {
+      "date": "2026-09-25",
+      "session": 2,
+      "expected_center": 23446.80078125,
+      "lower_risk_band": 23180.66070434505,
+      "upper_risk_band": 23712.94085815495
+    },
+    {
+      "date": "2026-09-28",
+      "session": 3,
+      "expected_center": 23446.80078125,
+      "lower_risk_band": 23120.8470869889,
+      "upper_risk_band": 23772.7544755111
+    },
+    {
+      "date": "2026-09-29",
+      "session": 4,
+      "expected_center": 23446.80078125,
+      "lower_risk_band": 23070.421875,
+      "upper_risk_band": 23823.1796875
+    },
+    {
+      "date": "2026-09-30",
+      "session": 5,
+      "expected_center": 23446.80078125,
+      "lower_risk_band": 23025.99637141399,
+      "upper_risk_band": 23867.60519108601
+    }
+  ],
+  "failed_sources": [
+    "fii_dii_cash"
+  ],
+  "cached_sources": []
+}
