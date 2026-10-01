@@ -1,0 +1,47 @@
+{
+  "system_name": "Smart Money Institutional Predictor & Swing Advisor",
+  "version": "2.1.0",
+  "author": "Smart Money Algorithmic Intelligence",
+  "recipient_email": "abhayv7272@gmail.com",
+  "schedule_ist": "21:00",
+  "schedule_cron_utc": "30 15 * * 1-5",
+  "thresholds": {
+    "fii_capitulation_ratio": 20.0,
+    "fii_accumulation_max": 40.0,
+    "fii_trend_markup_max": 70.0,
+    "fii_overbought_ratio": 78.0,
+    "fii_stock_futures_strong_buy_3d": 30000,
+    "fii_stock_futures_strong_sell_3d": -30000,
+    "pro_put_writing_strong_threshold": -20000,
+    "pro_call_writing_strong_threshold": -20000,
+    "retail_extreme_call_buying": 50000,
+    "retail_extreme_put_buying": 50000
+  },
+  "sectors": [
+    {"name": "Nifty Bank", "ticker": "^NSEBANK", "description": "Banking & Financial Leaders"},
+    {"name": "Nifty PSU Bank", "ticker": "PSUBNKBEES.NS", "description": "Public Sector Banks (SBI, PNB, BOB)"},
+    {"name": "Nifty IT", "ticker": "^CNXIT", "description": "Information Technology & Software (TCS, INFY)"},
+    {"name": "Nifty Pharma", "ticker": "^CNXPHARMA", "description": "Pharma & Generic Formulations (Sun, Dr Reddy)"},
+    {"name": "Nifty Healthcare", "ticker": "HEALTHADD.NS", "description": "Hospitals & Diagnostics (Apollo, Max)"},
+    {"name": "Nifty Auto", "ticker": "AUTOBEES.NS", "description": "Automobiles, EVs & Ancillaries (M&M, Tata Motors)"},
+    {"name": "Nifty FMCG", "ticker": "FMCGIETF.NS", "description": "Consumer Goods & Staples (ITC, HUL)"},
+    {"name": "Nifty Metal", "ticker": "TATASTEEL.NS", "description": "Steel, Aluminum & Mining (Tata Steel, JSW)"},
+    {"name": "Nifty Energy", "ticker": "RELIANCE.NS", "description": "Power, Refining & Green Energy (Reliance, NTPC)"},
+    {"name": "Nifty Oil & Gas", "ticker": "ONGC.NS", "description": "Petroleum, Exploration & Gas (ONGC, GAIL)"},
+    {"name": "Nifty Infrastructure", "ticker": "CPSEETF.NS", "description": "Infra, Ports, Roads & Engineering (L&T, Adani)"},
+    {"name": "Nifty Realty", "ticker": "DLF.NS", "description": "Real Estate & Construction (DLF, Godrej Prop)"},
+    {"name": "Nifty Consumer Durables", "ticker": "CONSUMBEES.NS", "description": "Electronics, Appliances & Lifestyle (Titan, Havells)"},
+    {"name": "Nifty Financial Services", "ticker": "FINIETF.NS", "description": "FinNifty, NBFCs & Insurance (Bajaj Finance)"},
+    {"name": "Nifty Midcap 50", "ticker": "^NSEMDCP50", "description": "Midcap High-Beta Growth Champions"},
+    {"name": "Nifty Smallcap", "ticker": "HDFCSML250.NS", "description": "Smallcap Momentum High-Alpha Leaders"}
+  ],
+  "macro_tickers": {
+    "brent_crude": "BZ=F",
+    "us_10y_yield": "^TNX",
+    "us_dollar_index": "DX-Y.NYB",
+    "dow_jones": "^DJI",
+    "sp500": "^GSPC",
+    "nifty_50": "^NSEI",
+    "bank_nifty": "^NSEBANK"
+  }
+}
