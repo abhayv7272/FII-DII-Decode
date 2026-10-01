@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+cd "$(dirname "$0")"
 
 echo "========================================================================"
 echo "🚀 LAUNCHING SMART MONEY INSTITUTIONAL PREDICTION ENGINE"

@@ -7,7 +7,7 @@ class ReportGenerator:
         self.output_dir = os.path.join(self.base_dir, output_dir)
         os.makedirs(self.output_dir, exist_ok=True)
 
-    def generate_html_report(self, calc_res, regime_res, sector_res, macro_res):
+    def generate_html_report(self, calc_res, regime_res, sector_res, macro_res, daily_sweep_res=None, weekly_sweep_res=None, mtf_res=None):
         date_str = calc_res["date"]
         display_date = calc_res["display_date"]
         cis = calc_res["cis_score"]
@@ -21,6 +21,35 @@ class ReportGenerator:
         cap_pct = regime_res["capital_allocation_pct"]
         cash_pct = regime_res["cash_reserve_pct"]
         action_text = regime_res["action_instructions"]
+        
+        daily_sweep_res = daily_sweep_res or []
+        is_friday_report = weekly_sweep_res is not None
+        mtf_res = mtf_res or {"has_signals": False, "actionable": [], "triggered": []}
+
+        # Signal-only MTF section: suppressed completely when no index trap/MSS exists.
+        mtf_section_html = ""
+        if mtf_res.get("has_signals"):
+            mtf_rows = ""
+            for m in mtf_res.get("actionable", []):
+                status = m.get("status", "PENDING")
+                color = "#10B981" if status == "TRIGGERED_ACTIVE" else "#F59E0B"
+                entry = f"{m['entry']:,.2f}" if m.get("entry") is not None else "Waiting"
+                sl = f"{m['stoploss']:,.2f}" if m.get("stoploss") is not None else "—"
+                t1 = f"{m['target_1']:,.2f}" if m.get("target_1") is not None else "—"
+                rr = f"{m['rr_t2']:.2f}R" if m.get("rr_t2") is not None else "—"
+                mtf_rows += f'''<tr style="border-bottom:1px solid #1E293B">
+                <td style="padding:10px;color:#F8FAFC;font-weight:700">{m['name']}</td>
+                <td style="padding:10px;color:{color};font-weight:800">{status.replace('_',' ')}</td>
+                <td style="padding:10px">{m['pwl']:,.2f}</td><td style="padding:10px">{m['week_low']:,.2f}</td>
+                <td style="padding:10px">{entry}</td><td style="padding:10px;color:#EF4444">{sl}</td>
+                <td style="padding:10px;color:#10B981">{t1}</td><td style="padding:10px">{m['target_2']:,.2f}</td>
+                <td style="padding:10px">{rr}</td></tr>'''
+            mtf_section_html = f'''<div class="card" style="border:1px solid #06B6D4;box-shadow:0 0 20px rgba(6,182,212,.12)">
+            <h2 style="margin-top:0;color:#22D3EE">🔀 INDEX MTF SWEEP → DAILY TRAP → 15-MIN MSS RADAR</h2>
+            <div style="color:#94A3B8;font-size:13px;margin-bottom:14px">Index-only BUY-side framework: previous-week low sweep, latest daily close reclaim, then a causal 15-minute market-structure shift after daily confirmation. This section appears only when signals exist.</div>
+            <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;color:#CBD5E1">
+            <thead><tr style="background:#1E293B;color:#94A3B8"><th>INDEX</th><th>STATUS</th><th>PWL</th><th>WEEK LOW</th><th>ENTRY/MSS</th><th>SL</th><th>T1</th><th>T2/PWH</th><th>RR</th></tr></thead>
+            <tbody>{mtf_rows}</tbody></table></div></div>'''
         
         # Build Sector HTML Rows
         sector_rows_html = ""
@@ -48,6 +77,173 @@ class ReportGenerator:
                 <td style="padding: 12px; font-weight: 700; color: #38BDF8;">{s['rs_score']:+.2f}</td>
                 <td style="padding: 12px;">{badge}</td>
             </tr>
+            """
+
+        # Build Daily Index Sweep Engine HTML
+        daily_sweep_cards_html = ""
+        if daily_sweep_res:
+            for sw in daily_sweep_res:
+                score = sw.get("quality_score", sw.get("score", 0))
+                grade = sw.get("tier_badge", sw.get("grade", "SWEEP"))
+                cp = sw.get("current_price", sw.get("close", 0.0))
+                dl = sw.get("day_low", 0.0)
+                sl = sw.get("swept_level", 0.0)
+                wick_pct = sw.get("lower_wick_pct", sw.get("wick_pct", 0.0))
+                rsi_val = sw.get("rsi", sw.get("rsi_current", 50.0))
+                is_rsi_div = sw.get("rsi_divergence", False)
+                has_fvg = sw.get("fvg_detected", False)
+                sw_depth = sw.get("sweep_depth_pct", 0.0)
+                
+                if score >= 70:
+                    badge_style = "background: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4);"
+                    card_border = "#10B981"
+                elif score >= 50:
+                    badge_style = "background: rgba(59, 130, 246, 0.2); color: #38BDF8; border: 1px solid rgba(59, 130, 246, 0.4);"
+                    card_border = "#38BDF8"
+                else:
+                    badge_style = "background: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.4);"
+                    card_border = "#F59E0B"
+                    
+                confluences_badges = "".join([
+                    f'<span style="background: #1E293B; color: #E2E8F0; padding: 3px 8px; border-radius: 4px; font-size: 11.5px; margin-right: 6px; display: inline-block; margin-bottom: 4px;">✓ {c}</span>'
+                    for c in sw.get("confluences", [])
+                ])
+                
+                fvg_text = f"Bullish FVG at {sw.get('fvg_bottom', 0):,.1f} - {sw.get('fvg_top', 0):,.1f}" if has_fvg else "No active FVG"
+                rsi_text = f"Bullish Divergence (RSI {rsi_val:.1f})" if is_rsi_div else f"RSI Neutral ({rsi_val:.1f})"
+                
+                daily_sweep_cards_html += f"""
+                <div style="background: #030712; border: 1px solid #1E293B; border-left: 4px solid {card_border}; border-radius: 12px; padding: 16px; margin-bottom: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                        <div>
+                            <span style="color: #F8FAFC; font-weight: 800; font-size: 16px;">{sw['name']}</span>
+                            <span style="color: #64748B; font-size: 12px; margin-left: 6px;">({sw.get('category', 'Index')})</span>
+                        </div>
+                        <div>
+                            <span style="{badge_style} padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 12px;">
+                                {grade} ({score}/100)
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; font-size: 12.5px; color: #CBD5E1; margin: 10px 0; background: #0B1120; padding: 10px; border-radius: 8px;">
+                        <div>Current Close: <strong style="color: #F8FAFC;">{cp:,.2f}</strong></div>
+                        <div>Day Low: <strong style="color: #EF4444;">{dl:,.2f}</strong></div>
+                        <div>Swept Level: <strong style="color: #F59E0B;">{sl:,.2f}</strong></div>
+                        <div>Rejection Wick: <strong style="color: #10B981;">{wick_pct:.1f}%</strong></div>
+                    </div>
+                    
+                    <div style="font-size: 12px; color: #94A3B8; margin-bottom: 8px;">
+                        <strong>Reversal Footprints:</strong> {rsi_text} • {fvg_text} • Prior Low Swept by {sw_depth:.2f}% & Reclaimed
+                    </div>
+                    
+                    <div>
+                        {confluences_badges}
+                    </div>
+                </div>
+                """
+        else:
+            daily_sweep_cards_html = """
+            <div style="background: #030712; border: 1px solid #1E293B; border-radius: 12px; padding: 20px; text-align: center; color: #94A3B8;">
+                ⚡ No active daily liquidity sweep setups triggered today. Market trading in standard trend continuation.
+            </div>
+            """
+
+        # Build Weekly Sweep Engine Section (Friday Edition)
+        weekly_section_html = ""
+        if is_friday_report:
+            weekly_cards_html = ""
+            if weekly_sweep_res:
+                for wk_hit in weekly_sweep_res:
+                    w_score = wk_hit.get("score", 0)
+                    w_grade = wk_hit.get("tier_badge", "WEEKLY SWEEP")
+                    w_cp = wk_hit.get("current_price", 0.0)
+                    w_low = wk_hit.get("weekly_low", 0.0)
+                    w_sl = wk_hit.get("swept_level", 0.0)
+                    w_pool = wk_hit.get("pool_type", "Swing Low")
+                    w_wick = wk_hit.get("wick_pct", 0.0)
+                    w_sl_target = wk_hit.get("stop_loss_level", 0.0)
+                    
+                    if w_score >= 70:
+                        w_badge_style = "background: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4);"
+                        w_border = "#10B981"
+                    elif w_score >= 50:
+                        w_badge_style = "background: rgba(56, 189, 248, 0.2); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.4);"
+                        w_border = "#38BDF8"
+                    else:
+                        w_badge_style = "background: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.4);"
+                        w_border = "#F59E0B"
+                        
+                    w_confluences_badges = "".join([
+                        f'<span style="background: #1E293B; color: #E2E8F0; padding: 3px 8px; border-radius: 4px; font-size: 11.5px; margin-right: 6px; display: inline-block; margin-bottom: 4px;">✓ {c}</span>'
+                        for c in wk_hit.get("confluences", [])
+                    ])
+                    
+                    weekly_cards_html += f"""
+                    <div style="background: #030712; border: 1px solid #1E293B; border-left: 4px solid {w_border}; border-radius: 12px; padding: 16px; margin-bottom: 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                            <div>
+                                <span style="color: #F8FAFC; font-weight: 800; font-size: 16px;">{wk_hit['name']}</span>
+                                <span style="color: #64748B; font-size: 12px; margin-left: 6px;">({wk_hit.get('category', 'Index')})</span>
+                            </div>
+                            <div>
+                                <span style="{w_badge_style} padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 12px;">
+                                    {w_grade} ({w_score}/100)
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; font-size: 12.5px; color: #CBD5E1; margin: 10px 0; background: #0B1120; padding: 10px; border-radius: 8px;">
+                            <div>Weekly Close: <strong style="color: #F8FAFC;">{w_cp:,.2f}</strong></div>
+                            <div>Weekly Low: <strong style="color: #EF4444;">{w_low:,.2f}</strong></div>
+                            <div>Swept {w_pool}: <strong style="color: #F59E0B;">{w_sl:,.2f}</strong></div>
+                            <div>Weekly Lower Wick: <strong style="color: #10B981;">{w_wick:.1f}%</strong></div>
+                        </div>
+                        
+                        <div style="font-size: 12px; color: #94A3B8; margin-bottom: 8px;">
+                            <strong>Positional Swing Strategy:</strong> Target 2 to 6 Weeks Holding • Invalidation Stop Loss below Weekly Wick at <strong style="color: #F8FAFC;">{w_sl_target:,.2f}</strong>.
+                        </div>
+                        
+                        <div>
+                            {w_confluences_badges}
+                        </div>
+                    </div>
+                    """
+            else:
+                weekly_cards_html = """
+                <div style="background: #030712; border: 1px solid #1E293B; border-radius: 12px; padding: 20px; text-align: center; color: #94A3B8;">
+                    ⚡ No multi-week fractal liquidity sweeps triggered this week across NSE indices. Standard weekly trend intact.
+                </div>
+                """
+                
+            weekly_section_html = f"""
+            <!-- FRIDAY SPECIAL: WEEKLY INDEX LIQUIDITY SWEEP RADAR -->
+            <div class="card" style="border: 1px solid #8B5CF6; box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+                    <h2 style="margin: 0; font-size: 20px; color: #A78BFA; display: flex; align-items: center; gap: 8px;">
+                        🗓️ FRIDAY SPECIAL: NSE INDEX WEEKLY LIQUIDITY SWEEP RADAR
+                    </h2>
+                    <span style="background: rgba(139, 92, 246, 0.2); color: #C4B5FD; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase;">
+                        Multi-Week Positional Horizon (2-6 Weeks)
+                    </span>
+                </div>
+                <div style="color: #94A3B8; font-size: 13px; margin-bottom: 16px;">
+                    Weekly Fractal Liquidity Sweeps, 26W / 52W Low Absorption Hammers, and Weekly Trend Reversals across all NSE Broad Market, Sectoral & Thematic Indices. <em>(Delivered weekly on Friday EOD)</em>.
+                </div>
+                {weekly_cards_html}
+            </div>
+            """
+        else:
+            weekly_section_html = f"""
+            <!-- WEEKLY SWEEP NOTICE -->
+            <div style="background: rgba(15, 23, 42, 0.6); border: 1px dashed #334155; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div style="color: #94A3B8; font-size: 13px;">
+                    🗓️ <strong>Weekly Index Sweep Radar</strong>: Runs automatically every <strong>Friday at 9:00 PM IST</strong> with the weekly candle close to deliver 2-to-6 week positional swing setups.
+                </div>
+                <span style="background: #1E293B; color: #94A3B8; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                    Friday Routine Active
+                </span>
+            </div>
             """
 
         # Build Sheet Tables HTML
@@ -182,7 +378,7 @@ class ReportGenerator:
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 16px;">
                 <div>
                     <span style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase;">
-                        Institutional Intelligence Report
+                        Institutional Intelligence Report {'• 🗓️ Friday Edition' if is_friday_report else ''}
                     </span>
                     <h1 style="margin: 8px 0 4px 0; font-size: 28px; font-weight: 900; color: #FFFFFF;">
                         Smart Money Daily Market Prediction
@@ -277,6 +473,21 @@ class ReportGenerator:
             </div>
         </div>
 
+        {weekly_section_html}
+
+        {mtf_section_html}
+
+        <!-- DAILY NSE INDEX LIQUIDITY SWEEP & CONFLUENCE RADAR -->
+        <div class="card">
+            <h2 style="margin-top: 0; font-size: 20px; color: #F43F5E; display: flex; align-items: center; gap: 8px;">
+                🎯 NSE INDEX DAILY LIQUIDITY SWEEP & REVERSAL RADAR
+            </h2>
+            <div style="color: #94A3B8; font-size: 13px; margin-bottom: 16px;">
+                Daily multi-confluence screening across Broad Market, Sectoral & Thematic NSE Indices detecting Stop-Loss Sweeps, Hammer Rejection Wicks, Bullish RSI Divergences, and Fair Value Gaps (FVGs). <em>(Runs every day)</em>.
+            </div>
+            {daily_sweep_cards_html}
+        </div>
+
         <!-- INSTITUTIONAL TRAPS & SETUP DETECTION -->
         <div class="card">
             <h2 style="margin-top: 0; font-size: 20px; color: #F59E0B; display: flex; align-items: center; gap: 8px;">
@@ -352,7 +563,7 @@ class ReportGenerator:
             f.write(html)
             
         # Also generate Markdown Report
-        md = self._generate_markdown(calc_res, regime_res, sector_res, macro_res)
+        md = self._generate_markdown(calc_res, regime_res, sector_res, macro_res, daily_sweep_res, weekly_sweep_res, mtf_res)
         out_md_path = os.path.join(self.output_dir, f"prediction_report_{date_str}.md")
         latest_md_path = os.path.join(self.output_dir, "latest_prediction_report.md")
         
@@ -369,14 +580,16 @@ class ReportGenerator:
             "html_content": html
         }
 
-    def _generate_markdown(self, calc_res, regime_res, sector_res, macro_res):
+    def _generate_markdown(self, calc_res, regime_res, sector_res, macro_res, daily_sweep_res=None, weekly_sweep_res=None, mtf_res=None):
         display_date = calc_res["display_date"]
         cis = calc_res["cis_score"]
         fii_ratio = calc_res["fii_long_ratio"]
         fii_stk_3d = calc_res["fii_stk_flow_3d"]
         signal = regime_res["primary_signal"]
+        daily_sweep_res = daily_sweep_res or []
+        is_friday_report = weekly_sweep_res is not None
         
-        md = f"""# 🏛️ Smart Money Institutional Prediction Report — {display_date}
+        md = f"""# 🏛️ Smart Money Institutional Prediction Report — {display_date} {'(🗓️ Friday Edition)' if is_friday_report else ''}
 
 **Primary Signal**: `{signal}`
 **Market Regime**: `{regime_res['regime_name']}`
@@ -399,7 +612,62 @@ class ReportGenerator:
 - **Support 1**: `{regime_res['support_1']}`
 - **SL Sweep Zone (Liquidity Hunt)**: `{regime_res['sweep_zone']}`
 - **Support 2**: `{regime_res['support_2']}`
+"""
+        mtf_res = mtf_res or {"has_signals": False, "actionable": []}
+        if mtf_res.get("has_signals"):
+            md += """
+---
 
+## 🔀 Index MTF Sweep → Daily Trap → 15-Min MSS Radar
+*Signal-only section; individual stocks are never scanned.*
+
+| Index | Status | PWL | Week Low | Entry/MSS | SL | T1 | T2/PWH | RR |
+| :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+"""
+            for m in mtf_res.get("actionable", []):
+                md += f"| {m['name']} | {m.get('status','')} | {m.get('pwl','—')} | {m.get('week_low','—')} | {m.get('entry') or 'Waiting'} | {m.get('stoploss') or '—'} | {m.get('target_1') or '—'} | {m.get('target_2') or '—'} | {m.get('rr_t2') or '—'} |\n"
+
+        if is_friday_report:
+            md += """
+---
+
+## 🗓️ FRIDAY SPECIAL: NSE Index Weekly Liquidity Sweep Radar (Multi-Week Positional)
+Weekly Fractal Liquidity Sweeps, 26W / 52W Low Absorption Hammers, and Weekly Trend Reversals across all NSE Broad Market, Sectoral & Thematic Indices *(Delivered every Friday)*.
+
+| Index Name | Category | Grade & Score | Weekly Close | Weekly Low | Swept Support | Wick % | Invalidation SL | Confluences |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+"""
+            if weekly_sweep_res:
+                for wk in weekly_sweep_res:
+                    w_confs = ", ".join(wk.get("confluences", [])[:2])
+                    md += f"| {wk['name']} | {wk.get('category', 'Index')} | {wk.get('tier_badge', 'WEEKLY')} ({wk.get('score', 0)}/100) | {wk.get('current_price', 0):,.1f} | {wk.get('weekly_low', 0):,.1f} | {wk.get('swept_level', 0):,.1f} ({wk.get('pool_type', 'Low')}) | {wk.get('wick_pct', 0):.1f}% | {wk.get('stop_loss_level', 0):,.1f} | {w_confs} |\n"
+            else:
+                md += "| *No multi-week index sweep triggers detected this week* | - | - | - | - | - | - | - | - |\n"
+
+        md += f"""
+---
+
+## 🎯 NSE Index Daily Liquidity Sweep Radar (Daily Routine)
+Daily multi-confluence screening across Broad Market, Sectoral & Thematic NSE Indices detecting Stop-Loss Sweeps, Hammer Rejection Wicks, RSI Divergences, and FVGs.
+
+| Index Name | Category | Grade & Score | Close | Day Low | Swept Support | Wick % | RSI Divergence | Confluences |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+"""
+        for sw in daily_sweep_res:
+            rsi_d = "Bullish Div" if sw.get('rsi_divergence', False) else "Neutral"
+            confs = ", ".join(sw.get('confluences', [])[:2])
+            cp = sw.get("current_price", sw.get("close", 0.0))
+            dl = sw.get("day_low", 0.0)
+            sl = sw.get("swept_level", 0.0)
+            wick_pct = sw.get("lower_wick_pct", sw.get("wick_pct", 0.0))
+            score = sw.get("quality_score", sw.get("score", 0))
+            grade = sw.get("tier_badge", sw.get("grade", "SWEEP"))
+            md += f"| {sw['name']} | {sw.get('category', 'Index')} | {grade} ({score}/100) | {cp:,.1f} | {dl:,.1f} | {sl:,.1f} | {wick_pct:.1f}% | {rsi_d} | {confs} |\n"
+            
+        if not daily_sweep_res:
+            md += "| *No active daily index sweep triggers detected today* | - | - | - | - | - | - | - | - |\n"
+
+        md += f"""
 ---
 
 ## 🔄 Sector Rotation Ranking

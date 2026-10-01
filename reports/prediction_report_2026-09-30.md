@@ -13,38 +13,54 @@
 Deploy 100% capital into high-beta, leading fundamental stocks at support / 20 EMA reclaim. Target 20 to 40 day positional swing holding.
 
 ### Expected Chart Trajectory
-Heavy Bearish Flow: Rejection expected near resistance 22750.0, with selling pressure testing support 22400.0 and potential breakdown towards 22230.0.
+Heavy Bearish Flow: Rejection expected near resistance 22600.0, with selling pressure testing support 22250.0 and potential breakdown towards 22090.0.
 
 ### Key Institutional Levels
-- **Resistance 2**: `22980.0`
-- **Resistance 1**: `22750.0`
-- **Support 1**: `22400.0`
-- **SL Sweep Zone (Liquidity Hunt)**: `22365.0`
-- **Support 2**: `22230.0`
+- **Resistance 2**: `22830.0`
+- **Resistance 1**: `22600.0`
+- **Support 1**: `22250.0`
+- **SL Sweep Zone (Liquidity Hunt)**: `22215.0`
+- **Support 2**: `22090.0`
+
+---
+
+## 🎯 NSE Index Liquidity Sweep & Reversal Confluence Radar
+Multi-confluence screening across Broad Market, Sectoral & Thematic NSE Indices detecting Stop-Loss Sweeps, Hammer Rejection Wicks, RSI Divergences, and FVGs.
+
+| Index Name | Category | Grade & Score | Close | Day Low | Swept Support | Wick % | RSI Divergence | Confluences |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Nifty Healthcare | Sectoral | 🔥 GRADE A+ SWEEP (70/100) | 16.2 | 16.1 | 16.2 | 47.8% | Bullish Div | Major Swing Low Swept & Reclaimed, Strong Lower Rejection Tail (35%+) |
+| Nifty Financial Services | Sectoral | 🔥 GRADE A+ SWEEP (70/100) | 30.4 | 29.5 | 30.1 | 46.1% | Bullish Div | Major Swing Low Swept & Reclaimed, Strong Lower Rejection Tail (35%+) |
+| Nifty Commodities | Thematic | 🔥 GRADE A+ SWEEP (70/100) | 1,233.0 | 1,214.8 | 1,227.0 | 43.7% | Bullish Div | Major Swing Low Swept & Reclaimed, Strong Lower Rejection Tail (35%+) |
+| Nifty Smallcap 100 | Broad Market | ⚡ GRADE B SWEEP (60/100) | 177.8 | 175.1 | 176.5 | 62.9% | Neutral | Major Swing Low Swept & Reclaimed, Massive Liquidity Absorption Hammer Wick (50%+) |
+| Nifty Bank | Sectoral | ⚡ GRADE B SWEEP (55/100) | 54,450.8 | 54,066.6 | 54,174.3 | 37.5% | Bullish Div | Prior Day Low (PDL) Swept & Reclaimed, Strong Lower Rejection Tail (35%+) |
+| Nifty 50 | Broad Market | 📈 GRADE C SWEEP (40/100) | 22,422.0 | 22,217.3 | 22,569.7 | 52.0% | Bullish Div | Massive Liquidity Absorption Hammer Wick (50%+), Bullish RSI Momentum Divergence |
+| Nifty Pharma | Sectoral | 📈 GRADE C SWEEP (40/100) | 26,311.5 | 26,020.5 | 25,854.8 | 58.6% | Bullish Div | Massive Liquidity Absorption Hammer Wick (50%+), Bullish RSI Momentum Divergence |
+| Nifty Realty | Sectoral | 📈 GRADE C SWEEP (35/100) | 658.4 | 650.5 | 653.0 | 38.2% | Neutral | Prior Day Low (PDL) Swept & Reclaimed, Strong Lower Rejection Tail (35%+) |
 
 ---
 
 ## 🔄 Sector Rotation Ranking
-Institutional accumulation is heavily concentrated in Nifty Realty. Focus 10-40 day swing positions in stocks belonging to these leadership sectors. Avoid laggards (Nifty Oil & Gas, Nifty Auto).
+Sector leadership is currently broad-based. Priority to sectors trading above their Daily 20 EMA.
 
 | Sector Name | 1-Week % | 1-Month % | 20 EMA Status | RS Score | Institutional Stance |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Nifty Bank | -1.02% | -4.18% | Below 20 EMA | +2.43 | IMPROVING (Outperforming) |
-| Nifty Realty | -2.52% | -1.38% | Above 20 EMA | +2.33 | LEADER (Strong Outperformance) |
-| Nifty Pharma | -2.49% | -1.73% | Below 20 EMA | +2.18 | IMPROVING (Outperforming) |
-| Nifty Metal | -3.23% | -1.18% | Below 20 EMA | +1.72 | IMPROVING (Outperforming) |
-| Nifty Infrastructure | -3.13% | -2.93% | Below 20 EMA | +0.95 | IMPROVING (Outperforming) |
-| Nifty Smallcap | -2.66% | -3.89% | Below 20 EMA | +0.93 | IMPROVING (Outperforming) |
-| Nifty PSU Bank | -2.81% | -5.07% | Below 20 EMA | +0.19 | IMPROVING (Outperforming) |
-| Nifty IT | -0.36% | -10.91% | Below 20 EMA | -0.27 | NEUTRAL (In Line) |
-| Nifty Healthcare | -4.13% | -3.39% | Below 20 EMA | -0.28 | NEUTRAL (In Line) |
-| Nifty Midcap 50 | -2.58% | -6.72% | Below 20 EMA | -0.40 | NEUTRAL (In Line) |
-| Nifty FMCG | -4.12% | -4.70% | Below 20 EMA | -0.93 | NEUTRAL (In Line) |
-| Nifty Consumer Durables | -3.93% | -6.81% | Below 20 EMA | -1.79 | NEUTRAL (In Line) |
-| Nifty Financial Services | -3.68% | -7.81% | Below 20 EMA | -2.05 | NEUTRAL (In Line) |
-| Nifty Oil & Gas | -5.53% | -5.37% | Below 20 EMA | -2.68 | LAGGARD (Underperforming) |
-| Nifty Auto | -3.99% | -9.05% | Below 20 EMA | -2.97 | LAGGARD (Underperforming) |
-| Nifty Energy | -4.14% | -10.22% | Below 20 EMA | -3.72 | LAGGARD (Underperforming) |
+| Nifty Pharma | -2.56% | -1.80% | Below 20 EMA | +3.04 | IMPROVING (Outperforming) |
+| Nifty IT | +0.51% | -10.13% | Below 20 EMA | +1.94 | IMPROVING (Outperforming) |
+| Nifty Bank | -2.03% | -5.15% | Below 20 EMA | +1.89 | IMPROVING (Outperforming) |
+| Nifty Infrastructure | -3.17% | -2.97% | Below 20 EMA | +1.84 | IMPROVING (Outperforming) |
+| Nifty Realty | -3.60% | -2.48% | Below 20 EMA | +1.66 | IMPROVING (Outperforming) |
+| Nifty Smallcap | -3.00% | -4.22% | Below 20 EMA | +1.39 | IMPROVING (Outperforming) |
+| Nifty Financial Services | -2.72% | -6.89% | Below 20 EMA | +0.34 | IMPROVING (Outperforming) |
+| Nifty Healthcare | -4.42% | -3.68% | Below 20 EMA | +0.24 | IMPROVING (Outperforming) |
+| Nifty PSU Bank | -3.82% | -6.05% | Below 20 EMA | -0.34 | NEUTRAL (In Line) |
+| Nifty Metal | -5.30% | -3.30% | Below 20 EMA | -0.45 | NEUTRAL (In Line) |
+| Nifty Midcap 50 | -3.63% | -7.72% | Below 20 EMA | -0.98 | NEUTRAL (In Line) |
+| Nifty FMCG | -4.91% | -5.48% | Below 20 EMA | -1.15 | NEUTRAL (In Line) |
+| Nifty Consumer Durables | -4.65% | -7.51% | Below 20 EMA | -1.90 | NEUTRAL (In Line) |
+| Nifty Oil & Gas | -5.72% | -5.55% | Below 20 EMA | -2.00 | NEUTRAL (In Line) |
+| Nifty Auto | -4.89% | -9.90% | Below 20 EMA | -3.34 | LAGGARD (Underperforming) |
+| Nifty Energy | -4.76% | -10.79% | Below 20 EMA | -3.65 | LAGGARD (Underperforming) |
 
 ---
 

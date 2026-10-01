@@ -1,6 +1,6 @@
 {
   "system_name": "Smart Money Institutional Predictor & Swing Advisor",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "author": "Smart Money Algorithmic Intelligence",
   "recipient_email": "abhayv7272@gmail.com",
   "schedule_ist": "21:00",
@@ -18,22 +18,102 @@
     "retail_extreme_put_buying": 50000
   },
   "sectors": [
-    {"name": "Nifty Bank", "ticker": "^NSEBANK", "description": "Banking & Financial Leaders"},
-    {"name": "Nifty PSU Bank", "ticker": "PSUBNKBEES.NS", "description": "Public Sector Banks (SBI, PNB, BOB)"},
-    {"name": "Nifty IT", "ticker": "^CNXIT", "description": "Information Technology & Software (TCS, INFY)"},
-    {"name": "Nifty Pharma", "ticker": "^CNXPHARMA", "description": "Pharma & Generic Formulations (Sun, Dr Reddy)"},
-    {"name": "Nifty Healthcare", "ticker": "HEALTHADD.NS", "description": "Hospitals & Diagnostics (Apollo, Max)"},
-    {"name": "Nifty Auto", "ticker": "AUTOBEES.NS", "description": "Automobiles, EVs & Ancillaries (M&M, Tata Motors)"},
-    {"name": "Nifty FMCG", "ticker": "FMCGIETF.NS", "description": "Consumer Goods & Staples (ITC, HUL)"},
-    {"name": "Nifty Metal", "ticker": "TATASTEEL.NS", "description": "Steel, Aluminum & Mining (Tata Steel, JSW)"},
-    {"name": "Nifty Energy", "ticker": "RELIANCE.NS", "description": "Power, Refining & Green Energy (Reliance, NTPC)"},
-    {"name": "Nifty Oil & Gas", "ticker": "ONGC.NS", "description": "Petroleum, Exploration & Gas (ONGC, GAIL)"},
-    {"name": "Nifty Infrastructure", "ticker": "CPSEETF.NS", "description": "Infra, Ports, Roads & Engineering (L&T, Adani)"},
-    {"name": "Nifty Realty", "ticker": "DLF.NS", "description": "Real Estate & Construction (DLF, Godrej Prop)"},
-    {"name": "Nifty Consumer Durables", "ticker": "CONSUMBEES.NS", "description": "Electronics, Appliances & Lifestyle (Titan, Havells)"},
-    {"name": "Nifty Financial Services", "ticker": "FINIETF.NS", "description": "FinNifty, NBFCs & Insurance (Bajaj Finance)"},
-    {"name": "Nifty Midcap 50", "ticker": "^NSEMDCP50", "description": "Midcap High-Beta Growth Champions"},
-    {"name": "Nifty Smallcap", "ticker": "HDFCSML250.NS", "description": "Smallcap Momentum High-Alpha Leaders"}
+    {
+      "name": "Nifty Bank",
+      "index_symbol": "^NSEBANK",
+      "history_proxy": "BANKBEES.NS",
+      "description": "Nifty Bank index; ETF fallback only"
+    },
+    {
+      "name": "Nifty PSU Bank",
+      "index_symbol": "^CNXPSUBANK",
+      "history_proxy": "PSUBNKBEES.NS",
+      "description": "Nifty PSU Bank index; ETF fallback only"
+    },
+    {
+      "name": "Nifty IT",
+      "index_symbol": "^CNXIT",
+      "history_proxy": "ITBEES.NS",
+      "description": "Nifty IT index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Pharma",
+      "index_symbol": "^CNXPHARMA",
+      "history_proxy": "PHARMABEES.NS",
+      "description": "Nifty Pharma index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Healthcare",
+      "index_symbol": null,
+      "history_proxy": "HEALTHIETF.NS",
+      "description": "Nifty Healthcare index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Auto",
+      "index_symbol": "^CNXAUTO",
+      "history_proxy": "AUTOBEES.NS",
+      "description": "Nifty Auto index; ETF fallback only"
+    },
+    {
+      "name": "Nifty FMCG",
+      "index_symbol": "^CNXFMCG",
+      "history_proxy": "FMCGIETF.NS",
+      "description": "Nifty FMCG index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Metal",
+      "index_symbol": "^CNXMETAL",
+      "history_proxy": "METALIETF.NS",
+      "description": "Nifty Metal index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Energy",
+      "index_symbol": "^CNXENERGY",
+      "history_proxy": "ENERGY.NS",
+      "description": "Nifty Energy index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Oil & Gas",
+      "index_symbol": null,
+      "history_proxy": "OILIETF.NS",
+      "description": "Nifty Oil & Gas index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Infrastructure",
+      "index_symbol": "^CNXINFRA",
+      "history_proxy": "INFRAIETF.NS",
+      "description": "Nifty Infrastructure index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Realty",
+      "index_symbol": "^CNXREALTY",
+      "history_proxy": "MOREALTY.NS",
+      "description": "Nifty Realty index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Consumer Durables",
+      "index_symbol": null,
+      "history_proxy": "CONSUMBEES.NS",
+      "description": "Nifty Consumer Durables index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Financial Services",
+      "index_symbol": "^CNXFIN",
+      "history_proxy": "FINIETF.NS",
+      "description": "Nifty Financial Services index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Midcap 50",
+      "index_symbol": "^NSEMDCP50",
+      "history_proxy": "MIDQ50ADD.NS",
+      "description": "Nifty Midcap 50 index; ETF fallback only"
+    },
+    {
+      "name": "Nifty Smallcap 250",
+      "index_symbol": null,
+      "history_proxy": "HDFCSML250.NS",
+      "description": "Nifty Smallcap 250 index; ETF fallback only"
+    }
   ],
   "macro_tickers": {
     "brent_crude": "BZ=F",

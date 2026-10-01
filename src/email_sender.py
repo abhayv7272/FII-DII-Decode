@@ -14,7 +14,10 @@ class EmailSender:
 
     def send_report(self, subject, html_content):
         if not self.smtp_user or not self.smtp_pass:
-            print("[INFO] No SMTP credentials configured in environment. Saved local HTML report instead.")
+            msg="SMTP credentials are not configured; HTML report was saved locally."
+            if os.environ.get("REQUIRE_EMAIL","").lower() in {"1","true","yes"}:
+                raise RuntimeError(msg)
+            print(f"[INFO] {msg}")
             print(f"[INFO] Report is ready for automated dispatch to: {self.recipient_email}")
             return False
             
@@ -35,5 +38,7 @@ class EmailSender:
             print(f"✅ Successfully dispatched daily report email to: {self.recipient_email}")
             return True
         except Exception as e:
+            if os.environ.get("REQUIRE_EMAIL","").lower() in {"1","true","yes"}:
+                raise RuntimeError(f"Email dispatch failed: {e}") from e
             print(f"⚠️ Email dispatch error: {e}")
             return False

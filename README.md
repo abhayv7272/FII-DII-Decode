@@ -1,8 +1,8 @@
 # 🏛️ Smart Money Institutional Predictor & Swing Advisor (Pro Edition)
 
-> **Automated Institutional Intelligence Engine based on Official NSE Derivatives Participant Open Interest, Smart Money (FII & Pro Desks) Footprints, and Multi-Day Institutional Flow.**
+> **Automated Institutional Intelligence Engine based on Official NSE Derivatives Participant Open Interest, Smart Money (FII & Pro Desks) Footprints, Sector Rotation, and Multi-Confluence Index Liquidity Sweeps.**
 
-Built specifically for **10-to-40 Day & 1-to-2 Month Positional / Swing Traders** to master **Macro Market Regimes, Capital Exposure Management (0% to 100% Cash Sizing), and Sector Rotation**.
+Built specifically for **10-to-40 Day & 1-to-2 Month Positional / Swing Traders** to master **Macro Market Regimes, Capital Exposure Management (0% to 100% Cash Sizing), Sector Rotation, and Reversal Confluence Triggers**.
 
 ---
 
@@ -12,7 +12,8 @@ Built specifically for **10-to-40 Day & 1-to-2 Month Positional / Swing Traders*
 - **Exact Amit Dhamija Mathematical Engine**: Computes Multi-Day Carried Inventory (Today, 1 Day Ago, 2 Days Ago) and Daily Flow of Funds (Added/Closed Longs & Shorts) across Index Futures, Calls, Puts, Stock Futures, Stock Calls, and Stock Puts.
 - **6-Factor Composite Institutional Score (CIS)**: Weighted quantitative scoring (-10 to +10) proven across **1,417 trading days (5+ Years)** with a **76.9% Win Rate** and **4.72x Profit Factor** on multi-week swings.
 - **5-Regime Capital Exposure Engine**: Tells you precisely whether to deploy **100% Capital** or sit on **90%-100% Cash** to protect alpha.
-- **Institutional Sector Rotation Leaderboard**: Ranks sectors (*Nifty Auto, Bank, IT, Pharma, Metal, FMCG, Energy, Realty*) based on Relative Strength (RS vs Nifty) and 20 EMA trend to pinpoint where Smart Money is accumulating.
+- **Institutional Sector Rotation Leaderboard**: Ranks 16 major sectors (*Nifty Auto, Bank, IT, Pharma, Metal, FMCG, Energy, Realty, Healthcare, etc.*) based on Relative Strength (RS vs Nifty) and 20 EMA trend.
+- **🎯 NSE Index Liquidity Sweep & Reversal Confluence Radar**: Adapted from the Daily-Sweep concept to scan **ALL Broad Market, Sectoral & Thematic NSE Indices** for Stop-Loss Sweeps, Hammer Rejection Wicks ($\ge 35\% - 50\%+$), 14-period Bullish RSI Divergences, and Fair Value Gaps (FVGs).
 - **Automated GitHub Actions Workflow**: Runs automatically every weekday at **9:00 PM IST (15:30 UTC)**, generates visual dark-mode HTML dashboards, and sends rich email reports directly to `abhayv7272@gmail.com`.
 
 ---
@@ -54,21 +55,9 @@ View the generated report by opening `reports/latest_prediction_report.html` in 
 
 ## ⚙️ GitHub Actions Automated Setup (Daily 9:00 PM IST Email to `abhayv7272@gmail.com`)
 
-### Step 1: Create a New GitHub Repository
-1. Go to [GitHub.com](https://github.com) and click **New Repository** (e.g. `smart-money-predictor`).
-2. Push this project code to your repository:
-```bash
-git init
-git add .
-git commit -m "feat: initial commit of Smart Money Institutional Predictor"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/smart-money-predictor.git
-git push -u origin main
-```
-
-### Step 2: Configure Free Email Secrets (Optional for Email Delivery)
+### Step 1: Configure Free Email Secrets (For Automated Delivery)
 To receive daily HTML reports at `abhayv7272@gmail.com` via Gmail SMTP:
-1. In your GitHub repository, go to **Settings > Secrets and variables > Actions > New repository secret**.
+1. In your GitHub repository (`https://github.com/abhayv7272/smart-money-predictor`), go to **Settings > Secrets and variables > Actions > New repository secret**.
 2. Add the following secrets:
    - `MAIL_SERVER`: `smtp.gmail.com`
    - `MAIL_PORT`: `587`
@@ -100,25 +89,44 @@ To receive daily HTML reports at `abhayv7272@gmail.com` via Gmail SMTP:
 smart-money-predictor/
 ├── .github/
 │   └── workflows/
-│       └── daily_prediction.yml       # GitHub Actions 9:00 PM IST Cron Workflow
-├── src/
-│   ├── fetcher.py                     # 100% Free daily data fetcher (NSE OI, Macro, Sectors)
-│   ├── calculator.py                  # Amit Dhamija exact table engine & CIS Score
-│   ├── regime_engine.py               # 5-Regime classifier, Capital Allocation %, Levels
-│   ├── sector_rotation.py             # Sector Relative Strength & Ranking Engine
-│   ├── report_generator.py            # Ultra-stunning Dark Mode HTML + Markdown generator
-│   ├── email_sender.py                # Email dispatcher for abhayv7272@gmail.com
-│   └── main.py                        # Master pipeline entrypoint
-├── reports/                           # Archived HTML & Markdown daily reports
+│       └── daily_prediction.yml     # Automated Daily 9:00 PM IST GitHub Actions Workflow
 ├── data/
-│   └── participant_oi_master.db       # 5+ Year historical SQLite DB (1,420 days)
-├── config.json                        # Thresholds, recipient email & sector list
-├── requirements.txt                   # Free Python dependencies
-├── run.sh                             # One-click runner
-└── README.md                          # Documentation
+│   └── participant_oi_master.db     # 1,420 Days Pre-loaded Historical SQLite DB
+├── reports/
+│   ├── latest_prediction_report.html # Ultra-Luxurious Visual HTML Prediction Dashboard
+│   ├── latest_prediction_report.md   # Clean Markdown Prediction Summary
+│   └── prediction_report_YYYY-MM-DD.html # Daily Archived Dashboard
+├── src/
+│   ├── __init__.py
+│   ├── main.py                      # Master Pipeline Runner
+│   ├── fetcher.py                   # 100% Free Multi-Source Fetcher (NSE + Macro)
+│   ├── calculator.py                # Amit Dhamija Sheet Layout & CIS Calculator
+│   ├── regime_engine.py             # 5 Regimes, Capital Exposure & Trajectory Engine
+│   ├── sector_rotation.py           # 16-Sector RS & Smart Money Rotation Analyzer
+│   ├── index_sweep_engine.py        # Multi-Confluence Liquidity Sweep Radar across ALL NSE Indices
+│   ├── report_generator.py          # HTML Dashboard & Markdown Generator
+│   └── email_sender.py              # Automated Gmail SMTP Dispatcher
+├── SMART_MONEY_WORKFLOW_MASTER_REFERENCE.md # Master Reference & Continuation Prompt
+├── config.json                      # Target Email abhayv7272@gmail.com & Sector Universe
+├── requirements.txt                 # Free Python Package Dependencies
+├── run.sh                           # 1-Click Execution Script
+└── README.md                        # Documentation & Deployment Guide
 ```
 
 ---
 
-## 📜 License & Disclaimer
-*This repository is for educational and algorithmic research purposes. Derivative trading involves risk. Strictly adhere to system stop-losses and position sizing.*
+## 🔬 Pre-Deployment Deep Diagnostics
+
+```bash
+pip install -r requirements.txt
+python -m unittest discover -s tests -v
+python diagnose.py
+python src/main.py
+```
+
+`diagnose.py` validates the official NSE participant-OI feed and parser, SQLite history, all seven macro feeds, sector/index feed coverage, Daily Sweep, Friday Weekly Sweep, and MTF PWL→daily reclaim→15-minute MSS engines. It exits non-zero when a critical feed fails.
+
+### Index-only data integrity
+All sweep engines use `src/index_universe.py` as a single source of truth. They prefer actual index symbols. Where Yahoo does not provide sufficient daily index history, they use an **index-tracking ETF only**, explicitly marked as `index_tracking_etf`; individual constituent stocks are never used as index substitutes. Fake neutral sector rows are prohibited.
+
+GitHub Actions runs regression tests before the pipeline and treats missing SMTP credentials or email delivery failure as a job failure (`REQUIRE_EMAIL=true`), preventing silent “green” runs with no Gmail report.
