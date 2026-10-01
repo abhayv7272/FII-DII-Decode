@@ -1,9 +1,6 @@
 name: Smart Money Daily Market Predictor
 
 on:
-  schedule:
-    # Monday-Friday at 15:30 UTC = 9:00 PM IST
-    - cron: '30 15 * * 1-5'
   workflow_dispatch:
 
 jobs:
