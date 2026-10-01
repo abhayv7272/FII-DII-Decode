@@ -242,3 +242,9 @@ Pipeline: previous completed W-FRI high/low → current-week daily low below PWL
 - Weekly scans exclude incomplete weekly candles outside Friday EOD execution.
 - `diagnose.py` validates OI, history, macro, sector coverage, and all three index engines.
 - GitHub Actions runs unit tests and fails loudly if SMTP credentials/delivery fail.
+
+---
+
+## 12. EMBEDDED SIGNAL CHARTS IN HTML/GMAIL REPORTS
+
+Every qualifying Daily Liquidity Sweep, Friday Weekly Liquidity Sweep, and signal-only MTF PWL→Daily Trap→15m MSS setup now includes an annotated candlestick chart. Daily charts show swept level and invalidation low; weekly charts show weekly liquidity pool and stop; MTF charts show PWL, MSS entry, SL, T1, and PWH/T2. Standalone HTML uses embedded base64 PNGs, while `email_sender.py` converts them to inline CID MIME attachments so Gmail displays charts without external hosting or blocked URLs. Charts are generated only for active/qualifying signals.

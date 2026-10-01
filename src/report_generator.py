@@ -1,5 +1,6 @@
 import os
 import datetime
+from signal_chart_renderer import chart_html
 
 class ReportGenerator:
     def __init__(self, output_dir="reports"):
@@ -30,6 +31,7 @@ class ReportGenerator:
         mtf_section_html = ""
         if mtf_res.get("has_signals"):
             mtf_rows = ""
+            mtf_chart_blocks = ""
             for m in mtf_res.get("actionable", []):
                 status = m.get("status", "PENDING")
                 color = "#10B981" if status == "TRIGGERED_ACTIVE" else "#F59E0B"
@@ -44,12 +46,13 @@ class ReportGenerator:
                 <td style="padding:10px">{entry}</td><td style="padding:10px;color:#EF4444">{sl}</td>
                 <td style="padding:10px;color:#10B981">{t1}</td><td style="padding:10px">{m['target_2']:,.2f}</td>
                 <td style="padding:10px">{rr}</td></tr>'''
+                mtf_chart_blocks += f'<div style="margin-top:16px"><div style="color:#22D3EE;font-weight:800">{m["name"]} — {status.replace("_"," ")}</div>{chart_html(m,"mtf")}</div>'
             mtf_section_html = f'''<div class="card" style="border:1px solid #06B6D4;box-shadow:0 0 20px rgba(6,182,212,.12)">
             <h2 style="margin-top:0;color:#22D3EE">🔀 INDEX MTF SWEEP → DAILY TRAP → 15-MIN MSS RADAR</h2>
             <div style="color:#94A3B8;font-size:13px;margin-bottom:14px">Index-only BUY-side framework: previous-week low sweep, latest daily close reclaim, then a causal 15-minute market-structure shift after daily confirmation. This section appears only when signals exist.</div>
             <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;color:#CBD5E1">
             <thead><tr style="background:#1E293B;color:#94A3B8"><th>INDEX</th><th>STATUS</th><th>PWL</th><th>WEEK LOW</th><th>ENTRY/MSS</th><th>SL</th><th>T1</th><th>T2/PWH</th><th>RR</th></tr></thead>
-            <tbody>{mtf_rows}</tbody></table></div></div>'''
+            <tbody>{mtf_rows}</tbody></table></div>{mtf_chart_blocks}</div>'''
         
         # Build Sector HTML Rows
         sector_rows_html = ""
@@ -140,6 +143,7 @@ class ReportGenerator:
                     <div>
                         {confluences_badges}
                     </div>
+                    {chart_html(sw,"daily")}
                 </div>
                 """
         else:
@@ -207,6 +211,7 @@ class ReportGenerator:
                         <div>
                             {w_confluences_badges}
                         </div>
+                        {chart_html(wk_hit,"weekly")}
                     </div>
                     """
             else:

@@ -2,6 +2,9 @@ import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+import re
+import base64
 
 class EmailSender:
     def __init__(self, recipient_email="abhayv7272@gmail.com"):
@@ -22,13 +25,28 @@ class EmailSender:
             return False
             
         try:
-            msg = MIMEMultipart("alternative")
+            # Gmail commonly strips data-URI images. Convert generated signal charts into
+            # inline CID attachments while keeping data URIs in the saved standalone HTML.
+            images=[]
+            pattern=re.compile(r'data:image/png;base64,([A-Za-z0-9+/=]+)')
+            def replace_image(match):
+                cid=f"signal_chart_{len(images)}"
+                images.append((cid,base64.b64decode(match.group(1))))
+                return f"cid:{cid}"
+            email_html=pattern.sub(replace_image,html_content)
+
+            msg = MIMEMultipart("related")
             msg["Subject"] = subject
             msg["From"] = f"Smart Money Intelligence <{self.sender_email}>"
             msg["To"] = self.recipient_email
-            
-            part = MIMEText(html_content, "html")
-            msg.attach(part)
+            alternative=MIMEMultipart("alternative")
+            alternative.attach(MIMEText(email_html,"html","utf-8"))
+            msg.attach(alternative)
+            for cid,payload in images:
+                image=MIMEImage(payload,_subtype="png")
+                image.add_header("Content-ID",f"<{cid}>")
+                image.add_header("Content-Disposition","inline",filename=f"{cid}.png")
+                msg.attach(image)
             
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.starttls()
