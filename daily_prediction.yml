@@ -1,0 +1,59 @@
+name: Smart Money Daily Market Predictor
+
+on:
+  schedule:
+    # Runs Monday to Friday at 15:30 UTC (9:00 PM IST)
+    - cron: '30 15 * * 1-5'
+  workflow_dispatch: # Allows manual trigger anytime from GitHub Actions tab
+
+jobs:
+  run-prediction:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: 📦 Install Free Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🏛️ Run Daily Institutional Prediction Engine
+        env:
+          MAIL_SERVER: ${{ secrets.MAIL_SERVER || 'smtp.gmail.com' }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT || '587' }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM || secrets.MAIL_USERNAME }}
+        run: |
+          python src/main.py
+
+      - name: 📧 Send Rich HTML Prediction Email
+        if: env.MAIL_USERNAME != ''
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER || 'smtp.gmail.com' }}
+          server_port: ${{ secrets.MAIL_PORT || 587 }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: 🏛️ Smart Money Daily Prediction Report (${{ steps.date.outputs.date }})
+          to: abhayv7272@gmail.com
+          from: Smart Money Intelligence <${{ secrets.MAIL_USERNAME }}>
+          html_body: file://reports/latest_prediction_report.html
+          convert_markdown: false
+
+      - name: 💾 Commit & Push Daily Prediction Reports
+        run: |
+          git config --global user.name "SmartMoney-Bot"
+          git config --global user.email "bot@smartmoney.ai"
+          git add reports/ data/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(daily-report): update prediction report for $(date +'%Y-%m-%d')" && git push)
