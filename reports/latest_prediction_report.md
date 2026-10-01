@@ -16,7 +16,7 @@ Deploy 100% capital into high-beta, leading fundamental stocks at support / 20 E
 Heavy Bearish Flow: Rejection expected near resistance 22750.0, with selling pressure testing support 22400.0 and potential breakdown towards 22230.0.
 
 ### Key Institutional Levels
-- **Resistance 2**: `22970.0`
+- **Resistance 2**: `22980.0`
 - **Resistance 1**: `22750.0`
 - **Support 1**: `22400.0`
 - **SL Sweep Zone (Liquidity Hunt)**: `22365.0`
@@ -25,26 +25,26 @@ Heavy Bearish Flow: Rejection expected near resistance 22750.0, with selling pre
 ---
 
 ## 🔄 Sector Rotation Ranking
-Institutional accumulation is heavily concentrated in Nifty Realty. Focus 10-40 day swing positions in stocks belonging to these leadership sectors. Avoid laggards (Nifty Auto, Nifty Energy).
+Institutional accumulation is heavily concentrated in Nifty Realty. Focus 10-40 day swing positions in stocks belonging to these leadership sectors. Avoid laggards (Nifty Oil & Gas, Nifty Auto).
 
 | Sector Name | 1-Week % | 1-Month % | 20 EMA Status | RS Score | Institutional Stance |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Nifty Realty | -1.93% | -0.79% | Above 20 EMA | +3.23 | LEADER (Strong Outperformance) |
-| Nifty Pharma | -1.84% | -1.07% | Below 20 EMA | +3.19 | IMPROVING (Outperforming) |
-| Nifty Bank | -1.29% | -4.43% | Below 20 EMA | +2.06 | IMPROVING (Outperforming) |
-| Nifty Metal | -3.02% | -0.97% | Below 20 EMA | +2.06 | IMPROVING (Outperforming) |
-| Nifty Smallcap | -2.45% | -3.69% | Below 20 EMA | +1.26 | IMPROVING (Outperforming) |
-| Nifty Infrastructure | -2.98% | -2.78% | Below 20 EMA | +1.20 | IMPROVING (Outperforming) |
-| Nifty IT | +0.29% | -10.33% | Below 20 EMA | +0.68 | IMPROVING (Outperforming) |
-| Nifty PSU Bank | -2.91% | -5.17% | Below 20 EMA | +0.07 | IMPROVING (Outperforming) |
-| Nifty Healthcare | -3.95% | -3.21% | Below 20 EMA | +0.01 | IMPROVING (Outperforming) |
-| Nifty FMCG | -3.84% | -4.42% | Below 20 EMA | -0.49 | NEUTRAL (In Line) |
-| Nifty Midcap 50 | -2.78% | -6.91% | Below 20 EMA | -0.67 | NEUTRAL (In Line) |
-| Nifty Consumer Durables | -3.98% | -6.86% | Below 20 EMA | -1.85 | NEUTRAL (In Line) |
-| Nifty Financial Services | -3.78% | -7.90% | Below 20 EMA | -2.16 | NEUTRAL (In Line) |
-| Nifty Oil & Gas | -5.28% | -5.12% | Below 20 EMA | -2.28 | NEUTRAL (In Line) |
-| Nifty Auto | -3.92% | -8.98% | Below 20 EMA | -2.85 | LAGGARD (Underperforming) |
-| Nifty Energy | -3.79% | -9.89% | Below 20 EMA | -3.18 | LAGGARD (Underperforming) |
+| Nifty Bank | -1.02% | -4.18% | Below 20 EMA | +2.43 | IMPROVING (Outperforming) |
+| Nifty Realty | -2.52% | -1.38% | Above 20 EMA | +2.33 | LEADER (Strong Outperformance) |
+| Nifty Pharma | -2.49% | -1.73% | Below 20 EMA | +2.18 | IMPROVING (Outperforming) |
+| Nifty Metal | -3.23% | -1.18% | Below 20 EMA | +1.72 | IMPROVING (Outperforming) |
+| Nifty Infrastructure | -3.13% | -2.93% | Below 20 EMA | +0.95 | IMPROVING (Outperforming) |
+| Nifty Smallcap | -2.66% | -3.89% | Below 20 EMA | +0.93 | IMPROVING (Outperforming) |
+| Nifty PSU Bank | -2.81% | -5.07% | Below 20 EMA | +0.19 | IMPROVING (Outperforming) |
+| Nifty IT | -0.36% | -10.91% | Below 20 EMA | -0.27 | NEUTRAL (In Line) |
+| Nifty Healthcare | -4.13% | -3.39% | Below 20 EMA | -0.28 | NEUTRAL (In Line) |
+| Nifty Midcap 50 | -2.58% | -6.72% | Below 20 EMA | -0.40 | NEUTRAL (In Line) |
+| Nifty FMCG | -4.12% | -4.70% | Below 20 EMA | -0.93 | NEUTRAL (In Line) |
+| Nifty Consumer Durables | -3.93% | -6.81% | Below 20 EMA | -1.79 | NEUTRAL (In Line) |
+| Nifty Financial Services | -3.68% | -7.81% | Below 20 EMA | -2.05 | NEUTRAL (In Line) |
+| Nifty Oil & Gas | -5.53% | -5.37% | Below 20 EMA | -2.68 | LAGGARD (Underperforming) |
+| Nifty Auto | -3.99% | -9.05% | Below 20 EMA | -2.97 | LAGGARD (Underperforming) |
+| Nifty Energy | -4.14% | -10.22% | Below 20 EMA | -3.72 | LAGGARD (Underperforming) |
 
 ---
 
